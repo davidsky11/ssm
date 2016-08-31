@@ -22,10 +22,8 @@ import com.crm.domain.User;
 import com.crm.rest.domain.ApiResult;
 import com.crm.service.UserService;
 import com.crm.service.ValidService;
-import com.crm.util.RandomUtil;
 import com.crm.util.ValidUtil;
 import com.crm.util.common.Const;
-import com.crm.util.sms.HttpSender;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
 

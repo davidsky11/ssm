@@ -23,12 +23,12 @@ ul, li {
 }
 #head {
 	width:20%;
-	margin:50px auto 0px 42%;
+	margin:50px auto 0px 44%;
 	position:relative;
 	z-index:1;
 }
 #head span {
-	font-size:34px;
+	font-size:36px;
 	text-align:center;
 	color:#FFFFFF;
 	height:50px;

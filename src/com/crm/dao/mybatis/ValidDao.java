@@ -37,7 +37,7 @@ public class ValidDao {
 					.concurrencyLevel(8)  // 最多8个并发
 					.initialCapacity(1)  // 初始容量
 					.maximumSize(100)  // 最大容量
-					.expireAfterAccess(10, TimeUnit.MICROSECONDS)  // 10分钟过期时间，不发生读写
+					.expireAfterAccess(10, TimeUnit.MINUTES)  // 10分钟过期时间，不发生读写
 					.build();
 		}
 	}

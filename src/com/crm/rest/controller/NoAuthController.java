@@ -76,6 +76,24 @@ public class NoAuthController {
 	@Autowired
 	private ValidService validService;
 	
+	@RequestMapping(value = "/codeT", method = RequestMethod.POST)
+	public String code1(@ApiParam(required = true, name = "phone", value = "手机号码") @RequestParam("phone") String phone) {
+		String validCode = RandomUtil.getRandomNumber(4);
+		validService.putValidCode(phone, validCode);
+		
+		return validCode;
+	}
+	
+	@RequestMapping(value = "/codeC", method = RequestMethod.POST)
+	public String check(@RequestParam("phone") String phone, @RequestParam("validCode") String validCode) {
+		String vCode = validService.getValidCode(phone);
+		System.out.println(" vCode: " + vCode + "    - validCode: " + validCode);
+		
+		return validCode;
+	}
+	
+	
+		
 	/**
 	 * @Title:			code
 	 * @Description:	获取短信验证码（每个手机号每天只能获取十次）

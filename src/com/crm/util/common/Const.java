@@ -21,7 +21,7 @@ public class Const {
 	public static final String SMS_URL = "http://222.73.117.169/msg/";
 	public static final String SMS_ACCOUNT = "N5765669";
 	public static final String SMS_PASS = "Ps0959a2";
-	public static final String SMS_MSG_HEAD = "【一品兑奖网】验证码";
+	public static final String SMS_MSG_HEAD = "【欢乐兑】验证码";
 	public static final String SMS_MSG_TAIL = "，您正在进行手机注册，切勿将验证码泄露于他人。";
 	
 	/**

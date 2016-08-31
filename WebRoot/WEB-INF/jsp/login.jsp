@@ -5,7 +5,7 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>兑奖网用户登录</title>
+<title> 欢 乐 兑 </title>
 <link rel="stylesheet" rev="stylesheet" type="text/css" href="css/login1.css" media="all"/>
 
 <script type="text/javascript" src="js/jquery/jQuery1.7.js"></script>
@@ -275,7 +275,7 @@
 
 <body>
 	<div id="head">
-		<span>一 品 兑 奖 网</span>
+		<span> 欢  乐  兑 </span>
 	</div>
 	<div id="tab">
 		<ul class="tab_menu">
