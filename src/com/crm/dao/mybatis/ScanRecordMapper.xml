@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.crm.dao.mybatis.ScanRecordMapper">  
+
+	<!-- <resultMap type="com.crm.domain.ScanRecord" id="ScanRecord">
+		<result column="id" property="id" jdbcType="VARCHAR" />
+		<result column="accountId" property="accountId" jdbcType="VARCHAR" />
+		<result column="accountName" property="accountName" jdbcType="VARCHAR" />
+		<result column="longitude" property="longitude" jdbcType="DOUBLE" />
+		<result column="latitude" property="latitude" jdbcType="DOUBLE" />
+		<result column="scanTime" property="scanTime" jdbcType="TIMESTAMP" />
+	</resultMap> -->
+
+	<insert id="saveScanRecord" parameterType="com.crm.domain.ScanRecord" >
+		<selectKey keyProperty="id" resultType="String" order="BEFORE">
+			select replace(UUID(), "-", "")
+		</selectKey>
+			insert into scan_record(<trim suffixOverrides=",">
+			<if test="id !=null and id !=''">id,</if>
+            <if test="accountId !=null and accountId !=''">accountId,</if>
+            <if test="accountName !=null and accountName !=''">accountName,</if>
+            <if test="longitude !=null and longitude !=''">longitude,</if>
+            <if test="latitude !=null and latitude !=''">latitude,</if>
+            <if test="scanTime !=null and scanTime !=''">scanTime</if>
+            </trim>)values(<trim suffixOverrides=",">
+            <if test="id !=null and id !=''">#{id},</if>
+            <if test="accountId !=null and accountId !=''">#{accountId},</if>
+            <if test="accountName !=null and accountName !=''">#{accountName},</if>
+            <if test="longitude !=null and longitude !=''">#{longitude},</if>
+            <if test="latitude !=null and latitude !=''">#{latitude},</if>
+            <if test="scanTime !=null and scanTime !=''">#{scanTime}</if>
+            </trim>)
+	</insert> 
+	
+	<delete id="deleteScanRecord" parameterType="String">
+		delete from scan_record where id=#{id}
+	</delete>
+	
+	<update id="updateScanRecord" parameterType="com.crm.domain.ScanRecord">
+    	update scan_record
+    	<set>
+            <if test="accountId !=null and accountId !=''">account=#{accountId},</if>
+            <if test="accountName !=null and accountName !=''">accountName=#{accountName},</if>
+            <if test="longitude !=null and longitude !=''">longitude=#{longitude},</if>
+            <if test="latitude !=null and latitude !=''">latitude=#{latitude},</if>
+            <if test="scanTime !=null and scanTime !=''">scanTime=#{scanTime}</if>
+    	</set>
+    	where id = #{id}
+    </update>
+
+	<select id="getScanRecordList" resultType="com.crm.domain.ScanRecord">
+		select t.id,t.accountId,t.accountName,t.longitude,t.latitude,t.scanTime from scan_record t where 1=1
+		<if test="conditionSql != null and conditionSql != ''">
+			${conditionSql}
+		</if>
+		<if test="page.sort != null and page.sort != ''">
+            order by #{page.sort} #{page.order}
+        </if>
+        <if test="page.page > 0">
+            limit #{page.start},#{page.end}
+        </if>
+	</select>
+	
+	<select id="findByCondition" resultType="com.crm.domain.ScanRecord">
+		select t.id,t.accountId,t.accountName,t.longitude,t.latitude,t.scanTime from scan_record t where 1=1
+		<if test="conditionSql !=null and conditionSql !=''">
+			${conditionSql}
+		</if>
+	</select>
+	
+	<select id="findByUser" parameterType="com.crm.domain.User" resultType="com.crm.domain.ScanRecord">
+		<!-- select t.id,t.accountId,t.exchangeTime,t.innerCode,t.outerCode from exchange t where 1=1
+		where t.publisherId = u.id and u.id = #{id} -->
+		select distinct t.id,t.accountId,t.accountName,t.longitude,t.latitude,t.scanTime from scan_record t, sysuser a 
+		where (t.accountId = a.id and a.id = #{id}) or (t.accountName like concat('%',#{username},'%'))
+	</select>
+	
+	<select id="getDatagridTotal" resultType="long" parameterType="com.crm.domain.ScanRecord">
+		select count(1) from scan_record t where 1=1
+        <if test="accountName != null and accountName != ''">
+            and t.accountName like concat('%',#{accountName},'%') 
+        </if>
+        <if test="scanTime != null and scanTime != ''">
+        	and date(scanTime) = #{scanTime}
+        </if>
+	</select>
+	
+	<select id="getDatagridTotalByCondition" resultType="long">
+		select count(1) from scan_record where 1=1
+        <if test="conditionSql != null and conditionSql != ''">
+            ${conditionSql}
+        </if>
+	</select>
+	
+	<select id="datagridScanRecord" resultType="com.crm.domain.ScanRecord">
+		select t.id,t.accountId,t.accountName,t.longitude,t.latitude,t.scanTime from scan_record t where 1=1
+		<if test="scanRecord.accountId != null and scanRecord.accountId != ''">
+            and t.accountId = #{scanRecord.accountId} 
+        </if>
+		<if test="scanRecord.accountName != null and scanRecord.accountName != ''">
+            and t.accountName like concat('%',#{scanRecord.accountName},'%') 
+        </if>
+        <if test="scanRecord.scanTime != null and scanRecord.scanTime != ''">
+        	and date(t.scanTime) = #{scanRecord.scanTime} 
+        </if>
+        <if test="page.sort != null and page.sort != ''">
+            order by #{page.sort} #{page.order}
+        </if>
+        <if test="page.page > 0">
+            limit #{page.start},#{page.end}
+        </if>
+	</select>
+    
+</mapper>

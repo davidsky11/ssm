@@ -1,0 +1,1 @@
+2016-08-25 23:36:54 [org.apache.commons.httpclient.HttpMethodBase:1656] - Cookie rejected: "$Version="1"; BAIDUID="671CF35A0981E80D9CB1C027D4A27C6B:FG=1"; $Path="/"; $Domain=".baidu.com"". Domain attribute ".baidu.com" violates RFC 2109: host minus domain may not contain any dots

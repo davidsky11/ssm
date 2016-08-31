@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.crm.dao.mybatis.AccountMapper">   
+
+	<!-- <insert id="save" useGeneratedKeys="true" keyProperty="id">
+		insert into account(<trim suffixOverrides=",">
+            <if test="username !=null and username !=''">username,</if>
+            <if test="password !=null and password !=''">password</if>
+            </trim>)
+	</insert>  -->
+	
+	<insert id="saveAccount" parameterType="com.crm.domain.Account" >
+		<selectKey keyProperty="id" resultType="String" order="BEFORE">
+			select replace(UUID(), "-", "")
+		</selectKey>
+			insert into account(<trim suffixOverrides=",">
+			<if test="id !=null and id !=''">id,</if>
+            <if test="username !=null and username !=''">username,</if>
+            <if test="password !=null and password !=''">password,</if>
+            <if test="userType !=null and userType !=''">userType,</if>
+            <if test="genarateName !=null and genarateName !=''">genarateName</if>
+            </trim>)values(<trim suffixOverrides=",">
+            <if test="id !=null and id !=''">#{id},</if>
+            <if test="username !=null and username !=''">#{username},</if>
+            <if test="password !=null and password !=''">#{password},</if>
+            <if test="userType !=null and userType !=''">#{userType},</if>
+            <if test="genarateName !=null and genarateName !=''">#{genarateName}</if>
+            </trim>)
+	</insert> 
+	
+	<delete id="deleteAccount" parameterType="String">
+		delete from account where id=#{id}
+	</delete>
+	
+	<update id="updateAccount" parameterType="com.crm.domain.Account">
+    	update account
+    	<set>
+    		<if test="username !=null and username !=''">username=#{username},</if>
+            <if test="password !=null and password !=''">password=#{password},</if>
+            <if test="userType !=null and userType !=''">userType=#{userType},</if>
+            <if test="genarateName !=null and genarateName !=''">genarateName=#{genarateName}</if>
+    	</set>
+    	where id = #{id}
+    </update>
+    
+    <select id="getDatagridTotal" resultType="long" parameterType="com.crm.domain.Account">
+		select 
+			count(1) 
+		from account t where 1=1
+        <if test="username != null and username != ''">
+            and username like concat('%',#{username},'%')
+        </if>
+	</select>
+	
+	<select id="datagridAccount" resultType="com.crm.domain.Account">
+		select t.id,t.username, t.generateName from account t where 1=1
+		<if test="account.username != null and account.username != ''">
+            and t.username like concat('%',#{account.username},'%')
+        </if>
+        <if test="page.sort != null and page.sort != ''">
+            order by #{page.sort} #{page.order}
+        </if>
+        <if test="page.page > 0">
+            limit #{page.start},#{page.end}
+        </if>
+	</select>
+
+	<select id="getAccountList" resultType="com.crm.domain.Account">
+		select t.id,t.username, t.generateName from account t where 1=1 
+		<if test="conditionsql != null and conditionsql != ''">
+			${conditionsql}
+		</if>
+	</select>
+	
+	<select id="findByNameAndPass" resultType="com.crm.domain.Account">
+		select t.id, t.username, t.password, t.userType, t.generateName from account t where t.username=#{username} 
+		and password=#{password} and userType=#{userType}
+	</select>
+	
+	<select id="findByUserName" resultType="com.crm.domain.Account">
+		select t.id,t.username, t.generateName from account t where t.username like concat('%',#{username},'%')
+		and userType=#{userType}
+	</select>
+	
+	<select id="findById" resultType="com.crm.domain.Account">
+		select t.id,t.username, t.generateName from account t where t.id=#{id}
+	</select> 
+	
+	<select id="getMenuByAccountId" resultType="com.crm.domain.SysMenu">
+		SELECT m.id,m.name,m.parentid,m.iconCls,m.url,
+			(select count(1) from sysmenu s where s.parentId!=0 and s.parentId=m.id) countChildrens 
+		FROM sysmenu m
+		  LEFT JOIN role_menu rm
+		  ON m.id = rm.menu_id
+		  LEFT JOIN sysrole r
+		  ON rm.role_id = r.id
+		  LEFT JOIN user_role ur
+		  ON  r.id = ur.roleId
+		  LEFT JOIN sysuser u
+		  ON ur.userId = u.id
+		  WHERE m.enable=1 AND u.id = #{userId} 
+		  AND m.id NOT IN(
+			SELECT tt.id
+			FROM
+				(SELECT m.id,
+					(SELECT COUNT(parentId) FROM sysmenu sp WHERE sp.enable=1 AND sp.parentId=m.id AND m.parentId=0 ) countch
+				 FROM sysmenu m WHERE m.parentId=0
+		  		) tt 
+		  	where countch =0
+		  )
+		  ORDER BY m.sequence
+	</select> 
+    
+</mapper>

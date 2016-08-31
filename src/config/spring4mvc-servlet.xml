@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:mvc="http://www.springframework.org/schema/mvc" xmlns:cache="http://www.springframework.org/schema/cache"
+	xmlns:util="http://www.springframework.org/schema/util" 
+	xmlns:p="http://www.springframework.org/schema/p"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+		http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
+        http://www.springframework.org/schema/context 
+        http://www.springframework.org/schema/context/spring-context-3.2.xsd
+        http://www.springframework.org/schema/mvc 
+        http://www.springframework.org/schema/mvc/spring-mvc-3.2.xsd
+        http://www.springframework.org/schema/cache 
+        http://www.springframework.org/schema/cache/spring-cache-3.2.xsd
+        http://www.springframework.org/schema/util 
+    	http://www.springframework.org/schema/util/spring-util.xsd">
+
+	<!-- 自动扫描的包名 ，使Spring支持自动检测组件，如注解的Controller -->
+	<context:component-scan base-package="com.crm" >
+		<context:include-filter type="regex" expression="com.crm.service.*"/>
+		<context:include-filter type="regex" expression="com.crm.controller.*"/>
+		<context:include-filter type="regex" expression="com.crm.authorization.*"/>
+		
+	</context:component-scan>
+	
+	<!-- <context:component-scan base-package="com.crm.controller" />
+	<context:component-scan base-package="com.crm.service" />
+	<context:component-scan base-package="com.crm.authorization" /> -->
+	
+	<!-- Controller测试的时候使用，发布可以注释掉 -->
+	<!-- <bean class="org.springframework.mock.web.MockServletContext"/> -->
+	
+	<util:list id="supportedMediaTypes">
+        <value>application/json</value>
+        <value>text/plain</value>
+        <value>text/html;charset=UTF-8</value>
+    </util:list>
+    
+	<!-- 启用spring mvc 注解 -->
+	<mvc:annotation-driven>
+		<!-- 启动JSON格式的配置 -->
+		<mvc:message-converters>
+			<!-- 将FastJsonHttpMessageConverter的默认编码设为UTF-8 -->  
+			<!-- <bean class="com.alibaba.fastjson.support.spring.FastJsonHttpMessageConverter">
+				<property name="supportedMediaTypes">
+					<list>
+						<value>text/html;charset=UTF-8</value>  // 避免IE出现下载JSON文件的情况 
+					</list>
+				</property>
+			</bean> -->
+			
+			<!-- 将Jackson2HttpMessageConverter的默认格式化输出设为true -->  
+			<bean class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter"
+				p:prettyPrint="true" p:supportedMediaTypes-ref="supportedMediaTypes" />
+		
+		</mvc:message-converters>
+	</mvc:annotation-driven>
+
+	<!-- 对静态资源文件的访问 缓存一年 <mvc:resources mapping="/images/**" location="/WEB-INF/images/" 
+		cache-period="31536000"/> <mvc:resources mapping="/css/**" location="/WEB-INF/css/" 
+		/> <mvc:resources mapping="/js/**" location="/WEB-INF/js/" /> <mvc:resources 
+		mapping="/fonts/**" location="/WEB-INF/fonts/" /> <mvc:resources mapping="/favicon.ico" 
+		location="favicon.ico" /> -->
+
+	<!-- 视图解析器:定义跳转的文件的前后缀 -->
+	<bean id="viewResolver"
+		class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<property name="prefix" value="/WEB-INF/jsp/" />
+		<property name="suffix" value=".jsp" />  <!--可为空,方便实现自已的依据扩展名来选择视图解释类的逻辑 -->
+	</bean>
+	<!-- <mvc:view-controller path="/" view-name="forward:/index.jsp"/> -->
+
+	<!-- 自定义解析器 -->
+	<!-- <bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter">
+		<property name="synchronizeOnSession" value="true" />
+		<property name="customArgumentResolvers">
+			<list>
+				<bean class="com.crm.authorization.resolvers.CurrentAccountMethodArgumentResolver" />
+			</list>
+		</property>
+	</bean> -->
+	
+	<!-- 缓存配置(两种) -->
+	<!-- 启用缓存注解功能(请将其配置在Spring主配置文件中) -->
+	<cache:annotation-driven cache-manager="springCacheManager" />
+	<!-- Spring自己的基于java.util.concurrent.ConcurrentHashMap实现的缓存管理器(该功能是从Spring3.1开始提供的) -->
+	<!-- <bean id="cacheManager" class="org.springframework.cache.support.SimpleCacheManager"> 
+		<property name="caches"> <set> <bean name="myCache" class="org.springframework.cache.concurrent.ConcurrentMapCacheFactoryBean"/> 
+		</set> </property> </bean> -->
+	<!-- 若只想使用Spring自身提供的缓存器,则注释掉下面的两个关于Ehcache配置的bean,并启用上面的SimpleCacheManager即可 -->
+	<!-- Spring提供的基于的Ehcache实现的缓存管理器 -->
+	<!-- <bean id="ehcacheManagerFactory"
+		class="org.springframework.cache.ehcache.EhCacheManagerFactoryBean">
+		<property name="configLocation" value="classpath:ehcache.xml" />
+	</bean>
+	<bean id="springCacheManager" class="org.springframework.cache.ehcache.EhCacheCacheManager">
+		<property name="cacheManager" ref="cacheManagerFactory" />
+	</bean> -->
+	
+	<!-- 静态资源 -->
+	<!-- 所有swagger目录的访问，直接访问location指定的目录 -->
+	<mvc:resources mapping="swagger/**" location="/WEB-INF/swagger/**"/>
+	<mvc:resources mapping="static/**" location="/static/" />
+	
+	<!-- Serve static content-->
+	<mvc:default-servlet-handler/>
+
+	<!--配置拦截器, 多个拦截器,顺序执行 -->
+	<mvc:interceptors>
+		<!-- 拦截网站请求 -->
+		<mvc:interceptor>
+			<!-- /**的意思是所有文件夹及里面的子文件夹 /*是所有文件夹，不含子文件夹 /是web项目的根目录 exclude-mapping 
+				不拦截的url -->
+			<mvc:mapping path="/" />
+			<mvc:mapping path="/**" />
+			<mvc:exclude-mapping path="/code" />
+			<!-- <mvc:exclude-mapping path="/login" /> -->
+			<mvc:exclude-mapping path="/logout" />
+			<mvc:exclude-mapping path="/r/**"/>  <!-- 屏蔽RESTful API接口 -->
+			<mvc:exclude-mapping path="/swagger/**"/>
+			<mvc:exclude-mapping path="/restapi/**"/>
+			<mvc:exclude-mapping path="/api-docs/**"/>
+
+			<bean class="com.crm.interceptor.CommonInterceptor"></bean>
+		</mvc:interceptor>
+		
+		<!-- 拦截RESTful API接口 -->
+		<mvc:interceptor>
+			<!-- /**的意思是所有文件夹及里面的子文件夹 /*是所有文件夹，不含子文件夹 /是web项目的根目录 exclude-mapping 
+				不拦截的url -->
+			<mvc:mapping path="/r/**" />
+			<mvc:exclude-mapping path="/r/register"/>  <!-- APP用户注册 -->
+			<mvc:exclude-mapping path="/r/login/**"/>  <!-- APP用户登录 -->
+			<mvc:exclude-mapping path="/r/nobuss/**"/>  <!-- APP用户登录 -->
+			<mvc:exclude-mapping path="/api-docs/**"/>
+
+			<bean class="com.crm.authorization.interceptor.AuthorizationInterceptor"></bean>
+		</mvc:interceptor>
+		<!-- 当设置多个拦截器时，先按顺序调用preHandle方法，然后逆序调用每个拦截器的postHandle和afterCompletion方法 -->
+	</mvc:interceptors>
+	
+</beans>   

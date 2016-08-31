@@ -1,0 +1,169 @@
+/* CSS Document */ 
+*{margin:0;padding:0;word-wrap:break-word;word-break:break-all;} 
+body{font-family:"宋体","Arial";font-size:12px;background:#fff;min-width:800px;} 
+ul,li{list-style:none;} 
+a{text-decoration:none;color:#555;} 
+h3{font-size:14px;font-weight:bold;margin:0em 0 0.5em 0;} 
+h2{font-size:16px;font-weight:bold;margin:1em 0} 
+/**tabs**/ 
+.tabPanel ul{height:23px;border-bottom:1px solid #CECECE; width:294px;} 
+.tabPanel ul li{ 
+float:left;margin:0 2px 0 0;border:1px solid #CECECE;font-size:13px;height:22px;line-height:22px;width:94px;text-align:center;cursor:pointer; 
+font-family:"Microsoft Yahei"; 
+text-shadow:0 1px 0 #fff; 
+border-radius:4px 4px 0 0; 
+box-shadow:inset 0 1px 0 rgba(255, 255, 255, 0.5); 
+/* background:#ddd; 
+background:-moz-linear-gradient(top, #eee, #ddd); 
+background:-webkit-gradient(linear, left top, left bottom, from(#eee), to(#ddd));*/ 
+} 
+.tabPanel .hit{ 
+border-color:#B9D894 #B9D894 #FFF;cursor:pointer;color:black;text-shadow:0 1px 0 #FFF; 
+/*background:#fff; 
+background:-webkit-gradient(linear, left top, left bottom, from(#e1e1e1), to(#fff)); 
+background:-moz-linear-gradient(top, #e1e1e1, #fff);*/ 
+} 
+.pane{border:1px solid #B9D894;border-top:0;min-height:100px;background-color:#fff;display:none; width:290px; height:285px} 
+.pane p{padding:15px 15px 0 10px;} 
+.pane h4{padding:15px 15px 0 10px;font-size:14px;font-weight:bold;} 
+/**88888888888888888888888888*/ 
+#Main { 
+/* background-color: #fff; 
+border-color: #bbb; 
+border-right: 1px solid #bbb; 
+border-style: solid;*/ 
+border-width: 1px; 
+padding: 30px 20px 30px 30px; 
+text-align: left; 
+font-family:"Microsoft Yahei"; 
+font-size: 13px; 
+} 
+div#Heading { 
+color: #904; 
+font-family: arial; 
+font-size: 150%; 
+font-weight: bold; 
+margin: 0; 
+padding: 0 0 15px; 
+} 
+h2 { 
+border-bottom: 1px solid #ddd; 
+color: #999; 
+font-size: 105%; 
+font-weight: bold; 
+margin: 0 0 8px; 
+padding: 0; 
+text-transform: uppercase; 
+} 
+p { 
+margin: 0; 
+padding: 6px 0; 
+} 
+.MyLabel { 
+color: #999; 
+display: block; 
+font-size: 13px; 
+font-weight: bold; 
+margin: 6px 0 2px; 
+text-transform: uppercase; 
+} 
+input.Textbox { 
+font-family: verdana,arial,sans-serif; 
+height: 20px; 
+/*padding: 2px;*/ 
+width: 160px; 
+border:1px solid #CECECE; 
+} 
+a.Button:link { 
+background: none repeat scroll 0 0 #904; 
+border-color: #999; 
+border-right: 1px solid #999; 
+border-width: 1px; 
+color: #fff; 
+display: block; 
+font-family: Verdana; 
+font-size: 15px; 
+font-weight: bold; 
+padding: 5px 12px 3px 20px; 
+width: 50px; 
+} 
+a.Button:visited { 
+background: none repeat scroll 0 0 #904; 
+border-color: #999; 
+border-right: 1px solid #999; 
+border-style: solid; 
+border-width: 1px; 
+color: #fff; 
+display: block; 
+font-size: 15px; 
+font-weight: bold; 
+padding: 3px 12px; 
+width: 60px; 
+} 
+span.ErrorMessage { 
+color: #904; 
+display: block; 
+font-weight: bold; 
+} 
+p.Small { 
+font-size: 85%; 
+margin-top: 12px; 
+} 
+.Button { 
+color:#FFF; 
+font-family:"Microsoft Yahei"; 
+font-size: 13px; 
+font-weight: bold; 
+/* padding-bottom: 3px; 
+padding-top: 5px;*/ 
+width: 60px; 
+background-color:#73AD2E; 
+border-radius:5px; 
+border:none; 
+} 
+a.tip_lnk:link, a.tip_lnk:active, a.tip_lnk:visited { 
+color:#444; 
+text-decoration: underline; 
+} 
+a.top_return { 
+font-weight: normal; 
+padding-left: 5px; 
+} 
+.form_div1 { 
+height: 50px; 
+overflow: hidden; 
+} 
+.form_div1 span { 
+display: block; 
+float: left; 
+overflow: hidden; 
+padding: 0 0 0 6px; 
+} 
+.form_div1 .span2 { 
+color: #999; 
+padding-top: 6px; 
+} 
+.form_div1 .input1 { 
+-moz-border-bottom-colors: none; 
+-moz-border-left-colors: none; 
+-moz-border-right-colors: none; 
+-moz-border-top-colors: none; 
+border-color: pink; 
+border-image: none; 
+border-right: 1px solid pink; 
+border-style: solid; 
+border-width: 1px; 
+color: #666; 
+height: 20px; 
+line-height: 20px; 
+width: 198px; 
+} 
+.form_div1 .input2 { 
+width: 109px; 
+} 
+.form_div1 .span1 { 
+/* padding-top: 6px; 
+text-align: right;*/ 
+width: 55px; 
+} 
+.b{ margin:15px 10px 10px 10px;} 

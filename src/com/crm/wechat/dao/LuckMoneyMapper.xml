@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >  
+<mapper namespace="****.mapper.LuckyMoneyMapper" >  
+        <!-- 是否已经领取过红包 -->  
+        <select id="existSendRecord" parameterType="java.util.Map" resultType="Integer">  
+        <if test="openid != null" >  
+           select count(*) from cm_hongbao where openid = #{openid}  and result = 1   
+        </if>  
+        <if test="mobile != null" >  
+           select count(*) from cm_hongbao where mobile = #{mobile}  and result = 1   
+        </if>  
+    </select>  
+      
+    <!-- 查询商户红包余额 -->  
+    <select id="selectCHongbao" resultType="com.caimei.hehe.po.Balance">  
+         select * from c_hongbao  
+    </select>  
+</mapper>  

@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.crm.dao.mybatis.AwardMapper">   
+
+	<insert id="addAward" parameterType="com.crm.domain.Award" >
+		<selectKey keyProperty="id" resultType="String" order="BEFORE">
+			select replace(UUID(), "-", "")
+		</selectKey>
+			insert into award(<trim suffixOverrides=",">
+			<if test="id !=null and id !=''">id,</if>
+            <if test="title !=null and title !=''">title,</if>
+            <if test="serialNo !=null and serialNo !=''">serialNo,</if>
+            <if test="description !=null and description !=''">description,</if>
+            <if test="hierarchy !=null and hierarchy !=''">hierarchy,</if>
+            <if test="sort !=null and sort !=''">sort,</if>
+            <if test="amount !=null and amount !=''">amount,</if>
+            <if test="publicCode !=null and publicCode !=''">publicCode</if>
+            </trim>)values(<trim suffixOverrides=",">
+            <if test="id !=null and id !=''">#{id},</if>
+            <if test="title !=null and title !=''">#{title},</if>
+            <if test="serialNo !=null and serialNo !=''">#{serialNo},</if>
+            <if test="description !=null and description !=''">#{description},</if>
+            <if test="hierarchy !=null and hierarchy !=''">#{hierarchy},</if>
+            <if test="sort !=null and sort !=''">#{sort},</if>
+            <if test="amount !=null and amount !=''">#{amount},</if>
+            <if test="publicCode !=null and publicCode !=''">#{publicCode}</if>
+            </trim>)
+	</insert>
+	
+	<delete id="deleteAward" parameterType="String">
+		delete from award where id=#{id}
+	</delete>
+	
+	<update id="updateAward">
+    	update award
+    	<set>
+            <if test="title !=null and title !=''">title=#{title},</if>
+            <if test="serialNo !=null and serialNo !=''">serialNo=#{serialNo},</if>
+            <if test="description !=null and description !=''">description=#{description},</if>
+            <if test="hierarchy !=null and hierarchy !=''">hierarchy=#{hierarchy},</if>
+            <if test="sort !=null and sort !=''">sort=#{sort},</if>
+            <if test="amount !=null and amount !=''">amount=#{amount},</if>
+            <if test="publicCode !=null and publicCode !=''">publicCode=#{publicCode}</if>
+    	</set>
+    	where id = #{id}
+    </update>
+	
+	<select id="findBySN" resultType="com.crm.domain.Award">
+		select t.id,t.title,t.serialNo,t.description,t.hierarchy,t.sort,t.amount,t.publicCode from award t where t.serialNo=#{serialNo}
+	</select>
+	
+	<select id="findById" resultType="com.crm.domain.Award">
+		select t.id,t.title,t.serialNo,t.description,t.hierarchy,t.sort,t.amount,t.publicCode from award t where t.id=#{id}
+	</select> 
+	
+	<select id="getDatagrid" parameterType="String" resultType="com.crm.domain.Award">
+		select id,title,serialNo,description,hierarchy,sort,amount,publicCode from award where 1=1 
+		<if test="conditionSql != null and conditionSql != ''">
+            ${conditionSql}
+        </if>
+	</select>
+	
+	<select id="getDatagridTotal" resultType="long">
+		select count(1) from award where  1=1
+		<if test="serialNo != null and serialNo != ''">
+            and serialNo like concat('%',#{serialNo},'%')
+        </if>
+	</select>
+	
+	<select id="datagridAward" resultType="com.crm.domain.Award">
+		select t.id,t.title,t.serialNo,t.description,t.hierarchy,t.sort,t.amount,t.publicCode from award t where 1=1
+		<if test="award.title != null and award.title != ''">
+			and t.title like concat('%',#{award.title},'%')
+		</if>
+		<if test="award.serialNo != null and award.serialNo != ''">
+			and t.serialNo = #{award.serialNo}
+		</if>
+		<if test="page.sort != null and page.sort != ''">
+            order by #{page.sort} #{page.order}
+        </if>
+        <if test="page.page > 0">
+            limit #{page.start},#{page.end}
+        </if>
+	</select>
+	
+</mapper>

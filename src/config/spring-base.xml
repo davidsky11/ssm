@@ -1,0 +1,61 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+    xmlns:aop="http://www.springframework.org/schema/aop"
+    xmlns:context="http://www.springframework.org/schema/context"
+    xmlns:util="http://www.springframework.org/schema/util"  
+    xmlns:mvc="http://www.springframework.org/schema/mvc"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans
+    http://www.springframework.org/schema/beans/spring-beans.xsd
+    http://www.springframework.org/schema/aop
+    http://www.springframework.org/schema/aop/spring-aop.xsd  
+    http://www.springframework.org/schema/util 
+    http://www.springframework.org/schema/util/spring-util.xsd
+    http://www.springframework.org/schema/context
+    http://www.springframework.org/schema/context/spring-context.xsd
+    http://www.springframework.org/schema/mvc 
+    http://www.springframework.org/schema/mvc/spring-mvc-3.2.xsd">
+
+    <description>spring主配置文件</description>
+
+    <!-- 属性和配置文件读入 ,多个用逗号隔开 数据库参数和系统参数 -->
+    <util:properties id="applicationProperties" location="classpath:configuration.properties"/>  
+    <context:property-placeholder properties-ref="applicationProperties" ignore-resource-not-found="true"/>
+
+	<!-- 自动扫描的包名 ，使Spring支持自动检测组件，如注解的Controller -->
+	<context:component-scan base-package="com.crm" >
+		<context:include-filter type="regex" expression="com.crm.service.*"/>
+		<context:include-filter type="regex" expression="com.crm.controller.*"/>
+		<context:include-filter type="regex" expression="com.crm.authorization.*"/>
+		
+		<!-- <context:exclude-filter type="annotation" expression="org.springframework.stereotype.Controller" /> -->
+	</context:component-scan>
+
+    <!-- 扫描注解@Component , @Service , @Repository。 要把 controller去除，controller是在spring-servlet.xml中配置的，如果不去除会影响事务管理的。 -->
+    <!-- <context:component-scan
+        base-package="com.turingoal.cms.core.commons,com.turingoal.cms.modules.commons,com.turingoal.cms.core.repository,com.turingoal.cms.core.service,com.turingoal.cms.core.**.directive,com.turingoal.cms.modules.**.repository,com.turingoal.cms.modules.**.service,com.turingoal.cms.modules.**.directive">
+        <context:include-filter type="annotation"
+            expression="org.aspectj.lang.annotation.Aspect" />
+        <context:exclude-filter type="annotation"
+            expression="org.springframework.stereotype.Controller" />
+        <context:exclude-filter type="annotation"
+            expression="org.springframework.web.bind.annotation.RestController" />
+        <context:exclude-filter type="annotation"
+            expression="org.springframework.web.bind.annotation.ControllerAdvice" />
+    </context:component-scan> -->
+
+    <!-- 以静态变量保存Spring ApplicationContext, 可在任何代码任何地方任何时候中取出ApplicaitonContext. -->
+    <!-- <bean class="com.crm.common.util.spring.SpringContextHolder" /> -->
+    
+    <!-- 当Spring容器启动完成后执行下面的这个Bean -->
+    <!-- <bean class="com.crm.filter.SystemInitListener"/> -->
+    
+    <!-- 导入其它spring配置文件 -->
+    <import resource="classpath:config/spring-mybatis.xml" />
+    <import resource="classpath:config/spring-rest.xml" />
+    <import resource="classpath:config/spring-cache.xml" />
+    <!-- <import resource="classpath:config/spring-redis.xml" /> -->
+    <!-- <import resource="classpath:config/spring-wechat.xml" />
+    <import resource="classpath:config/spring-i18n.xml" />
+    <import resource="classpath:config/spring-json.xml" /> -->
+    
+</beans>

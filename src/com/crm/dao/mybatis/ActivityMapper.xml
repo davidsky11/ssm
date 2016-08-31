@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.crm.dao.mybatis.ActivityMapper">
+
+	<insert id="saveActivity" parameterType="com.crm.domain.Activity" >
+		<selectKey keyProperty="id" resultType="String" order="BEFORE">
+			select replace(UUID(), "-", "")
+		</selectKey>
+			insert into activity(<trim suffixOverrides=",">
+			<if test="id !=null and id !=''">id,</if>
+            <if test="title !=null and title !=''">title,</if>
+            <if test="description !=null and description !=''">description,</if>
+            <if test="startTime !=null and startTime !=''">startTime,</if>
+            <if test="endTime !=null and endTime !=''">endTime,</if>
+            <if test="content !=null and content !=''">content,</if>
+            <if test="publisherId !=null and publisherId !=''">publisherId,</if>
+            <if test="publisherName !=null and publisherName !=''">publisherName,</if>
+            <if test="publicCode !=null and publicCode !=''">publicCode</if>
+            </trim>)values(<trim suffixOverrides=",">
+            <if test="id !=null and id !=''">#{id},</if>
+            <if test="title !=null and title !=''">#{title},</if>
+            <if test="description !=null and description !=''">#{description},</if>
+            <if test="startTime !=null and startTime !=''">#{startTime},</if>
+            <if test="endTime !=null and endTime !=''">#{endTime},</if>
+            <if test="content !=null and content !=''">#{content},</if>
+            <if test="publisherId !=null and publisherId !=''">#{publisherId},</if>
+            <if test="publisherName !=null and publisherName !=''">#{publisherName},</if>
+            <if test="publicCode !=null and publicCode !=''">#{publicCode}</if>
+            </trim>)
+	</insert> 
+	
+	<delete id="deleteActivity" parameterType="String">
+		delete from activity where id=#{id}
+	</delete>
+	
+	<update id="updateActivity" parameterType="com.crm.domain.Activity">
+    	update activity
+    	<set>
+            <if test="title !=null and title !=''">title=#{title},</if>
+            <if test="description !=null and description !=''">description=#{description},</if>
+            <if test="startTime !=null and startTime !=''">startTime=#{startTime},</if>
+            <if test="endTime !=null and endTime !=''">endTime=#{endTime},</if>
+            <if test="content !=null and content !=''">content=#{content},</if>
+            <if test="publisherId !=null and publisherId !=''">publisherId=#{publisherId},</if>
+            <if test="publisherName !=null and publisherName !=''">publisherName=#{publisherName},</if>
+            <if test="publicCode !=null and publicCode !=''">publicCode=#{publicCode}</if>
+    	</set>
+    	where id = #{id}
+    </update>
+
+	<select id="getActivityList" resultType="com.crm.domain.Activity">
+		select t.id,t.title,t.description,t.startTime,t.endTime,t.content,t.publisherId,t.publisherName,t.publicCode from activity t where 1=1
+		<if test="conditionSql != null and conditionSql != ''">
+            ${conditionSql}
+        </if>
+	</select>
+	
+	<select id="getDatagrid" resultType="com.crm.domain.Activity">
+		select t.id,t.title,t.description,t.startTime,t.endTime,t.content,t.publisherId,t.publisherName,t.publicCode from activity t where 1=1
+		<if test="conditionSql != null and conditionSql != ''">
+			${conditionSql}
+        </if>
+	</select>
+	
+	<select id="findByTitle" resultType="com.crm.domain.Activity">
+		select t.id,t.title,t.description,t.startTime,t.endTime,t.content,t.publisherId,t.publisherName,t.publicCode from activity t where title like concat('%',#{title},'%')
+	</select>
+	
+	<select id="findByPublisher" parameterType="com.crm.domain.User" resultType="com.crm.domain.Activity">
+		<!-- select t.id,t.title,t.description,t.startDate,t.endDate,t.content,t.publisherId,t.publisherName from activity t, sysuser u
+		where t.publisherId = u.id and u.id = #{id} -->
+		select t.id,t.title,t.description,t.startTime,t.endTime,t.content,t.publisherId,t.publisherName,t.publicCode from activity t where t.publisherId in (select u.id from sysuser u
+		where u.id = #{id})
+	</select> 
+	
+	<select id="findById" resultType="com.crm.domain.Activity">
+		select t.id,t.title,t.description,t.startTime,t.endTime,t.content,t.publisherId,t.publisherName,t.publicCode from activity t where t.id=#{id}
+	</select> 
+	
+	<select id="getDatagridTotal" resultType="long">
+		select count(1) from activity where 1=1
+		<if test="title != null and title != ''">
+            and title like concat('%',#{title},'%')
+        </if>
+        <if test="publisherName != null and publisherName != ''">
+            and publisherName like concat('%',#{publisherName},'%')
+        </if>
+	</select>
+	
+	<select id="datagridActivity" resultType="com.crm.domain.Activity">
+		select t.id,t.title,t.description,t.startTime,t.endTime,t.content,t.publisherId,t.publisherName,t.publicCode from activity t where 1=1
+		<if test="activity.title != null and activity.title != ''">
+            and title like concat('%',#{activity.title},'%')
+        </if>
+        <if test="activity.publisherName != null and activity.publisherName != ''">
+            and publisherName like concat('%',#{activity.publisherName},'%')
+        </if>
+		<if test="page.sort != null and page.sort != ''">
+            order by #{page.sort} #{page.order}
+        </if>
+        <if test="page.page > 0">
+            limit #{page.start},#{page.end}
+        </if>
+	</select>
+    
+</mapper>
