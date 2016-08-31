@@ -231,8 +231,8 @@
 		}
 		t = setInterval(show, 8000);*/
 		// 根据窗口宽度生成图片宽度
-		var width = $(window).width();
-		$(".screenbg img").css("width", width + "px");
+		//var width = $(window).width();
+		//$(".screenbg img").css("width", width + "px");
 	});
 </script>
 
