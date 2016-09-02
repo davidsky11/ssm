@@ -11,26 +11,20 @@ public class Wares {
 	
 	private String id;
 	private String name;  // 商品名称
-	private Double realPrice;  // 实际价格
 	private String creater;  // 创建者
 	private String publicCode;   // 公共编码
 	private String privateCode;  // 瓶身码
 	private String insideCode;  // 瓶盖码
-	private String awardId;  // 对应的奖项
-	private String number;  // 商品编号
-	private String batch;  // 商品批次
+	private String status;  // 兑奖状态
 	private String createTime;  // 创建时间
-	private String image;  // 对应的图片
-	private Double sellPrice;  // 零售价格
+	private String awardId; // 对应的奖项ID，默认为无奖（空值）
+	private Award award;
 	
 	public String getId() {
 		return id;
 	}
 	public String getName() {
 		return name;
-	}
-	public Double getRealPrice() {
-		return realPrice;
 	}
 	public String getCreater() {
 		return creater;
@@ -44,32 +38,14 @@ public class Wares {
 	public String getInsideCode() {
 		return insideCode;
 	}
-	public String getAwardId() {
-		return awardId;
-	}
-	public String getNumber() {
-		return number;
-	}
-	public String getBatch() {
-		return batch;
-	}
 	public String getCreateTime() {
 		return createTime;
-	}
-	public String getImage() {
-		return image;
-	}
-	public Double getSellPrice() {
-		return sellPrice;
 	}
 	public void setId(String id) {
 		this.id = id;
 	}
 	public void setName(String name) {
 		this.name = name;
-	}
-	public void setRealPrice(Double realPrice) {
-		this.realPrice = realPrice;
 	}
 	public void setCreater(String creater) {
 		this.creater = creater;
@@ -83,31 +59,33 @@ public class Wares {
 	public void setInsideCode(String insideCode) {
 		this.insideCode = insideCode;
 	}
-	public void setAwardId(String awardId) {
-		this.awardId = awardId;
-	}
-	public void setNumber(String number) {
-		this.number = number;
-	}
-	public void setBatch(String batch) {
-		this.batch = batch;
-	}
 	public void setCreateTime(String createTime) {
 		this.createTime = createTime;
 	}
-	public void setImage(String image) {
-		this.image = image;
+	public String getStatus() {
+		return status;
 	}
-	public void setSellPrice(Double sellPrice) {
-		this.sellPrice = sellPrice;
+	public void setStatus(String status) {
+		this.status = status;
+	}
+	public String getAwardId() {
+		return awardId;
+	}
+	public void setAwardId(String awardId) {
+		this.awardId = awardId;
+	}
+	public Award getAward() {
+		return award;
+	}
+	public void setAward(Award award) {
+		this.award = award;
 	}
 	
 	@Override
 	public String toString() {
-		return "Wares [id=" + id + ", name=" + name + ", realPrice=" + realPrice + ", creater=" + creater
-				+ ", publicCode=" + publicCode + ", privateCode=" + privateCode + ", insideCode=" + insideCode
-				+ ", awardId=" + awardId + ", number=" + number + ", batch=" + batch + ", createTime=" + createTime
-				+ ", image=" + image + ", sellPrice=" + sellPrice + "]";
+		return "Wares [id=" + id + ", name=" + name + ", creater=" + creater + ", publicCode=" + publicCode
+				+ ", privateCode=" + privateCode + ", insideCode=" + insideCode + ", status=" + status + ", createTime="
+				+ createTime + ", awardId=" + awardId + ", award=" + award + "]";
 	}
 	
 }

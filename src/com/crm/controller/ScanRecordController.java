@@ -123,7 +123,7 @@ public class ScanRecordController /*extends BaseController*/ {
 		
 		if (user != null) {
 			ScanRecord scanRecord = new ScanRecord();
-			scanRecord.setAccountId(user.getId());
+			scanRecord.setUserId(user.getId());
 			
 			dg.setTotal(scanRecordService.getDatagridTotal(scanRecord));
 			List<ScanRecord> scanRecordList = scanRecordService.datagridScanRecord(page, scanRecord);
@@ -141,7 +141,7 @@ public class ScanRecordController /*extends BaseController*/ {
 		DataGrid dg = new DataGrid();
 		
 		ScanRecord scanRecord = new ScanRecord();
-		scanRecord.setAccountName(username);
+		scanRecord.setUserName(username);
 		
 		dg.setTotal(scanRecordService.getDatagridTotal(scanRecord));
 		List<ScanRecord> scanRecordList = scanRecordService.datagridScanRecord(page, scanRecord);

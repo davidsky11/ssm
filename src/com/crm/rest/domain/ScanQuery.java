@@ -17,8 +17,8 @@ public class ScanQuery extends ScanRecord {
 	private Award award;
 	
 	public ScanQuery(ScanRecord sr) {
-		this.setAccountId(sr.getAccountId());
-		this.setAccountName(sr.getAccountName());
+		this.setUserId(sr.getUserId());
+		this.setUserName(sr.getUserName());
 		this.setId(sr.getId());
 		this.setLatitude(sr.getLatitude());
 		this.setLongitude(sr.getLongitude());

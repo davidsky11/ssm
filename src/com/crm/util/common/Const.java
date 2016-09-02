@@ -98,10 +98,17 @@ public class Const {
     public static final String ROLE_DEALER = "dealer";
     
     /**
-     * 兑奖状体
+     * 兑奖状态 【未兑奖】
      */
-    public static final String EX_STATUS_UNEXCHANGE = "UNEXCHANGE";
-    public static final String EX_STATUS_EXCHANGED = "EXCHANGED";
+    public static final String EX_STATUS_UNEXCHANGE = "0";
+    /**
+     * 兑奖状态 【未中奖】
+     */
+    public static final String EX_STATUS_NO_AWARD = "1";
+    /**
+     * 兑奖状态 【已兑奖】
+     */
+    public static final String EX_STATUS_EXCHANGED = "2";
     
     /**
      * 错误代码
@@ -167,5 +174,6 @@ public class Const {
     public static final String OPERATE_PRODUCT_INFO = "PRODUCT_INFO";
     public static final String OPERATE_PRODUCT_TRACE = "PRODUCT_TRACE";
     public static final String OPERATE_AWARD_ANALYSIS = "AWARD_ANALYSIS";
-    
+    public static final String OPERATE_PLACE_ANALYSIS = "PLACE_ANALYSIS";
+    public static final String OPERATE_SALE_ANALYSIS = "SALE_ANALYSIS";
 }

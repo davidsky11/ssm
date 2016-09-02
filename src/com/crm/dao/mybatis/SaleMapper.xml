@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.crm.dao.mybatis.SaleMapper">
+
+	<insert id="saveSale" parameterType="com.crm.domain.Sale" keyProperty="id" useGeneratedKeys="true">
+			insert into sale(<trim suffixOverrides=",">
+            <if test="year !=null and year !=''">year,</if>
+            <if test="month !=null and month !=''">month,</if>
+            <if test="amount !=null and amount !=''">amount,</if>
+            </trim>)values(<trim suffixOverrides=",">
+            <if test="year !=null and year !=''">#{year}</if>
+            <if test="month !=null and month !=''">#{month}</if>
+            <if test="amount !=null and amount !=''">#{amount}</if>
+            </trim>)
+	</insert> 
+	
+	<delete id="deleteSale" parameterType="String">
+		delete from sale where id=#{id}
+	</delete>
+	
+	<update id="updateSale" parameterType="com.crm.domain.Sale">
+    	update sale
+    	<set>
+            <if test="year !=null and year !=''">year=#{year}</if>
+            <if test="month !=null and month !=''">month=#{month}</if>
+            <if test="amount !=null and amount !=''">amount=#{amount}</if>
+    	</set>
+    	where id = #{id}
+    </update>
+
+	<select id="getSaleList" resultType="com.crm.domain.Sale">
+		select t.id,t.year,t.month,t.amount from sale t where 1=1
+		<if test="conditionSql != null and conditionSql != ''">
+            ${conditionSql}
+        </if>
+	</select>
+	
+	<select id="findById" resultType="com.crm.domain.Sale">
+		select t.id,t.year,t.month,t.amount from sale t where t.id=#{id}
+	</select> 
+	
+	<select id="getDatagridTotal" resultType="long">
+		select count(1) from sale where 1=1
+		<if test="year != null and year != ''">
+            and year = #{year}
+        </if>
+        <if test="month != null and month != ''">
+            and month = #{month}
+        </if>
+	</select>
+	
+	<select id="datagridSale" resultType="com.crm.domain.Sale">
+		select t.id,t.year,t.month,t.amount from sale t where 1=1
+		<if test="sale.year != null and sale.year != ''">
+            and year = #{sale.year}
+        </if>
+        <if test="sale.month != null and sale.month != ''">
+            and month = #{sale.month}
+        </if>
+		<if test="page.sort != null and page.sort != ''">
+            order by #{page.sort} #{page.order}
+        </if>
+        <if test="page.page > 0">
+            limit #{page.start},#{page.end}
+        </if>
+	</select>
+    
+</mapper>

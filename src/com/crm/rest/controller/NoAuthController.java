@@ -1,10 +1,10 @@
 package com.crm.rest.controller;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,25 +18,32 @@ import com.crm.authorization.annotation.Authorization;
 import com.crm.common.util.lang.DateUtil;
 import com.crm.domain.Activity;
 import com.crm.domain.Award;
-import com.crm.domain.CodeRepo;
 import com.crm.domain.Exchange;
+import com.crm.domain.Sale;
 import com.crm.domain.ScanRecord;
 import com.crm.domain.User;
 import com.crm.domain.Wares;
+import com.crm.domain.dto.PlaceAnalysis;
 import com.crm.domain.easyui.DataGrid;
 import com.crm.domain.easyui.PageHelper;
+import com.crm.domain.po.Address;
+import com.crm.domain.po.AddressComponent;
+import com.crm.domain.po.Result;
 import com.crm.rest.domain.ApiResult;
 import com.crm.rest.domain.ExchangeQuery;
 import com.crm.rest.domain.ScanQuery;
 import com.crm.service.ActivityService;
+import com.crm.service.AnalysisService;
 import com.crm.service.AwardService;
-import com.crm.service.CodeRepoService;
 import com.crm.service.ExchangeService;
+import com.crm.service.SaleService;
 import com.crm.service.ScanRecordService;
 import com.crm.service.UserService;
 import com.crm.service.ValidService;
 import com.crm.service.WaresService;
+import com.crm.util.MapUtil;
 import com.crm.util.RandomUtil;
+import com.crm.util.Tool;
 import com.crm.util.ValidUtil;
 import com.crm.util.common.Const;
 import com.crm.util.sms.HttpSender;
@@ -68,14 +75,23 @@ public class NoAuthController {
 	@Autowired
 	private ActivityService activityService;
 	@Autowired
-	private CodeRepoService codeRepoService;
-	@Autowired
 	private UserService userService;
 	@Autowired
 	private ExchangeService exchangeService;
 	@Autowired
 	private ValidService validService;
+	@Autowired
+	private AnalysisService analysisService;
+	@Autowired
+	private SaleService saleService;
 	
+	/**
+	 * 测试用
+	 * @Title:			code1
+	 * @Description:	向缓存中放入一堆 phone - validCode
+	 * @param phone
+	 * @return
+	 */
 	@RequestMapping(value = "/codeT", method = RequestMethod.POST)
 	public String code1(@ApiParam(required = true, name = "phone", value = "手机号码") @RequestParam("phone") String phone) {
 		String validCode = RandomUtil.getRandomNumber(4);
@@ -84,6 +100,14 @@ public class NoAuthController {
 		return validCode;
 	}
 	
+	/**
+	 * 测试用
+	 * @Title:			check
+	 * @Description:	检验验证码
+	 * @param phone
+	 * @param validCode
+	 * @return
+	 */
 	@RequestMapping(value = "/codeC", method = RequestMethod.POST)
 	public String check(@RequestParam("phone") String phone, @RequestParam("validCode") String validCode) {
 		String vCode = validService.getValidCode(phone);
@@ -92,8 +116,6 @@ public class NoAuthController {
 		return validCode;
 	}
 	
-	
-		
 	/**
 	 * @Title:			code
 	 * @Description:	获取短信验证码（每个手机号每天只能获取十次）
@@ -135,7 +157,6 @@ public class NoAuthController {
 			String returnString = HttpSender.batchSend(url, account, pswd, mobile, msg, needstatus, extno);
 			System.out.println("返回： " + returnString);
 			
-			// TODO 处理返回值,参见HTTP协议文档
 			/*
 			 * 返回值类似：   	201608252209002,0
 			 * 				1316546486
@@ -236,7 +257,32 @@ public class NoAuthController {
 		List<Exchange> list = this.exchangeSercie.findByCondition(conditionsql.toString());
 		
 		// 获取所有活动信息
-		List<Activity> activityList = this.activityService.getActivityList(null);
+		//List<Activity> activityList = this.activityService.getActivityList(null);
+		
+		/**
+		 * 获取当前兑奖记录对应的商品信息
+		 */
+		Set<String> waresIdSet = new HashSet<String>();
+		for (Exchange ex : list) {
+			waresIdSet.add(ex.getWaresId().trim());
+		}
+		
+		String[] arr = waresIdSet.toArray(new String[0]);
+		String sql = Tool.stringArrayToString(arr, true, ",");
+		List<Wares> waresList = waresService.getDatagrid(" and id in (" + sql + ")");
+		
+		/**
+		 * 获取所有的奖品信息
+		 */
+		List<Award> awardList = awardService.getDatagrid(null);
+		for (Wares w : waresList) {
+			for (Award aw : awardList) {
+				if (w.getAwardId().equals(aw.getId())) {
+					w.setAward(aw);
+					continue;
+				}
+			}
+		}
 		
 		List<ExchangeQuery> eqList = new ArrayList<ExchangeQuery>();
 		if (list != null && list.size() > 0) {
@@ -245,34 +291,12 @@ public class NoAuthController {
 				ExchangeQuery eq = new ExchangeQuery(exchange);
 				
 				/**
-				 * 获取活动信息
-				 */
-				String publicCode = exchange.getPublicCode();
-				Activity activity = null;
-				for (Activity act : activityList) {
-					if (publicCode.equals(act.getPublicCode())) {
-						activity = act;
-						break;
-					}
-				}
-				eq.setActivity(activity);
-				
-				/**
 				 * 获取奖品信息
 				 */
-				String waresId = exchange.getWaresId();
-				Wares wares = null;
-				if (waresId != null && !waresId.equals(""))	{
-					wares = this.waresService.findById(waresId);
-					
-					String awardId = wares.getAwardId();
-					Award award = null;
-					if (awardId != null && !awardId.equals("")) {
-						award = this.awardService.findById(awardId);
-						eq.setTitle(award.getTitle());
+				for (Wares wa : waresList) {
+					if (exchange.getWaresId().equals(wa.getId())) {
+						eq.setAward(wa.getAward());
 					}
-					
-					eq.setAward(award);
 				}
 				
 				eqList.add(eq);
@@ -280,7 +304,7 @@ public class NoAuthController {
 			
 			result.setCode(Const.INFO_NORMAL);
 			result.setSuccess(true);
-			result.setMsg("获取到 " + list.size() + " 条兑奖记录!");
+			result.setMsg("获取到 " + eqList.size() + " 条兑奖记录!");
 			result.setData(eqList);
 		} else {
 			result.setCode(Const.WARN_NO_MORE_DATA);
@@ -349,7 +373,13 @@ public class NoAuthController {
 			result.setMsg("数据加载到头了...");
 			result.setData(null);
 		} else {
+			List<Activity> activityList = this.activityService.getActivityList("");  // 获取所有的活动记录
+			List<Award> awardList = this.awardService.getDatagrid("");  // 获取所有的奖项信息
+			
 			List<ScanRecord> scanRecordList = scanRecordService.getScanRecordList(page, conditionsql.toString());
+			
+			// TODO 向扫描记录里添加奖项信息 和 活动信息
+			
 			for (ScanRecord sr : scanRecordList) {
 				
 			}
@@ -376,6 +406,7 @@ public class NoAuthController {
 	 * @param publicCode	公共编码
 	 * @param privateCode	瓶身编码
 	 * @param insideCode	瓶盖内码
+	 * @param exchange      是否兑奖
 	 * @return
 	 */
 	@RequestMapping(value = "/userWithInfo", method = RequestMethod.POST)
@@ -385,7 +416,8 @@ public class NoAuthController {
 			@RequestParam("username") String username, @RequestParam("flagCode") String flagCode,
 			@RequestParam("time") String time, @RequestParam("longitude") String longitude, 
 			@RequestParam("latitude") String latitude, @RequestParam("publicCode") String publicCode, 
-			@RequestParam("privateCode") String privateCode, @RequestParam("insideCode") String insideCode) {
+			@RequestParam("privateCode") String privateCode, @RequestParam("insideCode") String insideCode, 
+			@RequestParam("exchange") String exchange) {
 		System.out.println("loginWithMessage--userType: " + userType);
 		System.out.println("loginWithMessage--username: " + username);
     	System.out.println("loginWithMessage--flagCode: " + flagCode);
@@ -396,147 +428,207 @@ public class NoAuthController {
     	System.out.println("loginWithMessage--privateCode: " + privateCode);
     	System.out.println("loginWithMessage--insideCode: " + insideCode);
     	
+    	StringBuffer conditionSql = new StringBuffer();
     	ApiResult<Object> result = new ApiResult<Object>();
     	result.setOperate(Const.OPERATE_USER_WITH_INFO);
     	
+    	/**
+		 * 0、添加扫码记录
+		 */
+		List<User> userList = userService.findByConditionSql(username, userType);  // 1.找用户
+		User user = null;
+		if (userList != null && userList.size() > 0) {
+			user = userList.get(0);
+		}
+		
+		Address address = null;
+		try {
+			address = MapUtil.location2Address(Double.parseDouble(latitude), Double.parseDouble(longitude));
+		} catch (NumberFormatException e) {
+			result.setCode(Const.ERROR_PARAM_MISS);
+			result.setSuccess(false);
+			result.setMsg("经纬度数据错误!");
+			result.setData(null);
+			return result;
+		} catch (Exception e) {
+			e.printStackTrace();
+		} 
+		
+		ScanRecord sr = this.pushAddress2SR(address);
+		sr.setLatitude(Double.parseDouble(latitude));
+		sr.setLongitude(Double.parseDouble(longitude));
+		sr.setScanTime(DateUtil.formatDate(new Date()));
+		if (user != null) {
+			sr.setUserId(user.getId());
+			sr.setUserName(user.getUsername());
+			sr.setUserType(user.getUserType());
+		}
+		sr.setPublicCode(publicCode);
+		sr.setPrivateCode(privateCode);
+		sr.setInsideCode(insideCode);
+		
+		/**
+		 * 1、查询该商品信息
+		 */
+		conditionSql.setLength(0);
+		conditionSql.append(" and publicCode = '").append(publicCode).append("' ")
+			.append(" and privateCode = '").append(privateCode).append("'");
+	
+		// 查询商品信息
+		Wares wares = null;
+		List<Wares> waresList = waresService.getDatagrid(conditionSql.toString());
+		if (waresList != null && waresList.size() > 0) {
+			wares = waresList.get(0);
+		}
+		
     	switch (userType) {
 	    	case Const.USERTYPE_APPUSER:
-	    		List<CodeRepo> list = new ArrayList<CodeRepo>();
+	    		result.setOperate(Const.OPERATE_APP_SCAN);
 	    		
-	    		if (publicCode != null && privateCode != null && insideCode != null
-	    				&& !publicCode.equals("") && !privateCode.equals("") && !insideCode.equals("")) {
-	    			
-	    			// 根据publicCode/privateCode/insideCode 查询数据库
-	    			StringBuffer conditionSql = new StringBuffer();
-	    			conditionSql.append(" and publicCode = '").append(publicCode)
-	    				.append("' and privateCode = '").append(privateCode)
-	    				.append("' and insideCode = '").append(insideCode).append("'");
-	    			
-	    			/**
-	    			 * 1、获取商品信息
-	    			 */
-	    			Wares wares = null;
-	    			List<Wares> waresList = waresService.getDatagrid(conditionSql.toString());
-	    			if (waresList != null && waresList.size() > 0) {
-	    				wares = waresList.get(0);
-	    			}
-	    			
-	    			if (wares == null) {
-	    				result.setCode(Const.ERROR_NULL_POINTER);
-	    				result.setSuccess(false);
-	    				result.setMsg("未找到有效的商品信息");
-	    				result.setData(null);
-	    			} else {
-		    			list = codeRepoService.findByWaresId(wares.getId());
-		    			
-		    			CodeRepo cr = null;
-		    			if (list != null && list.size() > 0) {
-		    				cr = list.get(0);
-		    			} 
-		    			
-		    			if (cr == null) {
-		    				result.setCode(Const.ERROR_NULL_POINTER);
-		    				result.setSuccess(false);
-		    				result.setMsg("未找到有效记录");
-		    				result.setData(null);
-		    			} else {  // 有该记录
-		    				result.setCode(Const.INFO_NORMAL);
-		    				result.setSuccess(true);
-		    				String awardId = cr.getAwardId();  // 获取对应的奖项编码
-		    				
-		    				if (awardId != null && !awardId.equals("")) {
-		    					Award award = this.awardService.findById(awardId);
-		    					result.setMsg("恭喜您获取 " + award.getTitle());
-		    					result.setData(award);
-		    					
-		    					// TODO  添加兑奖记录，并兑奖
-		    					List<User> userList = this.userService.findUserByName(username, userType);
-		    					
-		    					User user = null;
-		    					if (userList != null && userList.size() > 0) {
-		    						user = userList.get(0);
-		    					}
-		    					
-		    					Exchange exchange = new Exchange();
-		    					
-		    					if (user != null)
-		    						exchange.setAccountId(user.getId());
-		    					exchange.setExchangeTime(DateUtil.now());
-		    					exchange.setLongitude(Double.parseDouble(longitude));
-		    					exchange.setLatitude(Double.parseDouble(latitude));
-		    					exchange.setInsideCode(insideCode);
-		    					exchange.setPrivateCode(privateCode);
-		    					exchange.setPublicCode(publicCode);
-		    					exchange.setFlagCode(flagCode);
-		    					exchange.setStatus(Const.EX_STATUS_UNEXCHANGE);  // 设置状态为未兑奖
-			    				
-		    					int res = 0;
-		    					try {
-									res = this.exchangeService.saveExchange(exchange);
-								} catch (Exception e) {
-									res = 0;
-									e.printStackTrace();
-								}
-		    					
-		    					// TODO 定时任务  执行兑奖操作
-		    				} else {
-		    					result.setMsg("谢谢惠顾");
-		    					result.setData(null);
-		    				}
-		    			}
-	    			}
-	    		} else {
+	    		/**
+	    		 * 3、检查参数合法性，不合法，直接返回
+	    		 */
+	    		if (publicCode == null || privateCode == null || insideCode == null
+	    				|| publicCode.equals("") || privateCode.equals("") || insideCode.equals("")) {
 	    			result.setCode(Const.ERROR_PARAM_MISS);
 	    			result.setSuccess(false);
 	    			result.setMsg("参数缺失!");
 	    			result.setData(null);
+	    			
+	    			return result;
 	    		}
+    			
+    			if (wares == null) {
+    				/* --> 返回值1
+    				 */
+    				result.setCode(Const.ERROR_NULL_POINTER);
+    				result.setSuccess(false);
+    				result.setMsg("未找到有效的商品信息");
+    				result.setData(null);
+    			} else {
+    				sr.setWaresId(wares.getId());
+    				try {
+    					this.scanRecordService.saveScanRecord(sr);
+    				} catch (Exception e) {
+    					e.printStackTrace();
+    				}
+    				
+	    			/**
+	    			 * 3、判断是否中奖
+	    			 */
+    				String awardId = wares.getAwardId(); // 获取对应的奖项位ID
+    				if (awardId == null || awardId.equals("")) {  // 没有奖
+    					if (!wares.getStatus().equals(Const.EX_STATUS_NO_AWARD)) {
+	    					wares.setStatus(Const.EX_STATUS_NO_AWARD);
+	    					waresService.updateWares(wares);
+    					}
+    					
+    					/* --> 返回值2  未中奖  【200 + false】
+    					 */
+    					result.setCode(Const.INFO_NORMAL);
+    					result.setSuccess(false);
+    					result.setMsg("该商品未中奖，欢迎下次惠顾！");
+    					result.setData(wares);
+    				} else {
+    					/* --> 返回值3  中奖  【200 + false】
+    					 */
+    					result.setCode(Const.INFO_NORMAL);
+    					result.setSuccess(true);
+    					
+    					Award award = awardService.findById(awardId);
+    					
+    					result.setMsg("您中了" + award.getTitle() + ", " + award.getDescription());
+    					result.setData(award);
+    					
+    					if (exchange != null && !exchange.equals("")) {  // 兑奖
+    						/*
+    						 * TODO  兑奖处理
+    						 * 	先兑奖，再添加兑奖记录
+    						 */
+    						/**
+    						 * I 兑奖
+    						 */
+    						// TODO 
+    						
+    						/**
+    						 * II 添加兑奖记录
+    						 */
+    						Exchange ex = new Exchange();
+    						ex.setUserId(user.getId());
+    						ex.setExchangeTime(DateUtil.formatDate(new Date()));
+    						ex.setWaresId(wares.getId());
+    						ex.setLongitude(Double.parseDouble(longitude));
+    						ex.setLatitude(Double.parseDouble(latitude));
+    						ex.setFlagCode(flagCode);
+    						ex.setPublicCode(publicCode);
+    						ex.setPrivateCode(privateCode);
+    						ex.setInsideCode(insideCode);
+    						ex.setAward(award);
+    						
+    						result.setMsg("您中了" + award.getTitle() + ", 系统正在为您开奖！");
+        					result.setData(ex);
+        					
+    						try {
+								exchangeSercie.saveExchange(ex);
+							} catch (Exception e) {
+								e.printStackTrace();
+								
+								result.setCode(Const.ERROR_SERVER);
+								result.setSuccess(false);
+								result.setMsg("新增兑奖记录失败!");
+							}
+    						
+    					}
+    				}
+    				
+    			}
 	    		
 	    		break;
 	    	case Const.USERTYPE_VENDER:
-	    		/**
-    			 * 1、获取商品信息
-    			 */
-	    		StringBuffer conditionSql = new StringBuffer();
-    			conditionSql.append(" and publicCode = '").append(publicCode)
-    				.append("' and privateCode = '").append(privateCode).append("'");
-    			
-    			Wares wares = null;
-    			List<Wares> waresList = waresService.getDatagrid(conditionSql.toString());
-    			if (waresList != null && waresList.size() > 0) {
-    				wares = waresList.get(0);
-    			}
-    			
-	    		CodeRepo cr = new CodeRepo();
-	    		cr.setFlagCode(flagCode);
-	    		cr.setScannerName(username);
-	    		if (wares != null)
-	    			cr.setWaresId(wares.getId());
-	    		cr.setScanTime(time);
-	    		cr.setLongitude(Double.parseDouble(longitude));
-	    		cr.setLatitude(Double.parseDouble(latitude));
+	    		result.setOperate(Const.OPERATE_VENDER_SCAN);
 	    		
-				int i = 0;
-				try {
-					i = this.codeRepoService.saveCodeRepo(cr);
+	    		// TODO  商户扫码
+	    		try {
+		    		/**
+		    		 * 1、添加商品数据
+		    		 */
+		    		/*Wares w = new Wares();
+		    		w.setPublicCode(publicCode);
+		    		w.setPrivateCode(privateCode);
+		    		if (user != null) {
+		    			w.setCreater(user.getUsername());
+		    			w.setCreater(DateUtil.formatDate(new Date()));
+		    		}
+		    		w.setStatus(Const.EX_STATUS_UNEXCHANGE);
+				
+					String waresId = "";
+					int i = waresService.addWares(w);
+					if (i == 1) {
+						waresId = w.getId();
+					}*/
+	    			
+	    			if (wares != null) {
+	    				/**
+			    		 * 4、添加扫码记录
+			    		 */
+						sr.setWaresId(wares.getId());
+						this.scanRecordService.saveScanRecord(sr);
+						
+						result.setCode(Const.INFO_NORMAL);
+		    			result.setMsg("商户扫码 成功");
+		    			result.setSuccess(true);
+		    			result.setData(null);
+		    			
+	    			} else {
+	    				result.setCode(Const.ERROR_NULL_POINTER);
+	    				result.setSuccess(false);
+	    				result.setMsg("未找到有效的商品信息");
+	    				result.setData(null);
+	    			}
+	    			
 				} catch (Exception e) {
-					i= 0;
 					e.printStackTrace();
 				}
-			
-	    		if (i == 1) {
-	    			result.setCode(Const.INFO_NORMAL);
-	    			result.setMsg("商户扫码 成功");
-	    			result.setSuccess(true);
-	    			result.setData(cr);
-	    			result.setOperate(Const.OPERATE_VENDER_SCAN);
-	    		} else {
-	    			result.setCode(Const.WARN_OPERATE_FAIL);
-	    			result.setMsg("商户扫码 失败");
-	    			result.setSuccess(false);
-	    			result.setData(cr);
-	    			result.setOperate(Const.OPERATE_VENDER_SCAN);
-	    		}
 	    		
 	    		break;
     		default:
@@ -567,24 +659,26 @@ public class NoAuthController {
 		
 		if (publicCode != null && privateCode != null && !publicCode.equals("") && !privateCode.equals("") ) {
 			
-			// 根据publicCode/privateCode/insideCode 查询数据库
+			/**
+			 * 1、根据publicCode/privateCode 查询数据库， 
+			 * 		--> 如果没有记录，则返回“商品不存在”
+			 * 		--> 如果有记录，则判断是否已兑奖
+			 */
 			StringBuffer conditionSql = new StringBuffer();
 			conditionSql.append(" and publicCode = '").append(publicCode)
 				.append("' and privateCode = '").append(privateCode).append("'");
-//				.append("' and insideCode = '").append(insideCode).append("'");
 			
 			/**
 			 * 1、获取商品信息
 			 */
 			Wares wares = null;
 			List<Wares> waresList = waresService.getDatagrid(conditionSql.toString());
+			
 			if (waresList != null && waresList.size() > 0) {
-				for (Wares ware : waresList) {
-					if (ware.getInsideCode().equals(insideCode)) {
-						
-					}
-				}
+				wares = waresList.get(0);
 			} else {
+				/* --> 返回结果1
+				 */
 				result.setCode(Const.ERROR_NULL_POINTER);
 				result.setMsg("该商品不存在");
 				result.setSuccess(false);
@@ -593,30 +687,53 @@ public class NoAuthController {
 				return result;
 			}
 			
-			List<CodeRepo> list = this.codeRepoService.findByWaresId(wares.getId());
-			CodeRepo cr = null;
-			
-			if (list != null && list.size() > 0) {
-				result.setCode(Const.INFO_NORMAL);
-				result.setSuccess(true);
-				result.setMsg("该商品已消费");
-				
-				cr = list.get(0);
-			} else {
-				result.setCode(Const.ERROR_NULL_POINTER);
-				result.setSuccess(true);
-				result.setMsg("该商品还未生产!");
-			}
-			
-			if (cr != null) {
-				if (insideCode.equals(wares.getInsideCode())) {
-					result.setMsg("该商品为正品，请扫码兑奖");
-					result.setData(cr);
-				} else {
-					result.setCode(Const.ERROR_NOT_EQUALS);
-					result.setMsg("该商品涉嫌伪造");
+			if (wares != null) {
+				if (wares.getStatus().equals(Const.EX_STATUS_EXCHANGED)) {  // 已兑奖
+					/* --> 返回结果2
+					 */
+					result.setCode(Const.INFO_NORMAL);
+					result.setSuccess(true);
+					result.setMsg("该商品已消费");
+					result.setData(wares);
+					return result;
+				} else {  // 未消费
+					/*conditionSql.setLength(0);  // 清空conditionSql
+					conditionSql.append(" and publicCode = '").append(publicCode).append("'")
+						.append(" and privateCode = '").append(privateCode).append("'")
+						.append(" and insideCode = '").append(insideCode).append("'");
+					waresList = waresService.getDatagrid(conditionSql.toString());*/
+					
+					boolean isWaster = true;  // 是否正品，默认true
+					// 方法1
+					if (wares.getInsideCode().equals(insideCode)) {
+						isWaster = false;
+					}
+					
+					// 方法2
+					for (Wares w : waresList) {
+						if (w.getInsideCode().equals(insideCode)) {
+							isWaster = false;
+							break;
+						}
+ 					}
+					
+					if (isWaster) {
+						/* --> 返回结果3
+						 */
+						result.setCode(Const.INFO_NORMAL);
+						result.setSuccess(true);
+						result.setCode(Const.ERROR_NOT_EQUALS);
+						result.setMsg("该商品涉嫌伪造");
+					} else {
+						/* --> 返回结果4
+						 */
+						result.setCode(Const.INFO_NORMAL);
+						result.setSuccess(true);
+						result.setMsg("该商品为正品，请扫码兑奖");
+					}
 				}
 			}
+			
 		} else {
 			result.setCode(Const.ERROR_PARAM_MISS);
 			result.setSuccess(false);
@@ -652,22 +769,10 @@ public class NoAuthController {
 			 */
     		StringBuffer conditionSql = new StringBuffer();
 			conditionSql.append(" and publicCode = '").append(publicCode)
-				.append("' and privateCode = '").append(privateCode).append("'");
+				.append("' and privateCode = '").append(privateCode).append("'")
+				.append(" ORDER BY scanTime DESC ");  // 按时间逆序
 			
-			Wares wares = null;
-			List<Wares> waresList = waresService.getDatagrid(conditionSql.toString());
-			if (waresList != null && waresList.size() > 0) {
-				wares = waresList.get(0);
-			} else {
-				result.setCode(Const.ERROR_NULL_POINTER);
-				result.setSuccess(false);
-				result.setMsg("未找到该商品信息 ");
-				result.setData(null);
-				
-				return result;
-			}
-			
-			List<CodeRepo> list = this.codeRepoService.findByWaresId(wares.getId());
+			List<ScanRecord> list = scanRecordService.findByCondition(conditionSql.toString());
 			
 			if (list != null && list.size() > 0) {
 				result.setCode(Const.INFO_NORMAL);
@@ -684,8 +789,9 @@ public class NoAuthController {
 			break;
 		case Const.OPERATE_PRODUCT_INFO:                   //商品信息
 			result.setOperate(Const.OPERATE_PRODUCT_INFO);
-
-
+			
+			
+			
 		 }
 		 
 		 return result;
@@ -711,7 +817,7 @@ public class NoAuthController {
 		result.setOperate(Const.OPERATE_AWARD_ANALYSIS);
 		
 		/**
-		 * 1、获取所有对应publicCode（对应活动）的  可中奖纪录
+		 * 1、获取所有对应publicCode（对应活动）的  活动信息
 		 */
 		StringBuffer conditionSql = new StringBuffer();
 		conditionSql.append(" and publicCode = '").append(publicCode).append("'");
@@ -730,34 +836,19 @@ public class NoAuthController {
 		}
 		
 		/**
-		 * 2、
+		 * 2、根据活动信息获取奖项信息
 		 */
-		conditionSql.append(" and awardId <> null");
-		Wares wares = null;
-		List<Wares> waresList = waresService.getDatagrid(conditionSql.toString());
-		int total = waresList.size();
+		conditionSql.setLength(0);
+		conditionSql.append(" and activityId = '").append(activity.getId()).append(")")
+			.append(" order by hierarchy ");
+		List<Award> awardList = this.awardService.getDatagrid(conditionSql.toString());
 		
-		Map<String, Integer> map = new HashMap<String, Integer>();  // AwardId - number
+		result.setCode(Const.INFO_NORMAL);
+		result.setSuccess(true);
+		result.setMsg("找到" + awardList.size() + "条奖项信息");
+		result.setData(awardList);
 		
-		Set<String> set = new HashSet<String>();
-		for (Wares w : waresList) {
-			if (wares.getAwardId() != null && !wares.getAwardId().trim().equals(""))
-				set.add(wares.getAwardId().trim());
-		}
-		
-		for (String awardId : set) {
-			int count = 0;
-			int charge = 0;
-			for (Wares w : waresList) {
-				if (wares.getAwardId() != null && wares.getAwardId().equals(awardId)) {
-					count ++;
-				}
-			}
-			
-			map.put(awardId, count);
-		}
-		
-		return null;
+		return result;
 	}
 	
 	/**
@@ -769,23 +860,78 @@ public class NoAuthController {
 	@RequestMapping(value = "/placeAnalysis", method = RequestMethod.POST)
 	@ResponseBody
 	public ApiResult<Object> placeAnalysis(@RequestParam("publicCode") String publicCode) {
-	
-		return null;
+		ApiResult<Object> result = new ApiResult<Object>();
+		result.setOperate(Const.OPERATE_PLACE_ANALYSIS);
+		
+		List<PlaceAnalysis> paList = analysisService.findPlaceAnalysis(publicCode, Const.USERTYPE_VENDER);
+		result.setSuccess(true);
+		result.setMsg("查询到" + paList.size() + "条数据.");
+		result.setData(paList);
+		
+		return result;
 	}
 	
 	/**
-	 * @Title:			sellAnalysis
+	 * @Title:			saleAnalysis
 	 * @Description:	销售统计  针对经销商
 	 * @param username
 	 * @param publicCode
 	 * @return
 	 */
-	@RequestMapping(value = "/sellAnalysis", method = RequestMethod.POST)
+	@RequestMapping(value = "/saleAnalysis", method = RequestMethod.POST)
 	@ResponseBody
-	public ApiResult<Object> sellAnalysis(@RequestParam("username") String username, @RequestParam("publicCode") String publicCode) {
-	
-		return null;
+	public ApiResult<Object> saleAnalysis(@RequestParam("username") String username, @RequestParam("publicCode") String publicCode) {
+		ApiResult<Object> result = new ApiResult<Object>();
+		result.setOperate(Const.OPERATE_SALE_ANALYSIS);
+		
+		Calendar cal = Calendar.getInstance();
+		int year = cal.get(Calendar.YEAR);  // 年
+		int month = cal.get(Calendar.MONTH);  // 月
+		
+		int prevYear = year - 1;  // 上年
+		
+		String begin = prevYear + "-" + month;
+		String end = year + "-" + (month+1);
+		
+		StringBuffer conditionSql = new StringBuffer();
+		conditionSql.append(" and scanTime > '").append(begin)
+			.append("' and scanTime < '").append(end)
+			.append("' and userType = '").append(Const.USERTYPE_VENDER).append("'");
+		
+		/**
+		 * 1、直接从销售统计表里获取数据
+		 */
+		List<Sale> saleList = saleService.getSaleList(conditionSql.toString());
+		//List<ScanRecord> srList = this.scanRecordService.findByCondition(conditionSql.toString());
+		
+		result.setCode(Const.INFO_NORMAL);
+		result.setSuccess(true);
+		result.setMsg("获取" + begin + "到" + end + " 的销售数据，共计" + saleList.size() + "条！");
+		result.setData(saleList);
+		
+		return result;
 	}
 	
+	private ScanRecord pushAddress2SR(Address address) {
+		ScanRecord sr = new ScanRecord();
+		Result result = address.getResult();
+		AddressComponent ac = null;
+		
+		if (result != null) {
+			ac = result.getAddressComponent();
+			sr.setSematicDescription(result.getSematic_description());
+			sr.setFormattedAddress(result.getFormatted_address());
+		}
+		
+		if (ac != null) {
+			sr.setCountry(ac.getCountry());
+			sr.setProvince(ac.getProvince());
+			sr.setCity(ac.getCity());
+			sr.setDistance(ac.getDistance());
+			sr.setStreet(ac.getStreet());
+		}
+		
+		return sr;
+	}
 }
  

@@ -2,7 +2,7 @@ package com.crm.domain;
 
 /** 
  * @ClassName	Activity.java
- * @Description 活动实体
+ * @Description 活动实体/抽象商品
  * @Author		kevin 
  * @CreateTime  2016年7月19日 上午12:17:31
  * @Version 	V1.0    
@@ -19,6 +19,7 @@ public class Activity {
 	private String publisherName;  
 	private int enable;  // 活动是否激活
 	private String publicCode;  // 公共编码
+	private String image;  // 图片
 	
 	public String getId() {
 		return id;
@@ -80,12 +81,19 @@ public class Activity {
 	public void setPublicCode(String publicCode) {
 		this.publicCode = publicCode;
 	}
+	public String getImage() {
+		return image;
+	}
+	public void setImage(String image) {
+		this.image = image;
+	}
 	
 	@Override
 	public String toString() {
 		return "Activity [id=" + id + ", title=" + title + ", description=" + description + ", content=" + content
 				+ ", startTime=" + startTime + ", endTime=" + endTime + ", publisherId=" + publisherId
-				+ ", publisherName=" + publisherName + ", enable=" + enable + ", publicCode=" + publicCode + "]";
+				+ ", publisherName=" + publisherName + ", enable=" + enable + ", publicCode=" + publicCode + ", image="
+				+ image + "]";
 	}
 	
 }

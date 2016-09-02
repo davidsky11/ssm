@@ -14,7 +14,9 @@
             <if test="hierarchy !=null and hierarchy !=''">hierarchy,</if>
             <if test="sort !=null and sort !=''">sort,</if>
             <if test="amount !=null and amount !=''">amount,</if>
-            <if test="publicCode !=null and publicCode !=''">publicCode</if>
+            <if test="activityId !=null and activityId !=''">activityId,</if>
+            <if test="total !=null and total !=''">total,</if>
+            <if test="remain !=null and remain !=''">remain</if>
             </trim>)values(<trim suffixOverrides=",">
             <if test="id !=null and id !=''">#{id},</if>
             <if test="title !=null and title !=''">#{title},</if>
@@ -23,7 +25,9 @@
             <if test="hierarchy !=null and hierarchy !=''">#{hierarchy},</if>
             <if test="sort !=null and sort !=''">#{sort},</if>
             <if test="amount !=null and amount !=''">#{amount},</if>
-            <if test="publicCode !=null and publicCode !=''">#{publicCode}</if>
+            <if test="acitivityId !=null and acitivityId !=''">#{acitivityId},</if>
+            <if test="total !=null and total !=''">#{total},</if>
+            <if test="remain !=null and remain !=''">#{remain}</if>
             </trim>)
 	</insert>
 	
@@ -40,21 +44,23 @@
             <if test="hierarchy !=null and hierarchy !=''">hierarchy=#{hierarchy},</if>
             <if test="sort !=null and sort !=''">sort=#{sort},</if>
             <if test="amount !=null and amount !=''">amount=#{amount},</if>
-            <if test="publicCode !=null and publicCode !=''">publicCode=#{publicCode}</if>
+            <if test="activityId !=null and activityId !=''">activityId=#{activityId},</if>
+            <if test="total !=null and total !=''">total=#{total},</if>
+            <if test="remain !=null and remain !=''">remain=#{remain}</if>
     	</set>
     	where id = #{id}
     </update>
 	
 	<select id="findBySN" resultType="com.crm.domain.Award">
-		select t.id,t.title,t.serialNo,t.description,t.hierarchy,t.sort,t.amount,t.publicCode from award t where t.serialNo=#{serialNo}
+		select t.id,t.title,t.serialNo,t.description,t.hierarchy,t.sort,t.amount,t.activityId,t.total,t.remain from award t where t.serialNo=#{serialNo}
 	</select>
 	
 	<select id="findById" resultType="com.crm.domain.Award">
-		select t.id,t.title,t.serialNo,t.description,t.hierarchy,t.sort,t.amount,t.publicCode from award t where t.id=#{id}
+		select t.id,t.title,t.serialNo,t.description,t.hierarchy,t.sort,t.amount,t.activityId,t.total,t.remain from award t where t.id=#{id}
 	</select> 
 	
 	<select id="getDatagrid" parameterType="String" resultType="com.crm.domain.Award">
-		select id,title,serialNo,description,hierarchy,sort,amount,publicCode from award where 1=1 
+		select id,title,serialNo,description,hierarchy,sort,amount,activityId,total,remain from award where 1=1 
 		<if test="conditionSql != null and conditionSql != ''">
             ${conditionSql}
         </if>
@@ -68,7 +74,7 @@
 	</select>
 	
 	<select id="datagridAward" resultType="com.crm.domain.Award">
-		select t.id,t.title,t.serialNo,t.description,t.hierarchy,t.sort,t.amount,t.publicCode from award t where 1=1
+		select t.id,t.title,t.serialNo,t.description,t.hierarchy,t.sort,t.amount,t.activityId,t.total,t.remain from award t where 1=1
 		<if test="award.title != null and award.title != ''">
 			and t.title like concat('%',#{award.title},'%')
 		</if>

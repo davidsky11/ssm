@@ -81,7 +81,7 @@ public final class DateUtil {
 		return tmp;
 	}
 	
-	public static String formatDate(Date date)throws ParseException{
+	public static String formatDate(Date date) {
         return df.format(date);
     }
     

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.crm.dao.mybatis.AnalysisMapper">   
+
+	
+	<select id="findPlaceAnalysis" resultType="com.crm.domain.dto.PlaceAnalysis">
+		SELECT province as province, count(*) as count FROM scan_record WHERE publicCode = #{publicCode} 
+		and userType = #{userType} GROUP BY province
+	</select>
+	
+	<select id="datagridWares" resultType="com.crm.domain.Wares">
+		select t.id,t.name,t.creater,t.publicCode,t.privateCode,t.insideCode,t.createTime,t.status,t.awardId from wares t where 1=1
+		<if test="wares.name != null and wares.name != ''">
+			and t.name like concat('%',#{wares.name},'%')
+		</if>
+		<if test="wares.creater != null and wares.creater != ''">
+			and t.creater = #{wares.creater}
+		</if>
+		<if test="wares.awardId != null and wares.awardId != ''">
+			and t.awardId = #{wares.awardId}
+		</if>
+		<if test="wares.batch != null and wares.batch != ''">
+			and t.batch = #{wares.batch}
+		</if>
+		<if test="page.sort != null and page.sort != ''">
+            order by #{page.sort} #{page.order}
+        </if>
+        <if test="page.page > 0">
+            limit #{page.start},#{page.end}
+        </if>
+	</select>
+	
+</mapper>

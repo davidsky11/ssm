@@ -9,24 +9,26 @@ import java.util.List;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DuplicateKeyException;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import com.crm.dao.mybatis.AccountMapper;
 import com.crm.dao.mybatis.ActivityMapper;
+import com.crm.dao.mybatis.AnalysisMapper;
 import com.crm.dao.mybatis.AwardMapper;
 import com.crm.dao.mybatis.ExchangeMapper;
 import com.crm.dao.mybatis.ScanRecordMapper;
 import com.crm.dao.mybatis.UserMapper;
-import com.crm.domain.Account;
+import com.crm.dao.mybatis.WaresMapper;
 import com.crm.domain.Activity;
 import com.crm.domain.Award;
 import com.crm.domain.Exchange;
 import com.crm.domain.ScanRecord;
 import com.crm.domain.User;
+import com.crm.domain.Wares;
+import com.crm.domain.dto.PlaceAnalysis;
 import com.crm.domain.easyui.PageHelper;
+import com.crm.util.common.Const;
 
 /**
  * @ClassName RedisTest.java
@@ -44,8 +46,6 @@ public class MyBatisTest extends AbstractJUnit4SpringContextTests {
 	@Autowired
 	private UserMapper userMapper;
 	@Autowired
-	private AccountMapper accountMapper;
-	@Autowired
 	private AwardMapper awardMapper;
 	@Autowired
 	private ActivityMapper activityMapper;
@@ -53,6 +53,10 @@ public class MyBatisTest extends AbstractJUnit4SpringContextTests {
 	private ExchangeMapper exchangeMapper;
 	@Autowired
 	private ScanRecordMapper scanRecordMapper;
+	@Autowired
+	private WaresMapper waresMapper;
+	@Autowired
+	private AnalysisMapper analysisMapper;
 
 	@Test
 	public void findUserByName() {
@@ -60,28 +64,6 @@ public class MyBatisTest extends AbstractJUnit4SpringContextTests {
 		System.out.println(user.size());
 	}
 	
-	@Test
-	public void findByUsernameAndPass() {
-		Account ac = accountMapper.findByNameAndPass("kevin", "123", "1");
-		System.out.println(ac.toString());
-	}
-	
-	@Test
-	public void save() {
-		Account ac = new Account();
-		ac.setUsername("test");
-		ac.setPassword("test");
-		int i = 0;
-		try {
-			i = accountMapper.saveAccount(ac);
-		} catch (Exception e) {
-			if (e instanceof DuplicateKeyException) {
-				
-			}
-			e.printStackTrace();
-		}
-		System.out.println(i + "  " + ac.getId());
-	}
 
 	@Test
 	public void testAddAward() {
@@ -176,22 +158,6 @@ public class MyBatisTest extends AbstractJUnit4SpringContextTests {
 	}
 	
 	@Test
-	public void datagrid() {
-		PageHelper page = new PageHelper();
-		page.setPage(0);
-		page.setRows(10);
-		page.setStart(0);
-		page.setEnd(10);
-		//page.setSort("username");
-		
-		Account account = new Account();
-		List<Account> list = accountMapper.datagridAccount(page, account);
-		if (list != null) {
-			System.out.println(list.size());
-		}
-	}
-	
-	@Test
 	public void datagrid1() {
 		PageHelper page = new PageHelper();
 		page.setPage(0);
@@ -249,8 +215,8 @@ public class MyBatisTest extends AbstractJUnit4SpringContextTests {
 	@Test
 	public void saveScanRecord() {
 		ScanRecord sr = new ScanRecord();
-		sr.setAccountName("kevin");
-		sr.setAccountId("888");
+		sr.setUserName("kevin");
+		sr.setUserId("888");
 		sr.setLatitude(123.3);
 		sr.setLongitude(11.8);
 		sr.setScanTime(sdf.format(new Date()));
@@ -268,7 +234,7 @@ public class MyBatisTest extends AbstractJUnit4SpringContextTests {
 	@Test
 	public void saveExchange() {
 		Exchange e = new Exchange();
-		e.setAccountId("888");
+		e.setUserId("888");
 		e.setExchangeTime(sdf.format(new Date()));
 		e.setInsideCode("123");
 		e.setPrivateCode("234");
@@ -304,4 +270,22 @@ public class MyBatisTest extends AbstractJUnit4SpringContextTests {
 		System.out.println(i);
 	}
 	
+	@Test
+	public void addWares() throws Exception {
+		Wares w = new Wares();
+		w.setPublicCode("123");
+		w.setPrivateCode("789");
+		w.setStatus(Const.EX_STATUS_UNEXCHANGE);
+		
+		Object o = waresMapper.addWares(w);
+		System.out.println(o + " id " + w.getId());
+	}
+	
+	@Test
+	public void findPlaceAnalysis() {
+		List<PlaceAnalysis> paList = analysisMapper.findPlaceAnalysis("123", "2");
+		for (PlaceAnalysis pa : paList) {
+			System.out.println(pa.toString());
+		}
+	}
 }

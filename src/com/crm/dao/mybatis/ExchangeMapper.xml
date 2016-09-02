@@ -8,7 +8,7 @@
 		</selectKey>
 			insert into exchange(<trim suffixOverrides=",">
 			<if test="id !=null and id !=''">id,</if>
-            <if test="accountId !=null and accountId !=''">accountId,</if>
+            <if test="userId !=null and userId !=''">userId,</if>
             <if test="exchangeTime !=null and exchangeTime !=''">exchangeTime,</if>
             <if test="insideCode !=null and insideCode !=''">insideCode,</if>
             <if test="privateCode !=null and privateCode !=''">privateCode,</if>
@@ -16,11 +16,10 @@
             <if test="longitude !=null and longitude !=''">longitude,</if>
             <if test="latitude !=null and latitude !=''">latitude,</if>
             <if test="flagCode !=null and flagCode !=''">flagCode,</if>
-            <if test="status !=null and status !=''">status,</if>
             <if test="waresId !=null and waresId !=''">waresId</if>
             </trim>)values(<trim suffixOverrides=",">
             <if test="id !=null and id !=''">#{id},</if>
-            <if test="accountId !=null and accountId !=''">#{accountId},</if>
+            <if test="userId !=null and userId !=''">#{userId},</if>
             <if test="exchangeTime !=null and exchangeTime !=''">#{exchangeTime},</if>
             <if test="insideCode !=null and insideCode !=''">#{insideCode},</if>
             <if test="privateCode !=null and privateCode !=''">#{privateCode},</if>
@@ -28,7 +27,6 @@
             <if test="longitude !=null and longitude !=''">#{longitude},</if>
             <if test="latitude !=null and latitude !=''">#{latitude},</if>
             <if test="flagCode !=null and flagCode !=''">#{flagCode},</if>
-            <if test="status !=null and status !=''">#{status},</if>
             <if test="waresId !=null and waresId !=''">#{waresId}</if>
             </trim>)
 	</insert>
@@ -40,7 +38,7 @@
 	<update id="updateExchange" parameterType="com.crm.domain.Exchange">
     	update exchange
     	<set>
-            <if test="accountId !=null and accountId !=''">accountId=#{accountId},</if>
+            <if test="userId !=null and userId !=''">userId=#{userId},</if>
             <if test="exchangeTime !=null and exchangeTime !=''">exchangeTime=#{exchangeTime},</if>
             <if test="insideCode !=null and insideCode !=''">insideCode=#{insideCode},</if>
             <if test="privateCode !=null and privateCode !=''">privateCode=#{privateCode}</if>
@@ -48,14 +46,13 @@
             <if test="longitude !=null and longitude !=''">longitude=#{longitude},</if>
             <if test="latitude !=null and latitude !=''">latitude=#{latitude},</if>
             <if test="flagCode !=null and flagCode !=''">flagCode=#{flagCode},</if>
-            <if test="status !=null and status !=''">status=#{status},</if>
             <if test="waresId !=null and waresId !=''">waresId=#{waresId}</if>
     	</set>
     	where id = #{id}
     </update>
 
 	<select id="getExchangeList" resultType="com.crm.domain.Exchange">
-		select t.id,t.accountId,t.exchangeTime,t.insideCode,t.privateCode,t.publicCode,t.longitude,t.latitude,t.flagCode,t.status,t.waresId from exchange t where 1=1
+		select t.id,t.userId,t.exchangeTime,t.insideCode,t.privateCode,t.publicCode,t.longitude,t.latitude,t.flagCode,t.waresId from exchange t where 1=1
 		<if test="conditionSql !=null and conditionSql !=''">
 			${conditionSql}
 		</if>
@@ -68,26 +65,26 @@
 	</select>
 	
 	<select id="findByCondition" resultType="com.crm.domain.Exchange">
-		select t.id,t.accountId,t.exchangeTime,t.insideCode,t.privateCode,t.publicCode,t.longitude,t.latitude,t.flagCode,t.status,t.waresId from exchange t where 1=1
+		select t.id,t.userId,t.exchangeTime,t.insideCode,t.privateCode,t.publicCode,t.longitude,t.latitude,t.flagCode,t.waresId from exchange t where 1=1
 		<if test="conditionSql !=null and conditionSql !=''">${conditionSql}</if>
 	</select>
 	
 	<select id="findByUser" parameterType="com.crm.domain.User" resultType="com.crm.domain.Exchange">
-		<!-- select t.id,t.accountId,t.exchangeTime,t.insideCode,t.privateCode from exchange t where 1=1
+		<!-- select t.id,t.userId,t.exchangeTime,t.insideCode,t.privateCode from exchange t where 1=1
 		where t.publisherId = u.id and u.id = #{id} -->
-		select distinct t.id,t.accountId,t.exchangeTime,t.insideCode,t.privateCode,t.publicCode,t.longitude,t.latitude,t.flagCode,t.status,t.waresId from exchange t, sysuser a 
-		where (t.accountId = a.id and a.id = #{id}) or (t.accountName like concat('%',#{username},'%'))
+		select distinct t.id,t.userId,t.exchangeTime,t.insideCode,t.privateCode,t.publicCode,t.longitude,t.latitude,t.flagCode,t.waresId from exchange t, sysuser a 
+		where (t.userId = a.id and a.id = #{id}) or (t.userName like concat('%',#{username},'%'))
 	</select> 
 	
 	<select id="findById" resultType="com.crm.domain.Exchange" >
-		select t.id, t.accountId, t.exchangeTime, t.insideCode, t.privateCode, t.publicCode, t.longitude, t.latitude, t.flagCode,t.status,t.waresId from exchange t
+		select t.id, t.userId, t.exchangeTime, t.insideCode, t.privateCode, t.publicCode, t.longitude, t.latitude, t.flagCode,t.waresId from exchange t
 		where t.id = #{id}
 	</select>
 	
 	<select id="getDatagridTotal" resultType="long" parameterType="com.crm.domain.Exchange">
 		select count(1) from exchange where  1=1
-		<if test="accountId != null and accountId != ''">
-            and accountId like concat('%',#{accountId},'%')
+		<if test="userId != null and userId != ''">
+            and userId like concat('%',#{userId},'%')
         </if>
 	</select>
 	
@@ -99,9 +96,9 @@
 	</select>
 
 	<select id="datagridExchange" resultType="com.crm.domain.Exchange">
-		select t.id, t.accountId, t.exchangeTime, t.insideCode, t.privateCode, t.publicCode, t.longitude, t.latitude, t.flagCode, t.status, t.waresId from exchange t where 1=1
-		<if test="exchange.accountId != null and exchange.accountId != ''">
-			and t.accountId = #{exchange.accountId}
+		select t.id, t.userId, t.exchangeTime, t.insideCode, t.privateCode, t.publicCode, t.longitude, t.latitude, t.flagCode, t.waresId from exchange t where 1=1
+		<if test="exchange.userId != null and exchange.userId != ''">
+			and t.userId = #{exchange.userId}
 		</if>
 		<if test="exchange.exchangeTime != null and exchange.exchangeTime != ''">
         	and date(t.exchangeTime) = #{exchange.exchangeTime} 

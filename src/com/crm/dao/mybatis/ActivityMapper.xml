@@ -15,7 +15,9 @@
             <if test="content !=null and content !=''">content,</if>
             <if test="publisherId !=null and publisherId !=''">publisherId,</if>
             <if test="publisherName !=null and publisherName !=''">publisherName,</if>
-            <if test="publicCode !=null and publicCode !=''">publicCode</if>
+            <if test="enable !=null and enable !=''">enable,</if>
+            <if test="publicCode !=null and publicCode !=''">publicCode,</if>
+            <if test="image !=null and enable !=''">image</if>
             </trim>)values(<trim suffixOverrides=",">
             <if test="id !=null and id !=''">#{id},</if>
             <if test="title !=null and title !=''">#{title},</if>
@@ -25,7 +27,9 @@
             <if test="content !=null and content !=''">#{content},</if>
             <if test="publisherId !=null and publisherId !=''">#{publisherId},</if>
             <if test="publisherName !=null and publisherName !=''">#{publisherName},</if>
+            <if test="enable !=null and enable !=''">#{enable}</if>
             <if test="publicCode !=null and publicCode !=''">#{publicCode}</if>
+            <if test="image !=null and image !=''">#{image}</if>
             </trim>)
 	</insert> 
 	
@@ -43,38 +47,40 @@
             <if test="content !=null and content !=''">content=#{content},</if>
             <if test="publisherId !=null and publisherId !=''">publisherId=#{publisherId},</if>
             <if test="publisherName !=null and publisherName !=''">publisherName=#{publisherName},</if>
-            <if test="publicCode !=null and publicCode !=''">publicCode=#{publicCode}</if>
+            <if test="publicCode !=null and publicCode !=''">publicCode=#{publicCode},</if>
+            <if test="image !=null and image !=''">image=#{image},</if>
+            <if test="enable !=null and enable !=''">enable=#{enable}</if>
     	</set>
     	where id = #{id}
     </update>
 
 	<select id="getActivityList" resultType="com.crm.domain.Activity">
-		select t.id,t.title,t.description,t.startTime,t.endTime,t.content,t.publisherId,t.publisherName,t.publicCode from activity t where 1=1
+		select t.id,t.title,t.description,t.startTime,t.endTime,t.content,t.publisherId,t.publisherName,t.publicCode,t.enable,t.image from activity t where 1=1
 		<if test="conditionSql != null and conditionSql != ''">
             ${conditionSql}
         </if>
 	</select>
 	
 	<select id="getDatagrid" resultType="com.crm.domain.Activity">
-		select t.id,t.title,t.description,t.startTime,t.endTime,t.content,t.publisherId,t.publisherName,t.publicCode from activity t where 1=1
+		select t.id,t.title,t.description,t.startTime,t.endTime,t.content,t.publisherId,t.publisherName,t.publicCode,t.enable,t.image from activity t where 1=1
 		<if test="conditionSql != null and conditionSql != ''">
 			${conditionSql}
         </if>
 	</select>
 	
 	<select id="findByTitle" resultType="com.crm.domain.Activity">
-		select t.id,t.title,t.description,t.startTime,t.endTime,t.content,t.publisherId,t.publisherName,t.publicCode from activity t where title like concat('%',#{title},'%')
+		select t.id,t.title,t.description,t.startTime,t.endTime,t.content,t.publisherId,t.publisherName,t.publicCode,t.enable,t.image from activity t where title like concat('%',#{title},'%')
 	</select>
 	
 	<select id="findByPublisher" parameterType="com.crm.domain.User" resultType="com.crm.domain.Activity">
 		<!-- select t.id,t.title,t.description,t.startDate,t.endDate,t.content,t.publisherId,t.publisherName from activity t, sysuser u
 		where t.publisherId = u.id and u.id = #{id} -->
-		select t.id,t.title,t.description,t.startTime,t.endTime,t.content,t.publisherId,t.publisherName,t.publicCode from activity t where t.publisherId in (select u.id from sysuser u
+		select t.id,t.title,t.description,t.startTime,t.endTime,t.content,t.publisherId,t.publisherName,t.publicCode,t.enable,t.image from activity t where t.publisherId in (select u.id from sysuser u
 		where u.id = #{id})
 	</select> 
 	
 	<select id="findById" resultType="com.crm.domain.Activity">
-		select t.id,t.title,t.description,t.startTime,t.endTime,t.content,t.publisherId,t.publisherName,t.publicCode from activity t where t.id=#{id}
+		select t.id,t.title,t.description,t.startTime,t.endTime,t.content,t.publisherId,t.publisherName,t.publicCode,t.enable,t.image from activity t where t.id=#{id}
 	</select> 
 	
 	<select id="getDatagridTotal" resultType="long">
@@ -88,7 +94,7 @@
 	</select>
 	
 	<select id="datagridActivity" resultType="com.crm.domain.Activity">
-		select t.id,t.title,t.description,t.startTime,t.endTime,t.content,t.publisherId,t.publisherName,t.publicCode from activity t where 1=1
+		select t.id,t.title,t.description,t.startTime,t.endTime,t.content,t.publisherId,t.publisherName,t.publicCode,t.enable,t.image from activity t where 1=1
 		<if test="activity.title != null and activity.title != ''">
             and title like concat('%',#{activity.title},'%')
         </if>

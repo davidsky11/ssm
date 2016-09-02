@@ -124,7 +124,7 @@ public class ExchangeController {
 		
 		if (user != null) {
 			Exchange exchange = new Exchange();
-			exchange.setAccountId(user.getId());
+			exchange.setUserId(user.getId());
 			
 			dg.setTotal(exchangeService.getDatagridTotal(exchange));
 			List<Exchange> exchangeList = exchangeService.datagridExchange(page, exchange);

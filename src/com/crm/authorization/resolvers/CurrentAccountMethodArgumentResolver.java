@@ -11,7 +11,7 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 import org.springframework.web.multipart.support.MissingServletRequestPartException;
 
 import com.crm.authorization.annotation.CurrentAccount;
-import com.crm.dao.mybatis.AccountDao;
+import com.crm.dao.mybatis.UserMapper;
 import com.crm.domain.Account;
 import com.crm.util.common.Const;
 
@@ -26,7 +26,7 @@ import com.crm.util.common.Const;
 public class CurrentAccountMethodArgumentResolver implements HandlerMethodArgumentResolver {
 
 	@Autowired
-	private AccountDao accountDao;
+	private UserMapper userMapper;
 	
 	@Override
 	public boolean supportsParameter(MethodParameter parameter) {
@@ -43,11 +43,10 @@ public class CurrentAccountMethodArgumentResolver implements HandlerMethodArgume
 			NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
 		//取出鉴权时存入的登录用户Id
         String currentUserId = (String) webRequest.getAttribute(Const.CURRENT_USER_ID, RequestAttributes.SCOPE_REQUEST);
-        //String currentUserId = parameter.get
 		
 		if (currentUserId != null) {
             //从数据库中查询并返回
-            return accountDao.findOne(currentUserId);
+            return userMapper.findByConditionSql(" AND ID = '" + currentUserId + "'");
         }
         throw new MissingServletRequestPartException(Const.CURRENT_USER_ID);
 	}

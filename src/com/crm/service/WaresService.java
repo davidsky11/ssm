@@ -38,11 +38,6 @@ public class WaresService {
 		return waresMapper.deleteWares(id);
 	}
 
-	//根据奖项编码查询
-	public List<Wares> findByNumber(@Param("serialNo") String serialNo) {
-		return waresMapper.findByNumber(serialNo);
-	}
-	
 	//根据id查询
 	public Wares findById(@Param("id") String id) {
 		return waresMapper.findById(id);

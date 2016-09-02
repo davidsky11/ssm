@@ -27,5 +27,32 @@ public class Tool {
 		return getUUID().trim().replace("-", "");
 	}
 	
+	/**
+	 * 字符窜数组转换成以某成分割符分割的字符窜,适用SQL中in的批量条件,如: in ('a','b','c')
+	 * 
+	 * @param str		字符窜数组
+	 * @param isString	是否字符串
+	 * @param splitFlag 成分割符
+	 * @return 			字符窜
+	 */
+	public static String stringArrayToString(String[] str, boolean isString,
+			String splitFlag) {
+		StringBuffer sb = new StringBuffer();
+		for (int i = 0; i < str.length; i++) {
+			if (isString)
+				sb.append("'");
+			sb.append(str[i]);
+			if (isString)
+				sb.append("'");
+			if (i + 1 != str.length)
+				sb.append(splitFlag);
+		}
+		return sb.toString();
+	}
+	
+	public static void main(String[] args) {
+		String[] str = new String[]{"123", "234"};
+		System.out.println(Tool.stringArrayToString(str, true, ","));
+	}
 }
  

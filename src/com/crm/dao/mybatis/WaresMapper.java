@@ -25,9 +25,6 @@ public interface WaresMapper {
 	//删除
 	public int deleteWares(String id);
 
-	//根据奖项编码查询
-	public List<Wares> findByNumber(@Param("number") String number);
-	
 	//根据id查询
 	public Wares findById(@Param("id") String id);
 	

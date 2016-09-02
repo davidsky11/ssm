@@ -16,7 +16,10 @@ public class Award {
 	private Integer hierarchy;  // 奖项层级，例如， 0-特等奖，1-一等奖，2-二等奖，3-三等奖，4-
 	private Integer sort;  // 排序
 	private Double amount;  // 奖项金额
-	private String publicCode;  // 公共编码
+	private String activityId;  // 活动ID
+	private Integer total;  // 总数量
+	private Integer remain;  // 剩余数量
+	private Activity activity;
 	
 	public Award() {
 		
@@ -87,20 +90,43 @@ public class Award {
 	public void setAmount(Double amount) {
 		this.amount = amount;
 	}
-	
-	public String getPublicCode() {
-		return publicCode;
+
+	public String getActivityId() {
+		return activityId;
 	}
 
-	public void setPublicCode(String publicCode) {
-		this.publicCode = publicCode;
+	public Integer getTotal() {
+		return total;
+	}
+
+	public Integer getRemain() {
+		return remain;
+	}
+
+	public void setActivityId(String activityId) {
+		this.activityId = activityId;
+	}
+
+	public void setTotal(Integer total) {
+		this.total = total;
+	}
+
+	public void setRemain(Integer remain) {
+		this.remain = remain;
+	}
+	public Activity getActivity() {
+		return activity;
+	}
+
+	public void setActivity(Activity activity) {
+		this.activity = activity;
 	}
 
 	@Override
 	public String toString() {
 		return "Award [id=" + id + ", title=" + title + ", serialNo=" + serialNo + ", description=" + description
-				+ ", hierarchy=" + hierarchy + ", sort=" + sort + ", amount=" + amount + ", publicCode=" + publicCode
-				+ "]";
+				+ ", hierarchy=" + hierarchy + ", sort=" + sort + ", amount=" + amount + ", activityId=" + activityId
+				+ ", total=" + total + ", remain=" + remain + ", activity=" + activity + "]";
 	}
 	
 }

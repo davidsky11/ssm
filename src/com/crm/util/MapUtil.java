@@ -2,6 +2,7 @@ package com.crm.util;
 
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 
 import org.apache.commons.httpclient.HttpClient;
@@ -54,6 +55,8 @@ public class MapUtil {
 			} else {
 				throw new Exception("HTTP ERROR Status: " + method.getStatusCode() + ":" + method.getStatusText());
 			}
+		} catch (UnsupportedEncodingException e) {
+			
 		} finally {
 			method.releaseConnection();
 		}
