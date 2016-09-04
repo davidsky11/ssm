@@ -274,7 +274,7 @@ public class NoAuthController {
 			conditionsql.append(" and date(exchangeTime) < '").append(endTime).append("'");
 		}
 		
-		conditionsql.append(" and accountId in (select id from sysuser where username = '")
+		conditionsql.append(" and userId in (select id from sysuser where username = '")
 			.append(username).append("' and userType = '").append(userType).append("')")
 			.append(" order by exchangeTime desc");
 		
@@ -387,9 +387,9 @@ public class NoAuthController {
 			conditionsql.append(" and date(scanTime) < '").append(endTime).append("'");
 		}
 		
-		conditionsql.append(" and (accountId in (select id from sysuser where username = '")
+		conditionsql.append(" and (userId in (select id from sysuser where username = '")
 			.append(username).append("' and userType = '").append(userType).append("')")
-			.append(" or accountName = '").append(username).append("')");
+			.append(" or userName = '").append(username).append("')");
 		
 		long total = scanRecordService.getDatagridTotalByCondition(conditionsql.toString());
 		
@@ -449,7 +449,7 @@ public class NoAuthController {
 			@ApiParam(required = true, name = "publicCode", value = "公共编码") @RequestParam("publicCode") String publicCode, 
 			@ApiParam(required = true, name = "privateCode", value = "唯一码") @RequestParam("privateCode") String privateCode,
 			@ApiParam(required = true, name = "insideCode", value = "内码") @RequestParam("insideCode") String insideCode, 
-			@RequestParam("exchange") String exchange) {
+			@ApiParam(required = false, name = "exchange", value = "是否立即兑奖")@RequestParam(value = "exchange", required = false) String exchange) {
 		System.out.println("loginWithMessage--userType: " + userType);
 		System.out.println("loginWithMessage--username: " + username);
     	System.out.println("loginWithMessage--flagCode: " + flagCode);
@@ -689,7 +689,7 @@ public class NoAuthController {
 		notes = "privateCode 在数据库中不存在，返回该商品还未生产\nprivateCode 对应的记录已经兑奖，返回该商品已消费\nprivateCode与insideCode不匹配，返回该商品涉嫌伪造\nprivateCode与insideCode匹配，返回该商品为正品，请扫码兑奖")
 	public ApiResult antiFake(@ApiParam(required = true, name = "publicCode", value = "公共编码") @RequestParam("publicCode") String publicCode, 
 			@ApiParam(required = true, name = "privateCode", value = "唯一码") @RequestParam("privateCode") String privateCode, 
-			@ApiParam(name = "insideCode", value = "内码") @RequestParam("insideCode") String insideCode) {
+			@ApiParam(required = false, name = "insideCode", value = "内码") @RequestParam(value = "insideCode", required = false) String insideCode) {
 		ApiResult result = new ApiResult();
 		
 		if (publicCode != null && privateCode != null && !publicCode.equals("") && !privateCode.equals("") ) {
@@ -932,14 +932,15 @@ public class NoAuthController {
 		int month = cal.get(Calendar.MONTH);  // 月
 		
 		int prevYear = year - 1;  // 上年
+		int nextMonth = month + 1;
 		
-		String begin = prevYear + "-" + month;
-		String end = year + "-" + (month+1);
+		String begin = prevYear + "-" + (month < 10 ? ("0" + month) : month);
+		String end = year + "-" + (nextMonth < 10 ? "0" + nextMonth : nextMonth);
 		
 		StringBuffer conditionSql = new StringBuffer();
-		conditionSql.append(" and scanTime > '").append(begin)
-			.append("' and scanTime < '").append(end)
-			.append("' and userType = '").append(Const.USERTYPE_VENDER).append("'");
+		conditionSql
+			.append(" and (t.year = '").append(prevYear).append("' and t.month > '").append(month-1).append("') ")
+			.append(" or (t.year = '").append(year).append("' and t.month < '").append(month).append("') ");
 		
 		/**
 		 * 1、直接从销售统计表里获取数据
