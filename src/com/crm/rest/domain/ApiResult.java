@@ -10,8 +10,8 @@ import com.wordnik.swagger.annotations.ApiModelProperty;
  * @CreateTime  2016年7月17日 下午11:47:46
  * @Version 	V1.0    
  */
-@ApiModel(value = "数据返回")
-public class ApiResult<T> {
+@ApiModel(value = "返回数据")
+public class ApiResult {
 
 	@ApiModelProperty(value = "操作")
 	private String operate;  // 进行的操作
@@ -26,7 +26,7 @@ public class ApiResult<T> {
 	private String msg;  // 带回的消息
 	
 	@ApiModelProperty(value = "附加数据")
-	private T data;  // 附带数据
+	private Object data;  // 附带数据
 	
 	public ApiResult() {}
 	
@@ -46,10 +46,10 @@ public class ApiResult<T> {
 	public void setCode(int code) {
 		this.code = code;
 	}
-	public T getData() {
+	public Object getData() {
 		return data;
 	}
-	public void setData(T data) {
+	public void setData(Object data) {
 		this.data = data;
 	}
 

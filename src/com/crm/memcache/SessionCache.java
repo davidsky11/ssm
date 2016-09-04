@@ -68,8 +68,8 @@ public class SessionCache {
 	 * @param userId
 	 * @return
 	 */
-	public ApiResult<String> checkToken1(String token) {
-		ApiResult<String> result = new ApiResult<String>();
+	public ApiResult checkToken1(String token) {
+		ApiResult result = new ApiResult();
 		
 		Element element = userEhCache.get(token);
 		if (element == null) {

@@ -47,7 +47,7 @@ public class AuthorizationInterceptor extends HandlerInterceptorAdapter {
 		// 验证token
 		TokenModel model = tokenService.getToken(authorization);
 		
-		ApiResult<String> result = new ApiResult<String>();
+		ApiResult result = new ApiResult();
 		result.setOperate(Const.OPERATE_AUTHORIZATION);
 		if (model == null) {
 			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);

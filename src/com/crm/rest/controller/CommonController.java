@@ -9,12 +9,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.MediaType;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
 
 import com.crm.authorization.model.TokenModel;
 import com.crm.authorization.service.TokenService;
@@ -36,9 +36,9 @@ import com.wordnik.swagger.annotations.ApiParam;
  * @CreateTime  2016年7月14日 上午12:47:45
  * @Version 	V1.0    
  */
-@RestController
-@RequestMapping("/v1")
-@Api(value = "buss", description = "用户相关的API", position = 1)
+@Controller
+@RequestMapping("v1")
+@Api(value = "v1", description = "用户相关的API")
 public class CommonController {
 	
 	private final Logger log = LoggerFactory.getLogger(CommonController.class);
@@ -65,13 +65,13 @@ public class CommonController {
 	 */
 	@RequestMapping(value = "/register", method = RequestMethod.POST)
 	@ApiOperation(value = "用户注册", httpMethod = "POST", nickname="register", response = ApiResult.class, notes = "根据用户名密码登录", position = 1)
-	public ApiResult<User> register(@ApiParam(required = true, name = "phone", value = "手机号码") @RequestParam("phone") String phone, 
+	public ApiResult register(@ApiParam(required = true, name = "phone", value = "手机号码") @RequestParam("phone") String phone, 
 			@ApiParam(required = true, name = "password", value = "密码") @RequestParam(value = "password") String password,
 			@ApiParam(required = true, name = "userType", value = "用户类型") @RequestParam(value = "userType") String userType,
 			@ApiParam(required = true, name = "validCode", value = "验证码") @RequestParam(value = "validCode") String validCode) {
 		log.debug("记录【" + counter.getAndIncrement() + "】 用户名: " + phone + " 密码: " + password);
 		
-		ApiResult<User> result = new ApiResult<User>();
+		ApiResult result = new ApiResult();
 		result.setOperate(Const.OPERATE_USER_REGISTER);
 		
 		/**
@@ -158,12 +158,12 @@ public class CommonController {
 	 */
 	@RequestMapping(value = "/login/{username}", method = RequestMethod.POST)
 	@ApiOperation(value = "用户登录", httpMethod = "POST", nickname="login", response = ApiResult.class, notes = "根据用户名密码登录", position = 3)
-	public ApiResult<User> appLogin(@ApiParam(required = true, name = "username", value = "用户名") @PathVariable("username") String username, 
+	public ApiResult appLogin(@ApiParam(required = true, name = "username", value = "用户名") @PathVariable("username") String username, 
 			@ApiParam(required = true, name = "password", value = "密码") @RequestParam(value = "password") String password,
 			@ApiParam(required = true, name = "userType", value = "密码") @RequestParam(value = "userType") String userType) {
 		log.debug("记录【" + counter.getAndIncrement() + "】 用户名: " + username + " 密码: " + password);
 		
-		ApiResult<User> result = new ApiResult<User>();
+		ApiResult result = new ApiResult();
 		result.setOperate(Const.OPERATE_USER_LOGIN);
 		
 		List<User> userList = this.userService.findByConditionSql(username, userType);
@@ -214,10 +214,10 @@ public class CommonController {
 	@ResponseBody 
 	@RequestMapping(value = "/logout", method = RequestMethod.POST)
 	@ApiOperation(value = "用户注销", httpMethod = "POST", produces =  MediaType.APPLICATION_JSON_VALUE, nickname="logout", response = ApiResult.class, notes = "根据sessionId注销", position = 4)
-	public ApiResult<String> accountLogout(@ApiParam(required = true, name = "auth", value = "用户会话唯一编码") @RequestParam("auth") String auth) {
+	public ApiResult accountLogout(@ApiParam(required = true, name = "auth", value = "用户会话唯一编码") @RequestParam("auth") String auth) {
 		log.debug("记录【" + counter.getAndIncrement() + "】 用户ID: " + auth);
 	
-		ApiResult<String> result = new ApiResult<String>();
+		ApiResult result = new ApiResult();
 		result.setOperate(Const.OPERATE_USER_LOGOUT);
 		
 		TokenModel tm = this.tokenService.getToken(auth);
