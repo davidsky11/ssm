@@ -5,7 +5,7 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title> 欢 乐 兑 </title>
+<title>欢乐兑登录界面</title>
 <link rel="stylesheet" rev="stylesheet" type="text/css" href="css/login1.css" media="all"/>
 
 <script type="text/javascript" src="js/jquery/jQuery1.7.js"></script>
@@ -298,7 +298,7 @@
 					<div id="password">
 						<label>密&nbsp;&nbsp;&nbsp;&nbsp;码：</label> 
 						<input type="password"
-							id="stu_password_hide" name="password" value="请输入密码"
+							id="stu_password_hide" name="password" 
 							nullmsg="密码不能为空!" datatype="*3-16" errormsg="密码范围在3~16之间!"  />
 					</div>
 					<div id="code">
@@ -330,7 +330,7 @@
 					</div>
 					<div id="password">
 						<label>密&nbsp;&nbsp;&nbsp;&nbsp;码：</label> <input type="password"
-							id="tea_password_hide" name="password" value="请输入密码"
+							id="tea_password_hide" name="password" value=""
 							nullmsg="密码不能为空!" datatype="*3-16" errormsg="密码范围在3~16之间!"
 							/>
 					</div>

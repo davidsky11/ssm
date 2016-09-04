@@ -1,6 +1,5 @@
 package com.crm.dao.test;
 
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -189,7 +188,7 @@ public class MyBatisTest extends AbstractJUnit4SpringContextTests {
 	}
 	
 	@Test
-	public void datagridScanRecord() throws ParseException {
+	public void datagridScanRecord() {
 		PageHelper page = new PageHelper();
 		page.setPage(0);
 		page.setRows(10);
@@ -197,9 +196,6 @@ public class MyBatisTest extends AbstractJUnit4SpringContextTests {
 		page.setEnd(10);
 		
 		ScanRecord sr = new ScanRecord();
-		//sr.setAccountId("885");
-		//sr.setAccountName("kevin");
-		//sr.setScanTime(new Timestamp(sdf.parse("2016-07-19").getTime()));
 		List<ScanRecord> list = scanRecordMapper.datagridScanRecord(page, sr);
 		for (ScanRecord s : list) {
 			System.out.println(s.toString());
@@ -288,4 +284,21 @@ public class MyBatisTest extends AbstractJUnit4SpringContextTests {
 			System.out.println(pa.toString());
 		}
 	}
+	
+	@Test
+	public void dataGridExchange() {
+		PageHelper page = new PageHelper();
+		page.setPage(0);
+		page.setRows(10);
+		page.setStart(0);
+		page.setEnd(10);
+		
+		Exchange exchange = new Exchange();
+		List<Exchange> list = exchangeMapper.datagridExchange(page, exchange);
+		
+		for (Exchange e : list) {
+			System.out.println(e.toString());
+		}
+	}
+	
 }

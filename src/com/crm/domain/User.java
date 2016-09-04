@@ -126,6 +126,13 @@ public class User {
 	public void setToken(String token) {
 		this.token = token;
 	}
-	
 
+	@Override
+	public String toString() {
+		return "User [id=" + id + ", username=" + username + ", password=" + password + ", email=" + email + ", idcard="
+				+ idcard + ", gender=" + gender + ", qq=" + qq + ", weixin=" + weixin + ", regtime=" + regtime
+				+ ", sysname=" + sysname + ", psysname=" + psysname + ", userType=" + userType + ", generateName="
+				+ generateName + ", token=" + token + "]";
+	}
+	
 }

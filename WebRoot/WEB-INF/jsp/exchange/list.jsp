@@ -1,5 +1,5 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@page import="com.crm.domain.Exchange"%>
+<%@page import="com.crm.domain.dto.ExchangeDto"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
@@ -131,11 +131,14 @@
 			nowrap="false">
 			<thead>
 				<tr>
-					<th field="id" width="120">编码</th>
-					<th field="accountId" width="120">用户编码</th>
-					<th field="exchangeTime" formatter="Common.TimestampFormatter2" width="100">兑奖时间</th>
-					<th field="innerCode" width="100">内码</th>
-					<th field="outerCode" width="100">瓶身码</th>
+					<th field="username" width="80">兑奖者</th>
+					<th field="awardName" width="100">奖项</th>
+					<th field="awardDesc" width="120">奖项信息</th>
+					<th field="awardAmount" width="50">奖项金额</th>
+					<th field="exchangeTime" formatter="Common.TimestampFormatter2" width="120">兑奖时间</th>
+					<th field="publicCode" width="80">公共编码</th>
+					<th field="privateCode" width="80">内码</th>
+					<th field="insideCode" width="80">瓶身码</th>
 				</tr>
 			</thead>
 		</table>

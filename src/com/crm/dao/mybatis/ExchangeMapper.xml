@@ -1,6 +1,63 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.crm.dao.mybatis.ExchangeMapper">  
+<mapper namespace="com.crm.dao.mybatis.ExchangeMapper">
+
+	<!-- <resultMap type="com.crm.domain.Exchange" id="datagridExchange">
+		<association property="award" javaType="com.crm.domain.Award" resultMap="getAward"/>
+	</resultMap>
+	
+	<select id="getAwardBy" resultMap="getAward">
+		select
+		<include refid="titledesc" />
+		from award
+	</select>
+	
+	定义sql片段，用于重用
+	<sql id="titledesc">title, description</sql> -->
+	
+	<resultMap type="com.crm.domain.Exchange" id="exchangeMap">
+		<id property="id" column="id" />
+		<result property="exchangeTime" column="exchangeTime" />
+		<result property="publicCode" column="publicCode" />
+		<result property="privateCode" column="privateCode" />
+		<result property="insideCode" column="insideCode" />
+		<result property="longitude" column="longitude" />
+		<result property="latitude" column="latitude" />
+		<result property="flagCode" column="flagCode" />
+		<association property="user" resultMap="userMap" />
+		<association property="award" resultMap="awardMap" />
+		<!-- <association property="user" column="userId" select="queryUser" />
+		<association property="award" column="awardId" select="queryAward" /> -->
+	</resultMap>
+	
+	<resultMap type="com.crm.domain.User" id="userMap">
+		<id property="id" column="u_id" />
+		<result property="username" column="u_username" />
+		<result property="email" column="u_email" />
+		<result property="idcard" column="u_idcard" />
+		<result property="gender" column="u_gender" />
+		<result property="qq" column="u_qq" />
+		<result property="weixin" column="u_weixin" />
+		<result property="userType" column="u_userType" />
+		<result property="generateName" column="u_generateName" />
+	</resultMap>
+	
+	<resultMap type="com.crm.domain.Award" id="awardMap" >
+		<id property="id" column="a_id" />
+		<result property="title" column="a_title" />
+		<result property="description" column="a_description" />
+		<result property="hierarchy" column="a_hierarchy" />
+		<result property="sort" column="a_sort" />
+		<result property="amount" column="a_amount" />
+	</resultMap>
+	
+	<select id="queryUser" resultMap="userMap">
+		select * from sysuser where id=#{id}
+	</select>
+	
+	<select id="queryAward" resultMap="awardMap">
+		select * from award where id=#{id}
+	</select>
 
 	<insert id="saveExchange" parameterType="com.crm.domain.Exchange" >
 		<selectKey keyProperty="id" resultType="String" order="BEFORE">
@@ -95,8 +152,13 @@
         </if>
 	</select>
 
-	<select id="datagridExchange" resultType="com.crm.domain.Exchange">
-		select t.id, t.userId, t.exchangeTime, t.insideCode, t.privateCode, t.publicCode, t.longitude, t.latitude, t.flagCode, t.waresId from exchange t where 1=1
+	<select id="datagridExchange" resultMap="exchangeMap">
+		select t.id, t.userId, t.exchangeTime, t.insideCode, t.privateCode, 
+		t.publicCode, t.longitude, t.latitude, t.flagCode, t.waresId,
+		u.id u_id, u.username u_username, u.email u_email, u.regtime u_regtime,
+		a.id a_id, a.title a_title, a.description a_description, a.amount a_amount
+		from exchange t, sysuser u, award a 
+		where t.awardId = a.id and t.userId = u.id
 		<if test="exchange.userId != null and exchange.userId != ''">
 			and t.userId = #{exchange.userId}
 		</if>

@@ -1,6 +1,8 @@
 package com.crm.controller;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -14,11 +16,17 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.crm.domain.Activity;
+import com.crm.domain.Award;
 import com.crm.domain.ScanRecord;
 import com.crm.domain.User;
+import com.crm.domain.Wares;
+import com.crm.domain.dto.ScanRecordDto;
 import com.crm.domain.easyui.DataGrid;
 import com.crm.domain.easyui.Json;
 import com.crm.domain.easyui.PageHelper;
+import com.crm.service.ActivityService;
+import com.crm.service.AwardService;
 import com.crm.service.ScanRecordService;
 import com.crm.util.common.Const;
 
@@ -36,6 +44,10 @@ public class ScanRecordController /*extends BaseController*/ {
 	
 	@Autowired
 	private ScanRecordService scanRecordService;
+	@Autowired
+	private ActivityService activityService;
+	@Autowired
+	private AwardService awardService;
 
 	/**
 	 * @Title:			accountList
@@ -127,7 +139,38 @@ public class ScanRecordController /*extends BaseController*/ {
 			
 			dg.setTotal(scanRecordService.getDatagridTotal(scanRecord));
 			List<ScanRecord> scanRecordList = scanRecordService.datagridScanRecord(page, scanRecord);
-			dg.setRows(scanRecordList);
+			
+			List<Activity> actList = activityService.getActivityList("");
+			HashMap<String, Activity> actMap = new HashMap<String, Activity>();
+			for (Activity act : actList) {
+				actMap.put(act.getPublicCode(), act);
+			}
+			
+			List<Award> awardList = awardService.getDatagrid("");
+			HashMap<String, Award> awardMap = new HashMap<String, Award>();
+			for (Award award : awardList) {
+				awardMap.put(award.getId(), award);
+			}
+			
+			List<ScanRecordDto> list = new ArrayList<ScanRecordDto>();
+			for (ScanRecord sr : scanRecordList) {
+				ScanRecordDto srd = new ScanRecordDto(sr);
+				srd.setActivityName(actMap.get(sr.getPublicCode()) == null ? "" :
+					actMap.get(sr.getPublicCode()).getTitle());
+				
+				Wares wares = sr.getWares();
+				if (wares != null) {
+					String awardId = wares.getAwardId();
+					srd.setAwardName(awardMap.get(awardId) == null ? "" 
+							: awardMap.get(awardId).getTitle());
+					
+				}
+				
+				list.add(srd);
+			}
+			
+			
+			dg.setRows(list);
 		}
 		return dg;
 	}

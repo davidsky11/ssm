@@ -11,6 +11,7 @@ public class ScanRecord {
 
 	private String id;
 	private String userId;  // 前端用户ID
+	private User user;
 	private String userName;  // 前端用户名称
 	private String userType;  // 用户类型
 	private Double longitude;  // 经度
@@ -143,15 +144,21 @@ public class ScanRecord {
 	public void setInsideCode(String insideCode) {
 		this.insideCode = insideCode;
 	}
+	public User getUser() {
+		return user;
+	}
+	public void setUser(User user) {
+		this.user = user;
+	}
 	
 	@Override
 	public String toString() {
-		return "ScanRecord [id=" + id + ", userId=" + userId + ", userName=" + userName + ", userType=" + userType
-				+ ", longitude=" + longitude + ", latitude=" + latitude + ", scanTime=" + scanTime + ", country="
-				+ country + ", province=" + province + ", city=" + city + ", distance=" + distance + ", street="
-				+ street + ", sematicDescription=" + sematicDescription + ", formattedAddress=" + formattedAddress
-				+ ", waresId=" + waresId + ", wares=" + wares + ", publicCode=" + publicCode + ", privateCode="
-				+ privateCode + ", insideCode=" + insideCode + "]";
+		return "ScanRecord [id=" + id + ", userId=" + userId + ", user=" + user + ", userName=" + userName
+				+ ", userType=" + userType + ", longitude=" + longitude + ", latitude=" + latitude + ", scanTime="
+				+ scanTime + ", country=" + country + ", province=" + province + ", city=" + city + ", distance="
+				+ distance + ", street=" + street + ", sematicDescription=" + sematicDescription + ", formattedAddress="
+				+ formattedAddress + ", waresId=" + waresId + ", wares=" + wares + ", publicCode=" + publicCode
+				+ ", privateCode=" + privateCode + ", insideCode=" + insideCode + "]";
 	}
 	
 }

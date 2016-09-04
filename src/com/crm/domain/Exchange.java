@@ -11,6 +11,7 @@ public class Exchange {
 	
 	private String id;
 	private String userId;  // 兑奖用户
+	private User user;
 	private String exchangeTime;  // 兑奖时间
 	private String insideCode;  // 瓶盖内码
 	private String privateCode;  // 瓶身码
@@ -19,7 +20,8 @@ public class Exchange {
 	private Double latitude;  // 纬度
 	private String flagCode;  // 硬件标识码，例如MAC地址
 	private String waresId;  // 商品ID
-	//private Wares wares;
+	private Wares wares;
+	private String awardId;
 	private Award award;
 	
 	public String getId() {
@@ -82,25 +84,37 @@ public class Exchange {
 	public void setUserId(String userId) {
 		this.userId = userId;
 	}
-	/*public Wares getWares() {
+	public Wares getWares() {
 		return wares;
 	}
 	public void setWares(Wares wares) {
 		this.wares = wares;
-	}*/
+	}
 	public Award getAward() {
 		return award;
 	}
 	public void setAward(Award award) {
 		this.award = award;
 	}
+	public User getUser() {
+		return user;
+	}
+	public void setUser(User user) {
+		this.user = user;
+	}
+	public String getAwardId() {
+		return awardId;
+	}
+	public void setAwardId(String awardId) {
+		this.awardId = awardId;
+	}
 	
 	@Override
 	public String toString() {
-		return "Exchange [id=" + id + ", userId=" + userId + ", exchangeTime=" + exchangeTime + ", insideCode="
-				+ insideCode + ", privateCode=" + privateCode + ", publicCode=" + publicCode + ", longitude="
-				+ longitude + ", latitude=" + latitude + ", flagCode=" + flagCode + ", waresId=" + waresId + ", award="
-				+ award + "]";
+		return "Exchange [id=" + id + ", userId=" + userId + ", user=" + user + ", exchangeTime=" + exchangeTime
+				+ ", insideCode=" + insideCode + ", privateCode=" + privateCode + ", publicCode=" + publicCode
+				+ ", longitude=" + longitude + ", latitude=" + latitude + ", flagCode=" + flagCode + ", waresId="
+				+ waresId + ", wares=" + wares + ", awardId=" + awardId + ", award=" + award + "]";
 	}
 	
 }

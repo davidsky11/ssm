@@ -1,6 +1,7 @@
 package com.crm.controller;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.Resource;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.crm.domain.Exchange;
 import com.crm.domain.User;
+import com.crm.domain.dto.ExchangeDto;
 import com.crm.domain.easyui.DataGrid;
 import com.crm.domain.easyui.Json;
 import com.crm.domain.easyui.PageHelper;
@@ -128,7 +130,13 @@ public class ExchangeController {
 			
 			dg.setTotal(exchangeService.getDatagridTotal(exchange));
 			List<Exchange> exchangeList = exchangeService.datagridExchange(page, exchange);
-			dg.setRows(exchangeList);
+			List<ExchangeDto> list = new ArrayList<ExchangeDto>();
+			for (Exchange e : exchangeList) {
+				ExchangeDto dto = new ExchangeDto(e);
+				list.add(dto);
+			}
+			
+			dg.setRows(list);
 		}
 		return dg;
 	}

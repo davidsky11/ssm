@@ -1,5 +1,5 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ page import="com.crm.domain.ScanRecord"%>
+<%@ page import="com.crm.domain.dto.ScanRecordDto"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
@@ -151,11 +151,14 @@
 			nowrap="false">
 			<thead>
 				<tr>
-					<th field="id" width="100">编码</th>
-					<th field="accountName" width="100">扫码者</th>
+					<th field="username" width="50">扫码者</th>
 					<th field="scanTime" formatter="Common.TimestampFormatter2" width="100">扫码时间</th>
-					<th field="longitude" width="100">经度</th>
-					<th field="latitude" width="100">纬度</th>
+					<th field="activityName" width="50">活动名称</th>
+					<th field="awardName" width="50">奖项名称</th>
+					<th field="longitude" width="50">经度</th>
+					<th field="latitude" width="50">纬度</th>
+					<th field="formattedAddress" width="150">地址</th>
+					<th field="sematicDescription" width="150">详细地址</th>
 				</tr>
 			</thead>
 		</table>
