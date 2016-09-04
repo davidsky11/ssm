@@ -82,7 +82,7 @@
 	
 	<!-- 缓存配置(两种) -->
 	<!-- 启用缓存注解功能(请将其配置在Spring主配置文件中) -->
-	<cache:annotation-driven cache-manager="springCacheManager" />
+	<!-- <cache:annotation-driven cache-manager="springCacheManager" /> -->
 	<!-- Spring自己的基于java.util.concurrent.ConcurrentHashMap实现的缓存管理器(该功能是从Spring3.1开始提供的) -->
 	<!-- <bean id="cacheManager" class="org.springframework.cache.support.SimpleCacheManager"> 
 		<property name="caches"> <set> <bean name="myCache" class="org.springframework.cache.concurrent.ConcurrentMapCacheFactoryBean"/> 
@@ -97,10 +97,13 @@
 		<property name="cacheManager" ref="cacheManagerFactory" />
 	</bean> -->
 	
+	<bean name="springSwaggerConfig" class="com.mangofactory.swagger.configuration.SpringSwaggerConfig" />
+	
 	<!-- 静态资源 -->
 	<!-- 所有swagger目录的访问，直接访问location指定的目录 -->
 	<mvc:resources mapping="swagger/**" location="/WEB-INF/swagger/**"/>
 	<mvc:resources mapping="static/**" location="/static/" />
+	<mvc:resources mapping="*.html" location="/" />
 	
 	<!-- Serve static content-->
 	<mvc:default-servlet-handler/>
@@ -116,10 +119,11 @@
 			<mvc:exclude-mapping path="/code" />
 			<!-- <mvc:exclude-mapping path="/login" /> -->
 			<mvc:exclude-mapping path="/logout" />
-			<mvc:exclude-mapping path="/r/**"/>  <!-- 屏蔽RESTful API接口 -->
+			<mvc:exclude-mapping path="/v1/**"/>  <!-- 屏蔽RESTful API接口 -->
 			<mvc:exclude-mapping path="/swagger/**"/>
 			<mvc:exclude-mapping path="/restapi/**"/>
 			<mvc:exclude-mapping path="/api-docs/**"/>
+			<mvc:exclude-mapping path="/api-docs"/>
 
 			<bean class="com.crm.interceptor.CommonInterceptor"></bean>
 		</mvc:interceptor>

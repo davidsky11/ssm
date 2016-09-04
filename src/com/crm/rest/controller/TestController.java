@@ -13,6 +13,7 @@ import com.crm.rest.domain.ApiResult;
 import com.crm.rest.domain.Greeting;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
+import com.wordnik.swagger.annotations.ApiParam;
 
 /** 
  * @ClassName	TestController.java
@@ -22,8 +23,8 @@ import com.wordnik.swagger.annotations.ApiOperation;
  * @Version 	V1.0    
  */
 @RestController
-@RequestMapping("/r/test")
-@Api(value = "test", description = "test service api", position = 1)
+@RequestMapping("/v1/test")
+@Api(value = "测试", description = "测试用的API", position = 4)
 public class TestController {
 	
 	private static final String template = "Hello, %s";
@@ -33,7 +34,7 @@ public class TestController {
 	@ResponseBody
 	@Authorization
 	@ApiOperation(value = "测试", httpMethod = "GET", nickname="greeting", response = ApiResult.class, notes = "测试API")
-	public ApiResult<Greeting> greeting(@PathVariable(value = "name") String name) {
+	public ApiResult<Greeting> greeting(@ApiParam(required = true, name = "name", value = "名称") @PathVariable(value = "name") String name) {
 		
 		Greeting g = new Greeting(counter.getAndIncrement(), String.format(template, name));
 		

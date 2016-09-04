@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.dao.DuplicateKeyException;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -24,6 +25,7 @@ import com.crm.service.UserService;
 import com.crm.service.ValidService;
 import com.crm.util.ValidUtil;
 import com.crm.util.common.Const;
+import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
 
@@ -35,7 +37,8 @@ import com.wordnik.swagger.annotations.ApiParam;
  * @Version 	V1.0    
  */
 @RestController
-@RequestMapping("/r")
+@RequestMapping("/v1")
+@Api(value = "buss", description = "用户相关的API", position = 1)
 public class CommonController {
 	
 	private final Logger log = LoggerFactory.getLogger(CommonController.class);
@@ -61,7 +64,6 @@ public class CommonController {
 	 * @param validCode	验证码
 	 */
 	@RequestMapping(value = "/register", method = RequestMethod.POST)
-	@ResponseBody
 	@ApiOperation(value = "用户注册", httpMethod = "POST", nickname="register", response = ApiResult.class, notes = "根据用户名密码登录", position = 1)
 	public ApiResult<User> register(@ApiParam(required = true, name = "phone", value = "手机号码") @RequestParam("phone") String phone, 
 			@ApiParam(required = true, name = "password", value = "密码") @RequestParam(value = "password") String password,
@@ -155,7 +157,6 @@ public class CommonController {
 	 * @param password
 	 */
 	@RequestMapping(value = "/login/{username}", method = RequestMethod.POST)
-	@ResponseBody
 	@ApiOperation(value = "用户登录", httpMethod = "POST", nickname="login", response = ApiResult.class, notes = "根据用户名密码登录", position = 3)
 	public ApiResult<User> appLogin(@ApiParam(required = true, name = "username", value = "用户名") @PathVariable("username") String username, 
 			@ApiParam(required = true, name = "password", value = "密码") @RequestParam(value = "password") String password,
@@ -210,9 +211,9 @@ public class CommonController {
 	 * @param username
 	 * @param password
 	 */
+	@ResponseBody 
 	@RequestMapping(value = "/logout", method = RequestMethod.POST)
-	@ResponseBody
-	@ApiOperation(value = "用户注销", httpMethod = "POST", nickname="logout", response = ApiResult.class, notes = "根据sessionId注销", position = 4)
+	@ApiOperation(value = "用户注销", httpMethod = "POST", produces =  MediaType.APPLICATION_JSON_VALUE, nickname="logout", response = ApiResult.class, notes = "根据sessionId注销", position = 4)
 	public ApiResult<String> accountLogout(@ApiParam(required = true, name = "auth", value = "用户会话唯一编码") @RequestParam("auth") String auth) {
 		log.debug("记录【" + counter.getAndIncrement() + "】 用户ID: " + auth);
 	

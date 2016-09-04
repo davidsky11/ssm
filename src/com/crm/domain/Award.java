@@ -1,4 +1,7 @@
-package com.crm.domain; 
+package com.crm.domain;
+
+import com.wordnik.swagger.annotations.ApiModel;
+import com.wordnik.swagger.annotations.ApiModelProperty;
 
 /** 
  * @ClassName	Award.java
@@ -7,11 +10,16 @@ package com.crm.domain;
  * @CreateTime  2016年7月19日 上午12:23:00
  * @Version 	V1.0    
  */
+@ApiModel(value = "奖项")
 public class Award {
 	
+	@ApiModelProperty(value = "奖项编号")
 	private String id;  
+	@ApiModelProperty(value = "名称")
 	private String title;  // 奖项标题
+	@ApiModelProperty(value = "编码")
 	private String serialNo;  // 奖项编码
+	@ApiModelProperty(value = "描述信息")
 	private String description;  // 奖项描述
 	private Integer hierarchy;  // 奖项层级，例如， 0-特等奖，1-一等奖，2-二等奖，3-三等奖，4-
 	private Integer sort;  // 排序

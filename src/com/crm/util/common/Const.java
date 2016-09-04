@@ -7,6 +7,14 @@ public class Const {
 	 * 地图相关信息
 	 */
 	public static final String MAP_AK = "47TS2lczgTxANcKZepTmQVrQuhMWHPVK";
+	
+	/**
+	 * 聚合数据相关信息
+	 */
+	public static final String JUHE_OPENID = "JH0945ce1f6b88b65f445fb44a2a9a8e5b";
+	public static final String JUHE_PHONE_APPKEY = "2117e0a5d1440cb5ef17da4ad691a255";
+	public static final String JUHE_QB_APPKEY = "ceb6f0f43aeee7e025e3595dd2c88233";
+	
 	/**
 	 * 根据经纬度坐标获取地址
 	 * coordtype 	- bd09ll(默认)	坐标的类型，目前支持的坐标类型包括：bd09ll（百度经纬度坐标）、bd09mc（百度米制坐标）、gcj02ll（国测局经纬度坐标）、wgs84ll（ GPS经纬度）

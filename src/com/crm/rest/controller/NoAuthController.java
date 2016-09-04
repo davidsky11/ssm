@@ -48,6 +48,7 @@ import com.crm.util.ValidUtil;
 import com.crm.util.common.Const;
 import com.crm.util.sms.HttpSender;
 import com.wordnik.swagger.annotations.Api;
+import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
 
 /** 
@@ -58,8 +59,8 @@ import com.wordnik.swagger.annotations.ApiParam;
  * @Version 	V1.0    
  */
 @RestController
-@RequestMapping("/r/nobuss")
-@Api(value = "appuser", description = "User service api", position = 2)
+@RequestMapping("/v1/nobuss")
+@Api(value = "nobuss", description = "不需要用户权限的API", position = 3)
 public class NoAuthController {
 	
 	private static PageHelper page = new PageHelper();
@@ -93,6 +94,8 @@ public class NoAuthController {
 	 * @return
 	 */
 	@RequestMapping(value = "/codeT", method = RequestMethod.POST)
+	@ResponseBody
+	@ApiOperation(value = "[测试] 向缓存中加入一对 phone-valid 码", httpMethod = "POST", response = String.class, notes = "向缓存中加入一对 phone-valid 码，valid自动生成")
 	public String code1(@ApiParam(required = true, name = "phone", value = "手机号码") @RequestParam("phone") String phone) {
 		String validCode = RandomUtil.getRandomNumber(4);
 		validService.putValidCode(phone, validCode);
@@ -109,7 +112,10 @@ public class NoAuthController {
 	 * @return
 	 */
 	@RequestMapping(value = "/codeC", method = RequestMethod.POST)
-	public String check(@RequestParam("phone") String phone, @RequestParam("validCode") String validCode) {
+	@ResponseBody
+	@ApiOperation(value = "[测试] 校验 phone-valid 是否能对应上", httpMethod = "POST", response = String.class, notes = "校验 phone-valid 码正确性")
+	public String check(@ApiParam(required = true, name = "phone", value = "手机号码") @RequestParam("phone") String phone, 
+			@ApiParam(required = true, name = "validCode", value = "验证码") @RequestParam("validCode") String validCode) {
 		String vCode = validService.getValidCode(phone);
 		System.out.println(" vCode: " + vCode + "    - validCode: " + validCode);
 		
@@ -124,6 +130,7 @@ public class NoAuthController {
 	 */
 	@RequestMapping(value = "/code", method = RequestMethod.POST)
 	@ResponseBody
+	@ApiOperation(value = "获取手机验证码", httpMethod = "POST", response = ApiResult.class, notes = "根据手机号码获取四位数的手机验证码")
 	public ApiResult<String> code(@ApiParam(required = true, name = "phone", value = "手机号码") @RequestParam("phone") String phone) {
 		ApiResult<String> result = new ApiResult<String>();
 		result.setOperate(Const.OPERATE_VALID_CODE);
@@ -233,9 +240,11 @@ public class NoAuthController {
 	 */
 	@RequestMapping(value = "/exchangeRecord", method = RequestMethod.POST)
 	@ResponseBody
-	public ApiResult<Object> exchangeRecord(@RequestParam("userType") String userType, 
-			@RequestParam("username") String username, @RequestParam("beginTime") String beginTime,
-			@RequestParam("endTime") String endTime) {
+	@ApiOperation(value = "兑奖记录", httpMethod = "POST", response = ApiResult.class, notes = "根据用户名、用户类型、时间查询兑奖记录")
+	public ApiResult<Object> exchangeRecord(@ApiParam(required = true, name = "userType", value = "用户类型") @RequestParam("userType") String userType, 
+			@ApiParam(required = true, name = "username", value = "用户类型") @RequestParam("username") String username, 
+			@ApiParam(required = true, name = "beginTime", value = "开始时间") @RequestParam("beginTime") String beginTime,
+			@ApiParam(required = true, name = "endTime", value = "结束时间") @RequestParam("endTime") String endTime) {
 	
 		ApiResult<Object> result = new ApiResult<Object>();
 		result.setOperate(Const.OPERATE_EXCHANGE_RECORD);
@@ -318,7 +327,7 @@ public class NoAuthController {
 	
 	/**
 	 * @Title:			scanRecord
-	 * @Description:	APP用户查询自己的扫描记录（分页）
+	 * @Description:	APP用户查询自己的扫码记录（分页）
 	 * @param userType
 	 * @param username
 	 * @param beginTime
@@ -328,10 +337,13 @@ public class NoAuthController {
 	 */
 	@RequestMapping(value = "/scanRecord", method = RequestMethod.POST)
 	@ResponseBody
-	public ApiResult<Object> scanRecord(@RequestParam("userType") String userType, 
-			@RequestParam("username") String username, @RequestParam("beginTime") String beginTime,
-			@RequestParam("endTime") String endTime, @RequestParam("currentPage") int currentPage,
-			@RequestParam("countPerPage") int countPerPage) {
+	@ApiOperation(value = "扫码记录", httpMethod = "POST", response = ApiResult.class, notes = "根据用户名、用户类型、时间查询分页查询扫码记录")
+	public ApiResult<Object> scanRecord(@ApiParam(required = true, name = "userType", value = "用户类型") @RequestParam("userType") String userType, 
+			@ApiParam(required = true, name = "username", value = "用户名称") @RequestParam("username") String username, 
+			@ApiParam(required = true, name = "beginTime", value = "开始时间") @RequestParam("beginTime") String beginTime,
+			@ApiParam(required = true, name = "endTime", value = "结束时间") @RequestParam("endTime") String endTime, 
+			@ApiParam(required = true, name = "currentPage", value = "当前页数") @RequestParam("currentPage") int currentPage,
+			@ApiParam(required = true, name = "countPerPage", value = "每页记录数") @RequestParam("countPerPage") int countPerPage) {
 	
 		ApiResult<Object> result = new ApiResult<Object>();
 		result.setOperate(Const.OPERATE_SCAN_RECORD);
@@ -412,11 +424,16 @@ public class NoAuthController {
 	@RequestMapping(value = "/userWithInfo", method = RequestMethod.POST)
 	@ResponseBody
 	@Authorization
-	public ApiResult<Object> userWithInfo(@RequestParam("userType") String userType, 
-			@RequestParam("username") String username, @RequestParam("flagCode") String flagCode,
-			@RequestParam("time") String time, @RequestParam("longitude") String longitude, 
-			@RequestParam("latitude") String latitude, @RequestParam("publicCode") String publicCode, 
-			@RequestParam("privateCode") String privateCode, @RequestParam("insideCode") String insideCode, 
+	@ApiOperation(value = "扫码兑奖", httpMethod = "POST", response = ApiResult.class, notes = "先扫码，如果有奖，再进行兑奖操作")
+	public ApiResult<Object> userWithInfo(@ApiParam(required = true, name = "userType", value = "用户类型") @RequestParam("userType") String userType, 
+			@ApiParam(required = true, name = "username", value = "用户名称") @RequestParam("username") String username, 
+			@ApiParam(required = true, name = "flagCode", value = "硬件标识码") @RequestParam("flagCode") String flagCode,
+			@ApiParam(required = true, name = "time", value = "客户端时间") @RequestParam("time") String time,
+			@ApiParam(required = true, name = "longitude", value = "经度") @RequestParam("longitude") String longitude, 
+			@ApiParam(required = true, name = "latitude", value = "纬度") @RequestParam("latitude") String latitude, 
+			@ApiParam(required = true, name = "publicCode", value = "公共编码") @RequestParam("publicCode") String publicCode, 
+			@ApiParam(required = true, name = "privateCode", value = "唯一码") @RequestParam("privateCode") String privateCode,
+			@ApiParam(required = true, name = "insideCode", value = "内码") @RequestParam("insideCode") String insideCode, 
 			@RequestParam("exchange") String exchange) {
 		System.out.println("loginWithMessage--userType: " + userType);
 		System.out.println("loginWithMessage--username: " + username);
@@ -653,8 +670,11 @@ public class NoAuthController {
 	@RequestMapping(value = "/antiFake", method = RequestMethod.POST)
 	@ResponseBody
 	@Authorization
-	public ApiResult<Object> antiFake(@RequestParam("publicCode") String publicCode, 
-			@RequestParam("privateCode") String privateCode, @RequestParam("insideCode") String insideCode) {
+	@ApiOperation(value = "商品防伪", httpMethod = "POST", response = ApiResult.class, 
+		notes = "privateCode 在数据库中不存在，返回该商品还未生产\nprivateCode 对应的记录已经兑奖，返回该商品已消费\nprivateCode与insideCode不匹配，返回该商品涉嫌伪造\nprivateCode与insideCode匹配，返回该商品为正品，请扫码兑奖")
+	public ApiResult<Object> antiFake(@ApiParam(required = true, name = "publicCode", value = "公共编码") @RequestParam("publicCode") String publicCode, 
+			@ApiParam(required = true, name = "privateCode", value = "唯一码") @RequestParam("privateCode") String privateCode, 
+			@ApiParam(required = true, name = "insideCode", value = "内码") @RequestParam("insideCode") String insideCode) {
 		ApiResult<Object> result = new ApiResult<Object>();
 		
 		if (publicCode != null && privateCode != null && !publicCode.equals("") && !privateCode.equals("") ) {
@@ -755,8 +775,10 @@ public class NoAuthController {
 	 */
 	@RequestMapping(value = "/deliverGoods", method = RequestMethod.POST)
 	@ResponseBody
-	public ApiResult<Object> deliverGoods(@RequestParam("flag") String flag,
-			@RequestParam("publicCode") String publicCode, @RequestParam("privateCode") String privateCode) {
+	@ApiOperation(value = "商品跟踪/商品信息", httpMethod = "POST", response = ApiResult.class, notes = "用户通过扫码将瓶身二维码信息传给后台识别")
+	public ApiResult<Object> deliverGoods(@ApiParam(required = true, name = "flag", value = "操作标识") @RequestParam("flag") String flag,
+			@ApiParam(required = true, name = "publicCode", value = "公共编码") @RequestParam("publicCode") String publicCode,
+			@ApiParam(required = true, name = "privateCode", value = "唯一码") @RequestParam("privateCode") String privateCode) {
 		
 		ApiResult<Object> result = new ApiResult<Object>();
 		
@@ -790,8 +812,10 @@ public class NoAuthController {
 		case Const.OPERATE_PRODUCT_INFO:                   //商品信息
 			result.setOperate(Const.OPERATE_PRODUCT_INFO);
 			
-			
-			
+			result.setCode(Const.INFO_NORMAL);
+			result.setSuccess(true);
+			result.setMsg("获取商品信息页面URL");
+			result.setData("http://localhost:8080/crmnew/static/wares_info.html");
 		 }
 		 
 		 return result;
@@ -811,7 +835,8 @@ public class NoAuthController {
 	 */
 	@RequestMapping(value = "/awardAnalysis", method = RequestMethod.POST)
 	@ResponseBody
-	public ApiResult<Object> awardAnalysis( @RequestParam("publicCode") String publicCode) {
+	@ApiOperation(value = "奖项统计", httpMethod = "POST", response = ApiResult.class, notes = "统计当前奖项的基本信息和数目信息")
+	public ApiResult<Object> awardAnalysis(@ApiParam(required = true, name = "publicCode", value = "公共编码") @RequestParam("publicCode") String publicCode) {
 	
 		ApiResult<Object> result = new ApiResult<Object>();
 		result.setOperate(Const.OPERATE_AWARD_ANALYSIS);
@@ -859,7 +884,8 @@ public class NoAuthController {
 	 */
 	@RequestMapping(value = "/placeAnalysis", method = RequestMethod.POST)
 	@ResponseBody
-	public ApiResult<Object> placeAnalysis(@RequestParam("publicCode") String publicCode) {
+	@ApiOperation(value = "地域统计", httpMethod = "POST", response = ApiResult.class, notes = "统计当前商品在各个地域的销售情况")
+	public ApiResult<Object> placeAnalysis(@ApiParam(required = true, name = "publicCode", value = "公共编码") @RequestParam("publicCode") String publicCode) {
 		ApiResult<Object> result = new ApiResult<Object>();
 		result.setOperate(Const.OPERATE_PLACE_ANALYSIS);
 		
@@ -880,7 +906,9 @@ public class NoAuthController {
 	 */
 	@RequestMapping(value = "/saleAnalysis", method = RequestMethod.POST)
 	@ResponseBody
-	public ApiResult<Object> saleAnalysis(@RequestParam("username") String username, @RequestParam("publicCode") String publicCode) {
+	@ApiOperation(value = "销售统计", httpMethod = "POST", response = ApiResult.class, notes = "统计当前商品各个月份的的销售情况（向前推算一年）")
+	public ApiResult<Object> saleAnalysis(@ApiParam(required = true, name = "username", value = "用户名称") @RequestParam("username") String username,
+			@ApiParam(required = true, name = "publicCode", value = "公共编码") @RequestParam("publicCode") String publicCode) {
 		ApiResult<Object> result = new ApiResult<Object>();
 		result.setOperate(Const.OPERATE_SALE_ANALYSIS);
 		

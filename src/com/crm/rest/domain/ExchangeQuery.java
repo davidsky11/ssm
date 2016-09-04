@@ -2,6 +2,8 @@ package com.crm.rest.domain;
 
 import com.crm.domain.Award;
 import com.crm.domain.Exchange;
+import com.wordnik.swagger.annotations.ApiModel;
+import com.wordnik.swagger.annotations.ApiModelProperty;
 
 /** 
  * @ClassName	ExchangeQuery.java
@@ -10,9 +12,12 @@ import com.crm.domain.Exchange;
  * @CreateTime  2016年8月7日 下午3:28:28
  * @Version 	V1.0    
  */
+@ApiModel(value = "扫码结果")
 public class ExchangeQuery extends Exchange {
 	
+	@ApiModelProperty(value = "奖项名称")
 	private String title;  // 奖项信息
+	@ApiModelProperty(value = "奖项信息")
 	private Award award;  // 奖品信息
 	
 	public ExchangeQuery(Exchange exchange) {

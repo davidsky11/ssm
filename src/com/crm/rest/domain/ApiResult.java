@@ -1,4 +1,7 @@
-package com.crm.rest.domain; 
+package com.crm.rest.domain;
+
+import com.wordnik.swagger.annotations.ApiModel;
+import com.wordnik.swagger.annotations.ApiModelProperty;
 
 /** 
  * @ClassName	ApiResult.java
@@ -7,12 +10,22 @@ package com.crm.rest.domain;
  * @CreateTime  2016年7月17日 下午11:47:46
  * @Version 	V1.0    
  */
+@ApiModel(value = "数据返回")
 public class ApiResult<T> {
 
+	@ApiModelProperty(value = "操作")
 	private String operate;  // 进行的操作
+	
+	@ApiModelProperty(value = "是否操作成功")
 	private boolean success = false;  // 是否成功
+	
+	@ApiModelProperty(value = "状态码")
 	private int code;  // 代码
+	
+	@ApiModelProperty(value = "回传信息")
 	private String msg;  // 带回的消息
+	
+	@ApiModelProperty(value = "附加数据")
 	private T data;  // 附带数据
 	
 	public ApiResult() {}

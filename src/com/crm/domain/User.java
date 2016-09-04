@@ -3,29 +3,41 @@
  */
 package com.crm.domain;
 
+import com.wordnik.swagger.annotations.ApiModel;
+import com.wordnik.swagger.annotations.ApiModelProperty;
+
 /**
  * @author zh
  * 2014-8-1
  */
+@ApiModel(value = "用户对象")
 public class User {
+	
+	@ApiModelProperty(value = "用户编码")
 	private String id;
+	@ApiModelProperty(value = "用户名")
 	private String username;
+	@ApiModelProperty(value = "密码")
 	private String password;
+	@ApiModelProperty(value = "电子邮箱")
 	private String email;
-	
+	@ApiModelProperty(value = "身份证号码")
 	private String idcard;
+	@ApiModelProperty(value = "性别")
 	private String gender;
+	@ApiModelProperty(value = "QQ号")
 	private String qq;
+	@ApiModelProperty(value = "微信号")
 	private String weixin;
+	@ApiModelProperty(value = "注册时间")
 	private String regtime;
-	
 	private String sysname;
 	private String psysname;
-	
+	@ApiModelProperty(value = "用户类型")
 	private String userType;
-	
+	@ApiModelProperty(value = "自动生成的用户名")
 	private String generateName;
-	
+	@ApiModelProperty(value = "token值")
 	private String token;
 	
 	public User() {}

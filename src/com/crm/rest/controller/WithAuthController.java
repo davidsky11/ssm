@@ -32,7 +32,7 @@ import com.wordnik.swagger.annotations.ApiParam;
  * @Version 	V1.0    
  */
 @RestController
-@RequestMapping("/r/buss")
+@RequestMapping("/v1/buss")
 @Api(value = "appuser", description = "User service api", position = 2)
 public class WithAuthController {
 	
@@ -43,7 +43,6 @@ public class WithAuthController {
 	private final AtomicLong counter = new AtomicLong();
 	
 	@Autowired
-//	@Qualifier("redisTokenService")
 	@Qualifier("ehcacheTokenService")
 	private TokenService<String, String> tokenService;
 	
@@ -92,43 +91,6 @@ public class WithAuthController {
 		result.setData("兑奖成功");
 		
 		return result;
-	}
-	
-	/**
-	 * @Title:			awardRecords2
-	 * @Description:	该函数为经销商或者用户扫描记录、兑奖记录查询函数，经销商可以选择起始日期进行查询、普通用户的起始日期为空
-	 * 		时间格式为： YYYY/MM/dd
-	 * @param role
-	 * @param username
-	 * @param beginTime	用户选择的具体查询起始时间
-	 * @param endTime	终止时间
-	 * @return
-	 */
-	@RequestMapping(value = "/awardRecords2", method = RequestMethod.POST)
-	@ResponseBody
-	public String awardRecords2(@RequestParam("role") String role, @RequestParam("username") String username,
-			@RequestParam("beginTime") String beginTime, @RequestParam("endTime") String endTime) {
-		String jsonStr = "[";
-		switch(role){
-    	case "customer": 
-    		jsonStr +=  "{\"time\":\"" + "2016年5月12号"+  "\",\"award\":\"" + "二等奖" +"\",\"detailAward\":\""+ "现金20元"+"\",\"state\":\""+ "已兑奖"+"\"}";
-    		jsonStr +=","+ "{\"time\":\"" + "2016年6月13号"+  "\",\"award\":\"" + "一等奖" +"\",\"detailAward\":\""+ "现金30元" + "\"，\"state\":\""+ "未兑奖"+"\"}";
-    		jsonStr +=","+ "{\"time\":\"" + "2016年7月2号"+  "\",\"award\":\"" + "三等奖" +"\",\"detailAward\":\""+ "再来一瓶" + "\"，\"state\":\""+ "未兑奖"+"\"}";
-    		jsonStr +=","+ "{\"time\":\"" + "2016年7月22号"+  "\",\"award\":\"" + "三等奖" +"\",\"detailAward\":\""+ "再来一瓶" + "\"，\"state\":\""+ "已兑奖"+"\"}";
-    	 jsonStr += "]";
-    	     break;
-    	case"dealer":
-    		jsonStr +=  "{\"time\":\"" + "2016年5月12号"+  "\",\"address\":\"" + "湖北武汉" + "\"}";
-    		jsonStr +=","+ "{\"time\":\"" + "2016年6月13号"+  "\",\"address\":\"" + "湖北武汉" + "\"}";
-    		jsonStr +=","+ "{\"time\":\"" + "2016年7月2号"+  "\",\"address\":\"" + "湖北武汉" + "\"}";
-    		jsonStr +=","+ "{\"time\":\"" + "2016年7月22号"+  "\",\"address\":\"" + "湖北武汉" + "\"}";
-    		break;
-		default:
-			break;
-		}
-		jsonStr += "]";
-	     
-		return jsonStr;
 	}
 	
 }

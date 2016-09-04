@@ -15,6 +15,7 @@ import java.security.NoSuchAlgorithmException;
  * @see        
  */
 public class MD5Util {
+	
 	public static String MD5(String s) {
 		if (s.trim() == null) {
 			return "null";
@@ -30,7 +31,7 @@ public class MD5Util {
 		} catch (UnsupportedEncodingException e) {
 			e.printStackTrace();
 		}
-		return bytes2Hex(abyte1).toUpperCase();
+		return bytes2Hex(abyte1).toLowerCase();
 	}
 
 	private static String bytes2Hex(byte[] b) {

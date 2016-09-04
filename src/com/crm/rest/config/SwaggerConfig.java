@@ -1,7 +1,5 @@
 package com.crm.rest.config;
 
-import java.sql.Timestamp;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -34,21 +32,23 @@ public class SwaggerConfig {
 	public SwaggerSpringMvcPlugin customImplementation() {
 		return new SwaggerSpringMvcPlugin(this.springSwaggerConfig)
 				.apiInfo(apiInfo())
+				.apiVersion("0.1")
+				.includePatterns("/v1.*?");
 //				.includePatterns(".*?")
 //				.pathProvider(new GtPaths())
-				.apiVersion("0.1")
-				.swaggerGroup("swagger")
+//				.apiVersion("0.1")
+//				.swaggerGroup("swagger")
 				/*.swaggerGroup("api-docs").build()*/
 				// 将Timestamp类型全部转为Long类型
-				.directModelSubstitute(Timestamp.class, Long.class)
-				.build();
+//				.directModelSubstitute(Timestamp.class, Long.class)
+//				.build();
 	}
 	
 	private ApiInfo apiInfo()
     {
         ApiInfo apiInfo = new ApiInfo(
-                "show more",
-                "后台管理系统RESTful API列表",
+                "欢乐兑API列表",
+                "提供给Android和IOS测试使用",
                 "My Apps API terms of service",
                 "davidsky11@126.com",
                 "My Apps API Licence Type",
@@ -56,14 +56,4 @@ public class SwaggerConfig {
         return apiInfo;
     }
 	
-    class GtPaths extends SwaggerPathProvider{
-        @Override
-        protected String applicationPath() {
-            return "/restapi";
-        }
-        @Override
-        protected String getDocumentationPath() {
-            return "/restapi";
-        }
-    }
 }
