@@ -2,8 +2,13 @@ package com.crm.dao.test;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -12,21 +17,26 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import com.crm.common.util.lang.DateUtil;
+import com.crm.common.util.math.RandomUtil;
 import com.crm.dao.mybatis.ActivityMapper;
 import com.crm.dao.mybatis.AnalysisMapper;
 import com.crm.dao.mybatis.AwardMapper;
 import com.crm.dao.mybatis.ExchangeMapper;
+import com.crm.dao.mybatis.SaleMapper;
 import com.crm.dao.mybatis.ScanRecordMapper;
 import com.crm.dao.mybatis.UserMapper;
 import com.crm.dao.mybatis.WaresMapper;
 import com.crm.domain.Activity;
 import com.crm.domain.Award;
 import com.crm.domain.Exchange;
+import com.crm.domain.Sale;
 import com.crm.domain.ScanRecord;
 import com.crm.domain.User;
 import com.crm.domain.Wares;
 import com.crm.domain.dto.PlaceAnalysis;
 import com.crm.domain.easyui.PageHelper;
+import com.crm.util.Tool;
 import com.crm.util.common.Const;
 
 /**
@@ -56,6 +66,8 @@ public class MyBatisTest extends AbstractJUnit4SpringContextTests {
 	private WaresMapper waresMapper;
 	@Autowired
 	private AnalysisMapper analysisMapper;
+	@Autowired
+	private SaleMapper saleMapper;
 
 	@Test
 	public void findUserByName() {
@@ -179,9 +191,22 @@ public class MyBatisTest extends AbstractJUnit4SpringContextTests {
 		page.setStart(0);
 		page.setEnd(10);
 		
-		System.out.println(awardMapper.getDatagridTotal(new Award()));
+		String publicCode = "";
+		if (publicCode != null && !publicCode.equals("")) {
+			
+		} else {
+			List<Activity> atyList = activityMapper.getActivityList(" and publisherId = '9'");
+			Set<String> set = new HashSet<String>();
+			for (Activity aty : atyList) {
+				set.add(aty.getPublicCode());
+			}
+			String[] publicCodeArr = set.toArray(new String[0]);
+			publicCode = Tool.stringArrayToString(publicCodeArr, true, ",");
+		}
 		
-		List<Award> list = awardMapper.datagridAward(page, new Award());
+		System.out.println(awardMapper.getDatagridTotal(publicCode, ""));
+		
+		List<Award> list = awardMapper.datagridAward(page, publicCode, "");
 		for (Award a : list) {
 			System.out.println(a.toString());
 		}
@@ -299,6 +324,84 @@ public class MyBatisTest extends AbstractJUnit4SpringContextTests {
 		for (Exchange e : list) {
 			System.out.println(e.toString());
 		}
+	}
+	
+	@Test
+	public void findSaleListBy() {
+		
+		User user = new User();
+		user.setId("2");
+
+		List<Activity> atyList = activityMapper.getActivityList(" and publisherId = '" + user.getId() + "'");
+		Set<String> set = new HashSet<String>();
+		for (Activity aty : atyList) {
+			set.add(aty.getPublicCode());
+		}
+		String[] publicCodeArr = set.toArray(new String[0]);
+		String publicCode = Tool.stringArrayToString(publicCodeArr, true, ",");
+		
+//		String publicCode = "123";
+		
+		Calendar cal = Calendar.getInstance();
+		int year = cal.get(Calendar.YEAR);  // 年
+		int month = cal.get(Calendar.MONTH);  // 月
+		
+		int prevYear = year - 1;  // 上年
+		int nextMonth = month + 1;
+		
+		String begin = prevYear + "-" + (month < 10 ? ("0" + month) : month);
+		String end = year + "-" + (nextMonth < 10 ? "0" + nextMonth : nextMonth);
+		
+		StringBuffer conditionSql = new StringBuffer();
+		conditionSql
+			.append(" and ((t.year = '").append(prevYear).append("' and t.month > '").append(month-1).append("') ")
+			.append(" or (t.year = '").append(year).append("' and t.month < '").append(month).append("')) ");
+		
+		PageHelper page = new PageHelper();
+		page.setStart(0);
+		page.setEnd(20);
+		List<Sale> list = saleMapper.findSaleListPage(page, publicCode, conditionSql.toString());
+		for (Sale s : list) {
+			System.out.println(s);
+		}
+	}
+	
+	@Test
+	public void addWaresBatch() {
+		List<Map<String, String>> waresList = new ArrayList<Map<String, String>>();
+		for (int i=0; i<3; i++) {
+			Map<String,String> map = new HashMap<String,String>();  
+			map.put("id", Tool.generateMajorKey());
+			map.put("publicCode", "789");
+			map.put("privateCode", RandomUtil.generateMixString(5));
+			map.put("insideCode", RandomUtil.generateMixString(3));
+			map.put("creater", "root");
+			map.put("createTime", DateUtil.formatDate(new Date()));
+			map.put("status", "0");
+			
+			waresList.add(map);
+		}
+		
+		//waresMapper.addWaresBatch(waresList);
+	}
+	
+	@Test
+	public void addWaresBatch1() {
+		List<Wares> waresList = new ArrayList<Wares>();
+		for (int i=0; i<3; i++) {
+			Wares w = new Wares();
+			w.setId(Tool.generateMajorKey());
+			w.setPublicCode("789");
+			w.setPrivateCode(RandomUtil.generateMixString(5));
+			w.setInsideCode(RandomUtil.generateMixString(3));
+			w.setCreater("root");
+			w.setCreateTime(DateUtil.formatDate(new Date()));
+			w.setStatus("0");
+			
+			waresList.add(w);
+		}
+		
+		waresMapper.addWaresBatch(waresList);
 	}
 	
 }

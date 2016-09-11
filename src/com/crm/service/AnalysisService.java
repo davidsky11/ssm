@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import com.crm.dao.mybatis.AnalysisMapper;
 import com.crm.domain.dto.PlaceAnalysis;
+import com.crm.domain.easyui.PageHelper;
 
 /** 
  * @ClassName	AnalysisService.java
@@ -23,6 +24,12 @@ public class AnalysisService {
 
 	public List<PlaceAnalysis> findPlaceAnalysis(String publicCode, String userType) {
 		return analysisMapper.findPlaceAnalysis(publicCode, userType);
+	}
+	
+	public List<PlaceAnalysis> findPlaceAnalysisPage(String publicCode, String userType, PageHelper page) {
+		page.setStart((page.getPage()-1)*page.getRows());
+		page.setEnd(page.getPage()*page.getRows());
+		return analysisMapper.findPlaceAnalysisPage(publicCode, userType, page);
 	}
 	
 }

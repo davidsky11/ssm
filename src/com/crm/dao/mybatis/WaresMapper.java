@@ -1,6 +1,7 @@
 package com.crm.dao.mybatis;
 
 import java.util.List;
+import java.util.Map;
 
 import org.apache.ibatis.annotations.Param;
 
@@ -37,6 +38,8 @@ public interface WaresMapper {
 	public List<Wares> datagridWares(@Param("page") PageHelper page, @Param("wares") Wares wares);
 	
 	public List<Wares> datagridWaresByCondition(@Param("page") PageHelper page, @Param("conditionSql") String conditionSql);
+	
+	public int addWaresBatch(@Param("waresList") List<Wares> waresList);
 	
 	//分页
 	//public List<Award> datagridAward(PageHelper page);

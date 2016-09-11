@@ -2,7 +2,6 @@ package com.crm.service;
 
 import java.util.List;
 
-import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -39,12 +38,12 @@ public class WaresService {
 	}
 
 	//根据id查询
-	public Wares findById(@Param("id") String id) {
+	public Wares findById(String id) {
 		return waresMapper.findById(id);
 	}
 	
 	//根据指定条件查询
-	public List<Wares> getDatagrid(@Param("conditionSql") String conditionSql) {
+	public List<Wares> getDatagrid(String conditionSql) {
 		return waresMapper.getDatagrid(conditionSql);
 	}
 	
@@ -53,14 +52,18 @@ public class WaresService {
 		return waresMapper.getDatagridTotal(wares);
 	}
 	
-	public List<Wares> datagridWares(@Param("page") PageHelper page, @Param("wares") Wares wares) {
+	public List<Wares> datagridWares(PageHelper page, Wares wares) {
 		page.setStart((page.getPage()-1)*page.getRows());
 		page.setEnd(page.getPage()*page.getRows());
 		return waresMapper.datagridWares(page, wares);
 	}
 	
-	public List<Wares> datagridWaresByCondition(@Param("page") PageHelper page, @Param("conditionSql") String conditionSql) {
+	public List<Wares> datagridWaresByCondition(PageHelper page, String conditionSql) {
 		return waresMapper.datagridWaresByCondition(page, conditionSql);
+	}
+	
+	public int addWaresBatch(List<Wares> waresList) {
+		return waresMapper.addWaresBatch(waresList);
 	}
 	
 }

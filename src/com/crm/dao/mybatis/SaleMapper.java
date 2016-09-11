@@ -33,6 +33,10 @@ public interface SaleMapper {
 	public Long getDatagridTotal(Sale sale);
 	
 	public List<Sale> datagridSale(@Param("page") PageHelper page, @Param("sale") Sale sale);
+	
+	public List<Sale> findSaleListPage(@Param("page") PageHelper page, @Param("publicCode") String publicCode, @Param("conditionSql") String conditionSql);
+	
+	public List<Sale> findSaleListBy(@Param("publicCode") String publicCode, @Param("conditionSql") String conditionSql);
 
 }
  

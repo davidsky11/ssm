@@ -28,6 +28,7 @@ public class Award {
 	private Integer total;  // 总数量
 	private Integer remain;  // 剩余数量
 	private Activity activity;
+	private String activityName;
 	
 	public Award() {
 		
@@ -125,16 +126,26 @@ public class Award {
 	public Activity getActivity() {
 		return activity;
 	}
-
 	public void setActivity(Activity activity) {
 		this.activity = activity;
+		if (activity != null) {
+			this.activityName = activity.getTitle();
+		}
+	}
+	public String getActivityName() {
+		return activityName;
+	}
+
+	public void setActivityName(String activityName) {
+		this.activityName = activityName;
 	}
 
 	@Override
 	public String toString() {
 		return "Award [id=" + id + ", title=" + title + ", serialNo=" + serialNo + ", description=" + description
 				+ ", hierarchy=" + hierarchy + ", sort=" + sort + ", amount=" + amount + ", activityId=" + activityId
-				+ ", total=" + total + ", remain=" + remain + ", activity=" + activity + "]";
+				+ ", total=" + total + ", remain=" + remain + ", activity=" + activity + ", activityName="
+				+ activityName + "]";
 	}
 	
 }

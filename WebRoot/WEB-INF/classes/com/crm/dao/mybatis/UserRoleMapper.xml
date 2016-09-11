@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.crm.dao.mybatis.UserRoleMapper">
+
+	<insert id="saveUserRole" parameterType="com.crm.domain.UserRole" >
+		<selectKey keyProperty="id" resultType="String" order="BEFORE">
+			select replace(UUID(), "-", "")
+		</selectKey>
+			insert into user_role(<trim suffixOverrides=",">
+			<if test="id !=null and id !=''">id,</if>
+            <if test="userId !=null and userId !=''">userId,</if>
+            <if test="roleId !=null and roleId !=''">roleId</if>
+            </trim>)values(<trim suffixOverrides=",">
+            <if test="id !=null and id !=''">#{id},</if>
+            <if test="userId !=null and userId !=''">#{userId},</if>
+            <if test="roleId !=null and roleId !=''">#{roleId}</if>
+            </trim>)
+	</insert> 
+	
+	<delete id="deleteUserRole" parameterType="String">
+		delete from user_role where id=#{id}
+	</delete>
+	
+	<delete id="deleteUserRoleBySQL" parameterType="String">
+		delete from user_role where 1=1 
+		<if test="conditionSql != null and conditionSql != ''">
+			${conditionSql}
+		</if>
+	</delete>
+	
+	<update id="updateUserRole" parameterType="com.crm.domain.UserRole">
+    	update user_role
+    	<set>
+            <if test="userId !=null and userId !=''">userId=#{userId},</if>
+            <if test="roleId !=null and roleId !=''">roleId=#{roleId}</if>
+    	</set>
+    	where id = #{id}
+    </update>
+    
+    <select id="findRoleByUserId" resultType="com.crm.domain.Role">
+    	select r.id, r.name, r.roleDesc, r.enabled from sysrole r where r.id in 
+    	(select ur.roleId from user_role ur where ur.userId = #{userId})
+    </select>
+    
+    <select id="findUserByRole" parameterType="com.crm.domain.Role" 
+    	resultType="com.crm.domain.User">
+    	select u.id, u.username, u.sysid, u.email, u.name, u.idcard, u.gender, u.qq, 
+    	u.weixin, u.regtime, u.userType, u.generateName from sysuser u where u.id in
+    	(select ur.userId from user_role ur where ur.roleId = #{role.id})
+    </select>
+    
+    <select id="getById" resultType="com.crm.domain.UserRole">
+    	select ur.id, ur.userId, ur.roleId from user_role where id = #{id}
+    </select>
+
+</mapper>

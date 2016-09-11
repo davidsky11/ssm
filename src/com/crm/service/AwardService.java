@@ -53,14 +53,14 @@ public class AwardService {
 	}
 	
 	//获取总数
-	public Long getDatagridTotal(Award award) {
-		return awardMapper.getDatagridTotal(award);
+	public Long getDatagridTotal(String activityId, String conditionSql) {
+		return awardMapper.getDatagridTotal(activityId, conditionSql);
 	}
 	
-	public List<Award> datagridAward(PageHelper page, Award award) {
+	public List<Award> datagridAward(PageHelper page, String activityId, String conditionSql) {
 		page.setStart((page.getPage()-1)*page.getRows());
 		page.setEnd(page.getPage()*page.getRows());
-		return awardMapper.datagridAward(page, award);
+		return awardMapper.datagridAward(page, activityId, conditionSql);
 	}
 	
 }

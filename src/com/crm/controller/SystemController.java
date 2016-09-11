@@ -59,8 +59,7 @@ public class SystemController extends BaseController {
     @RequestMapping(value = "/login", method = RequestMethod.POST)
     public String login(HttpServletRequest request, HttpServletResponse response,
     		@RequestParam String username, @RequestParam String password, 
-    		@RequestParam String code, @RequestParam String autologinch,
-    		@RequestParam String userType) throws Exception{
+    		@RequestParam String code, @RequestParam String userType) throws Exception{
     	
     	String returnUrl = "login";
     	
@@ -79,10 +78,10 @@ public class SystemController extends BaseController {
 				}else {
 					if (user.getPassword().equals(password)) {
 						
-						if(autologinch !=null && autologinch.equals("Y")){ // 判断是否要添加到cookie中
+						/*if(autologinch !=null && autologinch.equals("Y")){ // 判断是否要添加到cookie中
 							// 保存用户信息到cookie
 							UserCookieUtil.saveCookie(user, response);
-						}
+						}*/
 						
 						// 保存用信息到session
 						HttpSession session = request.getSession();
@@ -90,7 +89,7 @@ public class SystemController extends BaseController {
 						session.setAttribute(Const.SESSION_USER_TYPE, userType);
 						
 						String toUrl = RequestUtil.retrieveSavedRequest();
-						if (toUrl.contains("login")) {
+						if (toUrl.contains("login") || toUrl.contains("logout")) {
 							return "redirect:/";
 						} else {
 							return "redirect:" + toUrl;//跳转至访问页面

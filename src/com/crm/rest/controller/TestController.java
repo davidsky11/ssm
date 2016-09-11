@@ -23,8 +23,8 @@ import com.wordnik.swagger.annotations.ApiParam;
  * @Version 	V1.0    
  */
 @Controller
-@RequestMapping("v1/test")
-@Api(value = "v1/test", description = "测试用的API")
+@RequestMapping("/v1/test")
+@Api(value = "/v1/test", description = "测试用的API")
 public class TestController {
 	
 	private static final String template = "Hello, %s";

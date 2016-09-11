@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.crm.dao.mybatis.ScanRecordMapper">  
+
+	<resultMap type="com.crm.domain.ScanRecord" id="scanRecordMap">
+		<id property="id" column="id" />
+		<result property="userId" column="userId" />
+		<result property="userName" column="userName" />
+		<result property="userType" column="userType" />
+		<result property="publicCode" column="publicCode" />
+		<result property="privateCode" column="privateCode" />
+		<result property="insideCode" column="insideCode" />
+		<result property="longitude" column="longitude" />
+		<result property="latitude" column="latitude" />
+		<result property="scanTime" column="scanTime" />
+		<result property="flagCode" column="flagCode" />
+		<result property="country" column="country" />
+		<result property="province" column="province" />
+		<result property="city" column="city" />
+		<result property="distance" column="distance" />
+		<result property="street" column="street" />
+		<result property="sematicDescription" column="sematicDescription" />
+		<result property="formattedAddress" column="formattedAddress" />
+		<result property="waresId" column="waresId" />
+		
+		<association property="user" resultMap="userMap" />
+		<association property="wares" resultMap="waresMap" />
+	</resultMap>
+	
+	<resultMap type="com.crm.domain.User" id="userMap">
+		<id property="id" column="u_id" />
+		<result property="username" column="u_username" />
+		<result property="email" column="u_email" />
+		<result property="idcard" column="u_idcard" />
+		<result property="gender" column="u_gender" />
+		<result property="qq" column="u_qq" />
+		<result property="weixin" column="u_weixin" />
+		<result property="userType" column="u_userType" />
+		<result property="generateName" column="u_generateName" />
+	</resultMap>
+	
+	<resultMap type="com.crm.domain.Wares" id="waresMap" >
+		<id property="id" column="w_id" />
+		<result property="name" column="w_name" />
+		<result property="createTime" column="w_createTime" />
+		<result property="creater" column="w_creater" />
+		<result property="awardId" column="w_awardId" />
+	</resultMap>
+	
+	<insert id="saveScanRecord" parameterType="com.crm.domain.ScanRecord" >
+		<selectKey keyProperty="id" resultType="String" order="BEFORE">
+			select replace(UUID(), "-", "")
+		</selectKey>
+			insert into scan_record(<trim suffixOverrides=",">
+			<if test="id !=null and id !=''">id,</if>
+            <if test="userId !=null and userId !=''">userId,</if>
+            <if test="userName !=null and userName !=''">userName,</if>
+            <if test="longitude !=null and longitude !=''">longitude,</if>
+            <if test="latitude !=null and latitude !=''">latitude,</if>
+            <if test="scanTime !=null and scanTime !=''">scanTime,</if>
+            <if test="country !=null and country !=''">country,</if>
+            <if test="province !=null and province !=''">province,</if>
+            <if test="city !=null and city !=''">city,</if>
+            <if test="distance !=null and distance !=''">distance,</if>
+            <if test="street !=null and street !=''">street,</if>
+            <if test="sematicDescription !=null and sematicDescription !=''">sematicDescription,</if>
+            <if test="formattedAddress !=null and formattedAddress !=''">formattedAddress,</if>
+            <if test="userType !=null and userType !=''">userType,</if>
+            <if test="waresId !=null and waresId !=''">waresId,</if>
+            <if test="publicCode !=null and publicCode !=''">publicCode,</if>
+            <if test="privateCode !=null and privateCode !=''">privateCode,</if>
+            <if test="insideCode !=null and insideCode !=''">insideCode</if>
+            </trim>)values(<trim suffixOverrides=",">
+            <if test="id !=null and id !=''">#{id},</if>
+            <if test="userId !=null and userId !=''">#{userId},</if>
+            <if test="userName !=null and userName !=''">#{userName},</if>
+            <if test="longitude !=null and longitude !=''">#{longitude},</if>
+            <if test="latitude !=null and latitude !=''">#{latitude},</if>
+            <if test="scanTime !=null and scanTime !=''">#{scanTime},</if>
+            <if test="country !=null and country !=''">country=#{country},</if>
+            <if test="province !=null and province !=''">province=#{province},</if>
+            <if test="city !=null and city !=''">city=#{city},</if>
+            <if test="distance !=null and distance !=''">distance=#{distance},</if>
+            <if test="street !=null and street !=''">street=#{street},</if>
+            <if test="sematicDescription !=null and sematicDescription !=''">sematicDescription=#{sematicDescription},</if>
+            <if test="formattedAddress !=null and formattedAddress !=''">formattedAddress=#{formattedAddress},</if>
+            <if test="userType !=null and userType !=''">userType=#{userType},</if>
+            <if test="waresId !=null and waresId !=''">waresId=#{waresId},</if>
+            <if test="publicCode !=null and publicCode !=''">publicCode=#{publicCode},</if>
+            <if test="privateCode !=null and privateCode !=''">privateCode=#{privateCode},</if>
+            <if test="insideCode !=null and insideCode !=''">insideCode=#{insideCode}</if>
+            </trim>)
+	</insert> 
+	
+	<delete id="deleteScanRecord" parameterType="String">
+		delete from scan_record where id=#{id}
+	</delete>
+	
+	<update id="updateScanRecord" parameterType="com.crm.domain.ScanRecord">
+    	update scan_record
+    	<set>
+            <if test="userId !=null and userId !=''">userId=#{userId},</if>
+            <if test="userName !=null and userName !=''">userName=#{userName},</if>
+            <if test="longitude !=null and longitude !=''">longitude=#{longitude},</if>
+            <if test="latitude !=null and latitude !=''">latitude=#{latitude},</if>
+            <if test="scanTime !=null and scanTime !=''">scanTime=#{scanTime},</if>
+            <if test="country !=null and country !=''">country=#{country},</if>
+            <if test="province !=null and province !=''">province=#{province},</if>
+            <if test="city !=null and city !=''">city=#{city},</if>
+            <if test="distance !=null and distance !=''">distance=#{distance},</if>
+            <if test="street !=null and street !=''">street=#{street},</if>
+            <if test="sematicDescription !=null and sematicDescription !=''">sematicDescription=#{sematicDescription},</if>
+            <if test="formattedAddress !=null and formattedAddress !=''">formattedAddress=#{formattedAddress},</if>
+            <if test="userType !=null and userType !=''">userType=#{userType},</if>
+            <if test="waresId !=null and waresId !=''">waresId=#{waresId},</if>
+            <if test="publicCode !=null and publicCode !=''">publicCode=#{publicCode},</if>
+            <if test="privateCode !=null and privateCode !=''">privateCode=#{privateCode},</if>
+            <if test="insideCode !=null and insideCode !=''">insideCode=#{insideCode}</if>
+    	</set>
+    	where id = #{id}
+    </update>
+
+	<select id="getScanRecordList" resultType="com.crm.domain.ScanRecord">
+		select t.id,t.userId,t.userName,t.longitude,t.latitude,t.scanTime,t.country,t.province,t.city,
+		t.distance,t.street,t.sematicDescription,t.formattedAddress,t.waresId,t.publicCode,t.privateCode,
+		t.insideCode from scan_record t where 1=1
+		<if test="conditionSql != null and conditionSql != ''">
+			${conditionSql}
+		</if>
+		<if test="page.sort != null and page.sort != ''">
+            order by #{page.sort} #{page.order}
+        </if>
+        <if test="page.page > 0">
+            limit #{page.start},#{page.end}
+        </if>
+	</select>
+	
+	<select id="findByCondition" resultType="com.crm.domain.ScanRecord">
+		select t.id,t.userId,t.userName,t.longitude,t.latitude,t.scanTime,t.country,t.province,t.city,
+		t.distance,t.street,t.sematicDescription,t.formattedAddress,t.waresId,t.publicCode,t.privateCode,
+		t.insideCode from scan_record t where 1=1
+		<if test="conditionSql !=null and conditionSql !=''">
+			${conditionSql}
+		</if>
+	</select>
+	
+	<select id="findByUser" parameterType="com.crm.domain.User" resultType="com.crm.domain.ScanRecord">
+		<!-- select t.id,t.userId,t.exchangeTime,t.innerCode,t.outerCode from exchange t where 1=1
+		where t.publisherId = u.id and u.id = #{id} -->
+		select distinct t.id,t.userId,t.userName,t.longitude,t.latitude,t.scanTime,t.country,t.province,
+		t.city,t.distance,t.street,t.sematicDescription,t.formattedAddress,t.waresId,t.publicCode,t.privateCode,
+		t.insideCode from scan_record t, sysuser a 
+		where (t.userId = a.id and a.id = #{id}) or (t.userName like concat('%',#{username},'%'))
+	</select>
+	
+	<select id="getDatagridTotal" resultType="long" parameterType="com.crm.domain.ScanRecord">
+		select count(1) from scan_record t where 1=1
+        <if test="userName != null and userName != ''">
+            and t.userName like concat('%',#{userName},'%') 
+        </if>
+        <if test="scanTime != null and scanTime != ''">
+        	and date(scanTime) = #{scanTime}
+        </if>
+	</select>
+	
+	<select id="getDatagridTotalByCondition" resultType="long">
+		select count(1) from scan_record where 1=1
+        <if test="conditionSql != null and conditionSql != ''">
+            ${conditionSql}
+        </if>
+	</select>
+	
+	<select id="datagridScanRecord" resultMap="scanRecordMap">
+		select t.id,t.userId,t.userName,t.longitude,t.latitude,t.scanTime,t.country,t.province,t.city,t.distance,
+		t.street,t.sematicDescription,t.formattedAddress,t.waresId,t.publicCode,t.privateCode,t.insideCode,
+		u.id u_id, u.username u_username, u.email u_email, u.regtime u_regtime,
+		w.id w_id, w.name w_name, w.creater w_creater, w.awardId w_awardId
+		from scan_record t, sysuser u, wares w 
+		where t.waresId = w.id and t.userId = u.id
+		<if test="scanRecord.userId != null and scanRecord.userId != ''">
+            and t.userId = #{scanRecord.userId} 
+        </if>
+		<if test="scanRecord.userName != null and scanRecord.userName != ''">
+            and t.userName like concat('%',#{scanRecord.userName},'%') 
+        </if>
+        <if test="scanRecord.scanTime != null and scanRecord.scanTime != ''">
+        	and date(t.scanTime) = #{scanRecord.scanTime} 
+        </if>
+        <if test="page.sort != null and page.sort != ''">
+            order by #{page.sort} #{page.order}
+        </if>
+        <if test="page.page > 0">
+            limit #{page.start},#{page.end}
+        </if>
+	</select>
+	
+</mapper>

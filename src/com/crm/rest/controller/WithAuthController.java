@@ -31,8 +31,8 @@ import com.wordnik.swagger.annotations.ApiParam;
  * @Version 	V1.0    
  */
 @Controller
-@RequestMapping("v1/buss")
-@Api(value = "v1/buss", description = "用户权限相关API")
+@RequestMapping("/v1/buss")
+@Api(value = "/v1/buss", description = "用户权限相关API")
 public class WithAuthController {
 	
 	private static final String FIELD = "AppUser";

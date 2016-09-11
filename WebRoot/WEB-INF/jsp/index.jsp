@@ -5,7 +5,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
-<title>兑奖网</title>
+<title>欢乐兑</title>
 
 <STYLE>
 .main_header{width:100%;height:64px;margin:0px;background:url("${path}/img/login_bg.jpg") repeat-x;overflow: hidden;}
@@ -155,8 +155,9 @@
             <div class="easyui-tabs" id="mainTabs" fit="true" border="false">  
                 <div title="欢迎使用" style="padding:20px;">   
                     <div style="margin-top:20px; float:left;min-width:600px;widht: 600px; height: 90%; ">  
-                        <h1 style="font-size:24px;"> 兑 奖 网 </h1>
-                        <h2 style="color: darkblue;"> = = = 说 明 文 字 = = = </h2>
+                        <h1 style="font-size:24px;"> 欢 乐 兑 </h1>
+                        <!-- <h2 style="color: darkblue;"> = = = 说 明 文 字 = = = </h2> -->
+                        <img alt="操作说明" src="img/notes.png">
                     </div>  
                 </div>  
             </div>  

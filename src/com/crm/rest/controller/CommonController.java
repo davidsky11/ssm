@@ -37,8 +37,8 @@ import com.wordnik.swagger.annotations.ApiParam;
  * @Version 	V1.0    
  */
 @Controller
-@RequestMapping("v1")
-@Api(value = "v1", description = "用户相关的API")
+@RequestMapping("/v1")
+@Api(value = "/v1", description = "用户相关的API")
 public class CommonController {
 	
 	private final Logger log = LoggerFactory.getLogger(CommonController.class);
@@ -63,6 +63,7 @@ public class CommonController {
 	 * @param userType	用户类型 2-经销商，3-APP用户
 	 * @param validCode	验证码
 	 */
+	@ResponseBody
 	@RequestMapping(value = "/register", method = RequestMethod.POST)
 	@ApiOperation(value = "用户注册", httpMethod = "POST", nickname="register", response = ApiResult.class, notes = "根据用户名密码登录", position = 1)
 	public ApiResult register(@ApiParam(required = true, name = "phone", value = "手机号码") @RequestParam("phone") String phone, 
@@ -157,6 +158,7 @@ public class CommonController {
 	 * @param password
 	 */
 	@RequestMapping(value = "/login/{username}", method = RequestMethod.POST)
+	@ResponseBody
 	@ApiOperation(value = "用户登录", httpMethod = "POST", nickname="login", response = ApiResult.class, notes = "根据用户名密码登录", position = 3)
 	public ApiResult appLogin(@ApiParam(required = true, name = "username", value = "用户名") @PathVariable("username") String username, 
 			@ApiParam(required = true, name = "password", value = "密码") @RequestParam(value = "password") String password,

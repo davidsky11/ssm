@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.crm.dao.mybatis.ExchangeMapper">
+
+	<!-- <resultMap type="com.crm.domain.Exchange" id="datagridExchange">
+		<association property="award" javaType="com.crm.domain.Award" resultMap="getAward"/>
+	</resultMap>
+	
+	<select id="getAwardBy" resultMap="getAward">
+		select
+		<include refid="titledesc" />
+		from award
+	</select>
+	
+	定义sql片段，用于重用
+	<sql id="titledesc">title, description</sql> -->
+	
+	<resultMap type="com.crm.domain.Exchange" id="exchangeMap">
+		<id property="id" column="id" />
+		<result property="exchangeTime" column="exchangeTime" />
+		<result property="publicCode" column="publicCode" />
+		<result property="privateCode" column="privateCode" />
+		<result property="insideCode" column="insideCode" />
+		<result property="longitude" column="longitude" />
+		<result property="latitude" column="latitude" />
+		<result property="flagCode" column="flagCode" />
+		<association property="user" resultMap="userMap" />
+		<association property="award" resultMap="awardMap" />
+		<!-- <association property="user" column="userId" select="queryUser" />
+		<association property="award" column="awardId" select="queryAward" /> -->
+	</resultMap>
+	
+	<resultMap type="com.crm.domain.User" id="userMap">
+		<id property="id" column="u_id" />
+		<result property="username" column="u_username" />
+		<result property="email" column="u_email" />
+		<result property="idcard" column="u_idcard" />
+		<result property="gender" column="u_gender" />
+		<result property="qq" column="u_qq" />
+		<result property="weixin" column="u_weixin" />
+		<result property="userType" column="u_userType" />
+		<result property="generateName" column="u_generateName" />
+	</resultMap>
+	
+	<resultMap type="com.crm.domain.Award" id="awardMap" >
+		<id property="id" column="a_id" />
+		<result property="title" column="a_title" />
+		<result property="description" column="a_description" />
+		<result property="hierarchy" column="a_hierarchy" />
+		<result property="sort" column="a_sort" />
+		<result property="amount" column="a_amount" />
+	</resultMap>
+	
+	<select id="queryUser" resultMap="userMap">
+		select * from sysuser where id=#{id}
+	</select>
+	
+	<select id="queryAward" resultMap="awardMap">
+		select * from award where id=#{id}
+	</select>
+
+	<insert id="saveExchange" parameterType="com.crm.domain.Exchange" >
+		<selectKey keyProperty="id" resultType="String" order="BEFORE">
+			select replace(UUID(), "-", "")
+		</selectKey>
+			insert into exchange(<trim suffixOverrides=",">
+			<if test="id !=null and id !=''">id,</if>
+            <if test="userId !=null and userId !=''">userId,</if>
+            <if test="exchangeTime !=null and exchangeTime !=''">exchangeTime,</if>
+            <if test="insideCode !=null and insideCode !=''">insideCode,</if>
+            <if test="privateCode !=null and privateCode !=''">privateCode,</if>
+            <if test="publicCode !=null and publicCode !=''">publicCode,</if>
+            <if test="longitude !=null and longitude !=''">longitude,</if>
+            <if test="latitude !=null and latitude !=''">latitude,</if>
+            <if test="flagCode !=null and flagCode !=''">flagCode,</if>
+            <if test="waresId !=null and waresId !=''">waresId</if>
+            </trim>)values(<trim suffixOverrides=",">
+            <if test="id !=null and id !=''">#{id},</if>
+            <if test="userId !=null and userId !=''">#{userId},</if>
+            <if test="exchangeTime !=null and exchangeTime !=''">#{exchangeTime},</if>
+            <if test="insideCode !=null and insideCode !=''">#{insideCode},</if>
+            <if test="privateCode !=null and privateCode !=''">#{privateCode},</if>
+            <if test="publicCode !=null and publicCode !=''">#{publicCode},</if>
+            <if test="longitude !=null and longitude !=''">#{longitude},</if>
+            <if test="latitude !=null and latitude !=''">#{latitude},</if>
+            <if test="flagCode !=null and flagCode !=''">#{flagCode},</if>
+            <if test="waresId !=null and waresId !=''">#{waresId}</if>
+            </trim>)
+	</insert>
+	
+	<delete id="deleteExchange" parameterType="String">
+		delete from exchange where id=#{id}
+	</delete>
+	
+	<update id="updateExchange" parameterType="com.crm.domain.Exchange">
+    	update exchange
+    	<set>
+            <if test="userId !=null and userId !=''">userId=#{userId},</if>
+            <if test="exchangeTime !=null and exchangeTime !=''">exchangeTime=#{exchangeTime},</if>
+            <if test="insideCode !=null and insideCode !=''">insideCode=#{insideCode},</if>
+            <if test="privateCode !=null and privateCode !=''">privateCode=#{privateCode}</if>
+            <if test="publicCode !=null and publicCode !=''">publicCode=#{publicCode},</if>
+            <if test="longitude !=null and longitude !=''">longitude=#{longitude},</if>
+            <if test="latitude !=null and latitude !=''">latitude=#{latitude},</if>
+            <if test="flagCode !=null and flagCode !=''">flagCode=#{flagCode},</if>
+            <if test="waresId !=null and waresId !=''">waresId=#{waresId}</if>
+    	</set>
+    	where id = #{id}
+    </update>
+
+	<select id="getExchangeList" resultType="com.crm.domain.Exchange">
+		select t.id,t.userId,t.exchangeTime,t.insideCode,t.privateCode,t.publicCode,t.longitude,t.latitude,t.flagCode,t.waresId from exchange t where 1=1
+		<if test="conditionSql !=null and conditionSql !=''">
+			${conditionSql}
+		</if>
+		<if test="page.sort != null and page.sort != ''">
+            order by #{page.sort} #{page.order}
+        </if>
+        <if test="page.page > 0">
+            limit #{page.start},#{page.end}
+        </if>
+	</select>
+	
+	<select id="findByCondition" resultType="com.crm.domain.Exchange">
+		select t.id,t.userId,t.exchangeTime,t.insideCode,t.privateCode,t.publicCode,t.longitude,t.latitude,t.flagCode,t.waresId from exchange t where 1=1
+		<if test="conditionSql !=null and conditionSql !=''">${conditionSql}</if>
+	</select>
+	
+	<select id="findByUser" parameterType="com.crm.domain.User" resultType="com.crm.domain.Exchange">
+		<!-- select t.id,t.userId,t.exchangeTime,t.insideCode,t.privateCode from exchange t where 1=1
+		where t.publisherId = u.id and u.id = #{id} -->
+		select distinct t.id,t.userId,t.exchangeTime,t.insideCode,t.privateCode,t.publicCode,t.longitude,t.latitude,t.flagCode,t.waresId from exchange t, sysuser a 
+		where (t.userId = a.id and a.id = #{id}) or (t.userName like concat('%',#{username},'%'))
+	</select> 
+	
+	<select id="findById" resultType="com.crm.domain.Exchange" >
+		select t.id, t.userId, t.exchangeTime, t.insideCode, t.privateCode, t.publicCode, t.longitude, t.latitude, t.flagCode,t.waresId from exchange t
+		where t.id = #{id}
+	</select>
+	
+	<select id="getDatagridTotal" resultType="long" parameterType="com.crm.domain.Exchange">
+		select count(1) from exchange where  1=1
+		<if test="userId != null and userId != ''">
+            and userId like concat('%',#{userId},'%')
+        </if>
+	</select>
+	
+	<select id="getDatagridTotalByCondition" resultType="long" parameterType="String">
+		select count(1) from exchange where 1=1
+		<if test="conditionSql != null and conditionSql != ''">
+            ${conditionSql}
+        </if>
+	</select>
+
+	<select id="datagridExchange" resultMap="exchangeMap">
+		select t.id, t.userId, t.exchangeTime, t.insideCode, t.privateCode, 
+		t.publicCode, t.longitude, t.latitude, t.flagCode, t.waresId,
+		u.id u_id, u.username u_username, u.email u_email, u.regtime u_regtime,
+		a.id a_id, a.title a_title, a.description a_description, a.amount a_amount
+		from exchange t, sysuser u, award a 
+		where t.awardId = a.id and t.userId = u.id
+		<if test="exchange.userId != null and exchange.userId != ''">
+			and t.userId = #{exchange.userId}
+		</if>
+		<if test="exchange.exchangeTime != null and exchange.exchangeTime != ''">
+        	and date(t.exchangeTime) = #{exchange.exchangeTime} 
+        </if>
+		<if test="page.sort != null and page.sort != ''">
+            order by #{page.sort} #{page.order}
+        </if>
+        <if test="page.page > 0">
+            limit #{page.start},#{page.end}
+        </if>
+	</select>
+    
+</mapper>

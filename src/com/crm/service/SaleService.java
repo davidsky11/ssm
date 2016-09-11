@@ -2,7 +2,6 @@ package com.crm.service;
 
 import java.util.List;
 
-import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -50,10 +49,20 @@ public class SaleService {
 		return saleMapper.getDatagridTotal(sale);
 	}
 	
-	public List<Sale> datagridSale(@Param("page") PageHelper page, @Param("sale") Sale sale) {
+	public List<Sale> datagridSale(PageHelper page, Sale sale) {
 		page.setStart((page.getPage()-1)*page.getRows());
 		page.setEnd(page.getPage()*page.getRows());
 		return saleMapper.datagridSale(page, sale);
+	}
+	
+	public List<Sale> findSaleListPage(PageHelper page, String publicCode, String conditionSql) {
+		page.setStart((page.getPage()-1)*page.getRows());
+		page.setEnd(page.getPage()*page.getRows());
+		return saleMapper.findSaleListPage(page, publicCode, conditionSql);
+	}
+	
+	public List<Sale> findSaleListBy(String publicCode, String conditionSql) {
+		return saleMapper.findSaleListBy(publicCode, conditionSql);
 	}
 
 }

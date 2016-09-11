@@ -121,7 +121,7 @@
 </head>
 <body class="easyui-layout" fit="true">
 	<div region="center" border="false" style="overflow: hidden;">
-		<!-- 用户信息列表 title="用户管理" -->
+		<!-- 用户信息列表 title="活动管理" -->
 		<table id="datagrid" class="easyui-datagrid" 
 		    fit="true"
 			url="${path}/activity/datagrid" 
@@ -137,6 +137,7 @@
 				<tr>
 					<th field="id" width="100">编号</th>
 					<th field="title" width="100">活动名称</th>
+					<th field="publicCode" width="70">公共编码</th>
 					<th field="description" width="100">活动描述</th>
 					<th field="content" width="100">活动内容</th>
 					<th field="startTime" formatter="Common.TimestampFormatter2" width="100">开始时间</th>
@@ -169,6 +170,9 @@
 			<form id="fm" method="post" novalidate>
 				<div class="fitem">
 					<label>活动名称:</label> <input name="title" class="easyui-textbox" required="true">
+				</div>
+				<div class="fitem">
+					<label>公共编码:</label> <input name="publicCode" class="easyui-textbox" required="true">
 				</div>
 				<div class="fitem">
 					<label>活动描述:</label> <input name="description" class="easyui-textbox">

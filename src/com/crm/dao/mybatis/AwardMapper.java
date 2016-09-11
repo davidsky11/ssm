@@ -35,9 +35,9 @@ public interface AwardMapper {
 	public List<Award> getDatagrid(@Param("conditionSql") String conditionSql);
 	
 	//获取总数
-	public Long getDatagridTotal(Award award);
+	public Long getDatagridTotal(@Param("activityId") String activityId, @Param("conditionSql") String conditionSql);
 	
-	public List<Award> datagridAward(@Param("page") PageHelper page, @Param("award") Award award);
+	public List<Award> datagridAward(@Param("page") PageHelper page, @Param("activityId") String activityId, @Param("conditionSql") String conditionSql);
 	
 	//分页
 	//public List<Award> datagridAward(PageHelper page);

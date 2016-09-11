@@ -281,6 +281,7 @@
 		<ul class="tab_menu">
 			<li class="selected" value="3">APP用户登录</li>
 			<li value="2">商户账户登录</li>
+			<li value="1">厂商账号登录</li>
 		</ul>
 		<div class="tab_box">
 			<!-- APP用户登录开始 -->
@@ -296,7 +297,7 @@
 						<!--ajaxurl="demo/valid.jsp"-->
 					</div>
 					<div id="password">
-						<label>密&nbsp;&nbsp;&nbsp;&nbsp;码：</label> 
+						<label>密&nbsp;&nbsp;&nbsp;码：</label> 
 						<input type="password"
 							id="stu_password_hide" name="password" 
 							nullmsg="密码不能为空!" datatype="*3-16" errormsg="密码范围在3~16之间!"  />
@@ -309,7 +310,7 @@
 					</div>
 					<div id="remember">
 						<input type="checkbox" id="remember1" name="remember"> <label>记住密码</label>
-						<input type="hidden" id="autologinch1" name="autologinch"  class="autologinch" value=""/>
+						<!-- <input type="hidden" id="autologinch1" name="autologinch"  class="autologinch" value=""/> -->
 					</div>
 					<div id="login">
 						<button type="submit">登录</button>
@@ -329,7 +330,7 @@
 							datatype="s3-18" errormsg="商户账号范围在3~18个字符之间1" />
 					</div>
 					<div id="password">
-						<label>密&nbsp;&nbsp;&nbsp;&nbsp;码：</label> <input type="password"
+						<label>密&nbsp;&nbsp;&nbsp;码：</label> <input type="password"
 							id="tea_password_hide" name="password" value=""
 							nullmsg="密码不能为空!" datatype="*3-16" errormsg="密码范围在3~16之间!"
 							/>
@@ -342,7 +343,7 @@
 					</div>
 					<div id="remember">
 						<input type="checkbox" id="remember2" name="remember"> <label>记住密码</label>
-						<input type="hidden" id="autologinch2" name="autologinch"  class="autologinch" value=""/>
+						<!-- <input type="hidden" id="autologinch2" name="autologinch"  class="autologinch" value=""/> -->
 					</div>
 					<div id="login">
 						<button type="submit">登录</button>
@@ -351,11 +352,12 @@
 			</div>
 			<!-- 商户账号登录结束 -->
 			<!-- 系统账户登录开始 -->
-			<!-- <div class="hide">
+			<div class="hide">
 				<div class="sec_error_box"></div>
 				<form action="login" method="post" class="sec_login_error">
+					<input type="hidden" id="userType" name="userType" value="1" />
 					<div id="username">
-						<label>账&nbsp;&nbsp;&nbsp;号：</label> <input type="text"
+						<label>厂&nbsp;商&nbsp;号：</label> <input type="text"
 							id="sec_username_hide" name="username" value="请输入账号"
 							nullmsg="账号不能为空!" datatype="s3-18" errormsg="账号范围在3~18个字符之间!"
 							sucmsg="账号验证通过" />
@@ -367,19 +369,20 @@
 							sucmsg="密码验证通过" />
 					</div>
 					<div id="code">
-						<label>验证码：</label> <input type="text" id="sec_code_hide"
-							name="code" value="请输入验证码" nullmsg="验证码不能为空!" datatype="*4-4"
-							errormsg="验证码有4位数!" sucmsg="验证码验证通过" /> <img id="codeImg"
-							name="codeImg" alt="验证码占位图" title="点击更换" src="" />
-						<div id="remember">
-							<input type="checkbox" id="remember3" name="remember"> <label>记住密码</label>
-							<input type="hidden" id="autologinch3" name="autologinch"  class="autologinch" value=""/>
-						</div>
-						<div id="login">
-							<button type="submit">登录</button>
-						</div>
+						<label>验证码：</label> 
+						<input type="text" id="sec_code_hide" name="code" value="请输入验证码" nullmsg="验证码不能为空!" datatype="*4-4"
+							errormsg="验证码有4位数!" sucmsg="验证码验证通过" /> 
+						<img id="codeImg" name="codeImg" alt="验证码占位图" title="点击更换" src="" />
+					</div>
+					<div id="remember">
+						<input type="checkbox" id="remember3" name="remember" /> <label>记住密码</label>
+						<!-- <input type="hidden" id="autologinch3" name="autologinch"  class="autologinch" value=""/> -->
+					</div>
+					<div id="login">
+						<button type="submit">登录</button>
+					</div>
 				</form>
-			</div> -->
+			</div>
 			<!-- 系统账号登陆结束 -->
 		</div>
 	</div>

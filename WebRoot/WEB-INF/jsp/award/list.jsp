@@ -1,5 +1,5 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@page import="com.crm.domain.Account"%>
+<%@page import="com.crm.domain.Award"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
@@ -16,6 +16,13 @@
 	function addAward(){
 		$('#dlg').dialog('open').dialog('setTitle','新增奖项设置');
 		$('#fm').form('clear');
+		
+		var activityName = $('#search_title').find("option:selected").text();//.find("option:selected")
+		var activityId = $('#search_title').val();
+		
+		//alert(activityName + " " + activityId);
+		$('#activityNameA').val(activityName);
+		$('#activityIdA').attr("value", activityId);
 		url = path+"/award/addAward";
 		mesTitle = '新增奖项设置成功';
 	}
@@ -110,13 +117,56 @@
 	function reload(){
 		$('#datagrid').datagrid('reload'); 
 	}
+	
+	function FindData() {
+		var activityId = $('#search_title').val();
+		
+		//alert(activityId);
+		$('#datagrid').datagrid({
+			url: path+'/award/datagrid',
+			loadMsg: '正在加载中',
+			columns: [[
+				{field: 'activityName', title: '活动名称', width:100 },
+				{field: 'title', title: '奖项名称', width:100 },
+				{field: 'description', title: '描述', width:100 },
+				{field: 'hierarchy', title: '层级', width: 100},
+				{field: 'sort', title: '排序', width: 100},
+				{field: 'amount', title: '金额(元)', width: 100},
+				{field: 'total', title: '总数', width: 50},
+				{field: 'remain', title: '剩余', width: 50}
+				]],
+			queryParams: {
+				activityId: activityId
+			},
+			striped: true,
+			pagination: true,
+			rownumbers: true,
+			singleSelect: true,
+			fit: true,
+			border: false,
+			nowrap: false
+		});
+		
+		var queryParams = $('#datagrid').datagrid('options').queryParams;
+		queryParams.activityId = activityId;
+		
+		$('#datagrid').datagrid('reload');
+		/*$('#datagrid').datagrid('reload', {
+			publicCode: publicCode
+		}); */
+	};
+	
+	$(function() {
+		FindData();
+		$("#search_title").get(0).selectedIndex=0;  //设置Select索引值为1的项选中
+	})
 </script>
 
 </head>
 <body class="easyui-layout" fit="true">
 	<div region="center" border="false" style="overflow: hidden;">
-		<!-- 奖项信息列表 title="奖项管理" -->
-		<table id="datagrid" class="easyui-datagrid" 
+		<!-- 奖项信息列表 title="奖项管理"  class="easyui-datagrid" -->
+		<table id="datagrid" 
 		    fit="true"
 			url="${path}/award/datagrid" 
 			toolbar="#toolbar" 
@@ -129,13 +179,14 @@
 			nowrap="false">
 			<thead>
 				<tr>
-					<th field="id" width="100">编号</th>
-					<th field="title" width="100">标题</th>
-					<th field="serialNo" width="100">SN码</th>
-					<th field="description" width="100">描述</th>
-					<th field="hierarchy" width="100">层级</th>
-					<th field="sort" width="100">排序</th>
-					<th field="amount" width="100">奖项金额</th>
+					<th width="100">活动名称</th>
+					<th width="100">奖项名称</th>
+					<th width="100">描述</th>
+					<th width="100">层级</th>
+					<th width="100">排序</th>
+					<th width="100">金额(元)</th>
+					<th width="50">总数</th>
+					<th width="50">剩余</th>
 				</tr>
 			</thead>
 		</table>
@@ -150,10 +201,16 @@
 				iconCls="icon-edit" plain="true" onclick="editAward();">编辑</a> 
 			<a href="javascript:void(0);" class="easyui-linkbutton"
 				iconCls="icon-remove" plain="true" onclick="deleteAward();">删除</a>
-			<!-- <span>奖项名:</span><input name="search_title" id="search_title" value="" size=10 /> 
+				
+			<span>根据活动信息查询:  </span>
+			<select id="search_title" name="activityId">
+				<!-- <option value="">请选择活动</option> -->
+				<c:forEach items="${atyList}" var="aty" >
+					<option value="${aty.id}">${aty.title}</option>
+				</c:forEach>
+			</select>
   			<a href="javascript:FindData()" class="easyui-linkbutton" data-options="iconCls:'icon-search'">查询</a> 
-			<a href="javascript:void(0);" class="easyui-linkbutton"
-				iconCls="icon-jright" plain="true" onclick="searchAward();">更多查询</a> -->
+  			
 		</div>
 
 		<!-- 添加/修改对话框 -->
@@ -162,22 +219,33 @@
 			buttons="#dlg-buttons">
 			<form id="fm" method="post" novalidate>
 				<div class="fitem">
+					<label>活动名称：</label> <input id="activityNameA" name="activityNameA" required="true" readonly >
+					<input id="activityIdA" name="activityIdA" type="hidden" >
+				</div>
+			
+				<div class="fitem">
 					<label>奖项名称:</label> <input name="title" class="easyui-textbox" required="true">
 				</div>
-				<div class="fitem">
+				<!-- <div class="fitem">
 					<label>奖项编码:</label> <input name="serialNo" class="easyui-textbox" required="true">
-				</div>
+				</div> -->
 				<div class="fitem">
 					<label>奖项描述:</label> <input name="description" class="easyui-textbox" >
 				</div>
 				<div class="fitem">
-					<label>奖项级别:</label> <input name="hierarchy" class="easyui-textbox" required="true">
+					<label>奖项级别:</label> <input name="hierarchy" class="easyui-textbox" >
 				</div>
 				<div class="fitem">
-					<label>奖项排序:</label> <input name="sort" class="easyui-textbox" required="true">
+					<label>奖项排序:</label> <input name="sort" class="easyui-textbox" >
 				</div>
 				<div class="fitem">
 					<label>奖项金额:</label> <input name="amount" class="easyui-textbox" required="true">
+				</div>
+				<div class="fitem">
+					<label>总数:</label> <input name="total" class="easyui-textbox" required="true">
+				</div>
+				<div class="fitem">
+					<label>剩余:</label> <input name="remain" class="easyui-textbox" required="true">
 				</div>
 			</form>
 		</div>
@@ -218,9 +286,9 @@
 				<div class="fitem">
 					<label>奖项名称:</label> <input name="title" class="easyui-textbox" >
 				</div>
-				<div class="fitem">
+				<!-- <div class="fitem">
 					<label>SN码:</label> <input name="serialNo" class="easyui-textbox" >
-				</div>
+				</div> -->
 			</form>
 		</div>
 		

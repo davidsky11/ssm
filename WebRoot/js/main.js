@@ -8,10 +8,6 @@ $.startWith = function(source, str) {
 	return reg.test(source);
 };
 
-function FindData() {
-	
-};
-
 function getTime(/** timestamp=0 **/) {
     var ts = arguments[0] || 0;
     var t, y, m, d, h, i, s;

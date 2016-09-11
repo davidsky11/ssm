@@ -5,6 +5,7 @@ import java.util.List;
 import org.apache.ibatis.annotations.Param;
 
 import com.crm.domain.dto.PlaceAnalysis;
+import com.crm.domain.easyui.PageHelper;
 
 /** 
  * @ClassName	AnalysisMapper.java
@@ -16,6 +17,11 @@ import com.crm.domain.dto.PlaceAnalysis;
 public interface AnalysisMapper {
 
 	public List<PlaceAnalysis> findPlaceAnalysis(@Param("publicCode") String publicCode, @Param("userType") String userType);
+	
+	public List<PlaceAnalysis> findPlaceAnalysisPage(@Param("publicCode") String publicCode, @Param("userType") String userType,
+			@Param("page") PageHelper page);
+	
+	public Long getPalceAnalysisTotal(@Param("publicCode") String publicCode, @Param("userType") String userType);
 	
 }
  

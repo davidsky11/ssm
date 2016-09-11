@@ -59,8 +59,8 @@ import com.wordnik.swagger.annotations.ApiParam;
  * @Version 	V1.0    
  */
 @Controller
-@RequestMapping("v1/nobuss")
-@Api(value = "v1/nobuss", description = "不需要用户权限的API")
+@RequestMapping("/v1/nobuss")
+@Api(value = "/v1/nobuss", description = "不需要用户权限的API")
 public class NoAuthController {
 	
 	private static PageHelper page = new PageHelper();
@@ -293,7 +293,10 @@ public class NoAuthController {
 		
 		String[] arr = waresIdSet.toArray(new String[0]);
 		String sql = Tool.stringArrayToString(arr, true, ",");
-		List<Wares> waresList = waresService.getDatagrid(" and id in (" + sql + ")");
+		List<Wares> waresList = new ArrayList<Wares>();
+		if (sql != null && !sql.equals("")) {
+			waresList = waresService.getDatagrid(" and id in (" + sql + ")");
+		}
 		
 		/**
 		 * 获取所有的奖品信息
@@ -830,7 +833,7 @@ public class NoAuthController {
 			result.setCode(Const.INFO_NORMAL);
 			result.setSuccess(true);
 			result.setMsg("获取商品信息页面URL");
-			result.setData("http://localhost:8080/crmnew/static/wares_info.html");
+			result.setData("http://www.hclinks.cn/crmnew/static/wares_info.html");
 		 }
 		 
 		 return result;
@@ -945,7 +948,7 @@ public class NoAuthController {
 		/**
 		 * 1、直接从销售统计表里获取数据
 		 */
-		List<Sale> saleList = saleService.getSaleList(conditionSql.toString());
+		List<Sale> saleList = saleService.findSaleListBy(publicCode, conditionSql.toString());
 		//List<ScanRecord> srList = this.scanRecordService.findByCondition(conditionSql.toString());
 		
 		result.setCode(Const.INFO_NORMAL);

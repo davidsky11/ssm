@@ -1,7 +1,11 @@
 package com.crm.controller;
 
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+
+import javax.servlet.http.HttpServletRequest;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,12 +15,18 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.ModelAndView;
 
+import com.crm.domain.Activity;
 import com.crm.domain.Award;
+import com.crm.domain.User;
 import com.crm.domain.easyui.DataGrid;
 import com.crm.domain.easyui.Json;
 import com.crm.domain.easyui.PageHelper;
+import com.crm.service.ActivityService;
 import com.crm.service.AwardService;
+import com.crm.util.Tool;
+import com.crm.util.common.Const;
 
 /** 
  * @ClassName	AccountController.java
@@ -32,6 +42,8 @@ public class AwardController {
 	
 	@Autowired
 	private AwardService awardService;
+	@Autowired
+	private ActivityService activityService;
 
 	/**
 	 * @Title:			accountList
@@ -41,8 +53,13 @@ public class AwardController {
 	 * @throws IOException
 	 */
 	@RequestMapping(value = "/award/list", method = RequestMethod.GET)
-	public String awardList(Model model) throws IOException { 
-		return "award/list";
+	public ModelAndView awardList(Model model) throws IOException { 
+		ModelAndView mv = new ModelAndView("award/list");
+		
+		List<Activity> atyList = this.activityService.getActivityList("");
+		mv.addObject("atyList", atyList);
+		
+		return mv;
 	}
 	
 	/**
@@ -51,17 +68,26 @@ public class AwardController {
 	 */
 	@ResponseBody
 	@RequestMapping(value = "/award/addAward",method = RequestMethod.POST)
-    public Json addAward(Award award) {
+    public Json addAward(HttpServletRequest request, Award award) {
 		Json j = new Json();
 		
-		try {
-            awardService.addAward(award);
-            j.setSuccess(true);
-            j.setMsg("用户新增成功！");
-            j.setObj(award);
-        } catch (Exception e) {
-            j.setMsg(e.getMessage());
-        }
+		String activityIdA = request.getParameter("activityIdA");
+		if (activityIdA == null || activityIdA.equals("")) {
+			j.setSuccess(false);
+			j.setMsg("请指定活动！");
+			j.setObj("");
+		} else {
+			try {
+				award.setActivityId(activityIdA);
+				award.setRemain(award.getTotal());
+	            awardService.addAward(award);
+	            j.setSuccess(true);
+	            j.setMsg("用户新增成功！");
+	            j.setObj(award);
+	        } catch (Exception e) {
+	            j.setMsg(e.getMessage());
+	        }
+		}
         return j;
     }
 	
@@ -112,12 +138,27 @@ public class AwardController {
 	 */
 	@ResponseBody
 	@RequestMapping(value = "/award/datagrid", method = RequestMethod.POST)
-	public DataGrid datagrid(PageHelper page) {
+	public DataGrid datagrid(HttpServletRequest request, PageHelper page) {
+		User user =  (User)request.getSession().getAttribute(Const.SESSION_USER);
 		DataGrid dg = new DataGrid();
 		
-		Award award = new Award();
-		dg.setTotal(awardService.getDatagridTotal(award));
-		List<Award> awardList = awardService.datagridAward(page, award);
+		String activityId = request.getParameter("activityId");
+		
+		if (activityId != null && !activityId.equals("")) {
+			activityId = "'" + activityId + "'";
+		} else {
+			List<Activity> atyList = activityService.getActivityList(" and publisherId = '" + user.getId() + "'");
+			Set<String> set = new HashSet<String>();
+			for (Activity aty : atyList) {
+				set.add(aty.getId());
+			}
+			String[] activityIdArr = set.toArray(new String[0]);
+			activityId = Tool.stringArrayToString(activityIdArr, true, ",");
+		}
+		
+		Long total = awardService.getDatagridTotal(activityId, "");
+		dg.setTotal(total);
+		List<Award> awardList = awardService.datagridAward(page, activityId, "");
 		dg.setRows(awardList);
 		return dg;
 	}

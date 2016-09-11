@@ -38,6 +38,9 @@ public class Tool {
 	public static String stringArrayToString(String[] str, boolean isString,
 			String splitFlag) {
 		StringBuffer sb = new StringBuffer();
+		if (str.length <= 0) {
+			return "";
+		}
 		for (int i = 0; i < str.length; i++) {
 			if (isString)
 				sb.append("'");

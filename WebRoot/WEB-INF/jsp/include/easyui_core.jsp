@@ -28,6 +28,7 @@
 <script src="${path}/js/main.js" type="text/javascript"></script>
 <script src="${path}/js/easyui/jeasyui.common.js"  type="text/javascript" ></script>
 <SCRIPT src="${path}/js/index/Clock.js" type=text/javascript></SCRIPT>
+<script src='${path}/js/echarts/echarts.min.js' type='text/javascript' ></script>
 
 <!-- 导入Easy UI的主题Css文件 -->
 <link id="easyuiTheme" href="${path}/js/easyui/themes/default/easyui.core.css" rel="stylesheet" type="text/css" />

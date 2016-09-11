@@ -132,6 +132,8 @@ public class ScanRecordController /*extends BaseController*/ {
 		User user =  (User)request.getSession().getAttribute(Const.SESSION_USER);
 		
 		DataGrid dg = new DataGrid();
+		page.setSort("scanTime");
+		page.setOrder("desc");
 		
 		if (user != null) {
 			ScanRecord scanRecord = new ScanRecord();

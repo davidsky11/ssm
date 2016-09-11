@@ -20,6 +20,8 @@ public class Activity {
 	private int enable;  // 活动是否激活
 	private String publicCode;  // 公共编码
 	private String image;  // 图片
+	private Integer count;  // 对应生成的编码的个数
+	private Double amount;  // 预算奖项金额
 	
 	public String getId() {
 		return id;
@@ -87,13 +89,22 @@ public class Activity {
 	public void setImage(String image) {
 		this.image = image;
 	}
+	public Double getAmount() {
+		return amount;
+	}
+	public void setCount(Integer count) {
+		this.count = count;
+	}
+	public void setAmount(Double amount) {
+		this.amount = amount;
+	}
 	
 	@Override
 	public String toString() {
 		return "Activity [id=" + id + ", title=" + title + ", description=" + description + ", content=" + content
 				+ ", startTime=" + startTime + ", endTime=" + endTime + ", publisherId=" + publisherId
 				+ ", publisherName=" + publisherName + ", enable=" + enable + ", publicCode=" + publicCode + ", image="
-				+ image + "]";
+				+ image + ", count=" + count + ", amount=" + amount + "]";
 	}
 	
 }
