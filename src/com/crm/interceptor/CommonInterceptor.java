@@ -7,6 +7,7 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.codec.binary.Base64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.servlet.ModelAndView;
@@ -19,11 +20,9 @@ import com.crm.util.UserCookieUtil;
 import com.crm.util.common.Const;
 import com.crm.util.common.MD5;
 
-import org.apache.commons.codec.binary.Base64;
-
 /**
  * @ClassName:		CommonInterceptor
- * @Description:	TODO(这里用一句话描述这个类的作用)
+ * @Description:	
  * 			分别实现预处理、后处理（调用了Service并返回ModelAndView，但未进行页面渲染）、返回处理（已经渲染了页面）
  * 			在preHandle中，可以进行编码、安全控制等处理； 
  *			在postHandle中，有机会修改ModelAndView； 
@@ -73,9 +72,9 @@ public class CommonInterceptor extends HandlerInterceptorAdapter {
 		String contextPath = request.getContextPath();
 		String url = requestUri.substring(contextPath.length());
 		
-		String forwardUrl = "/WEB-INF/jsp/login.jsp";
+		String forwardUrl = "/WEB-INF/pages/login.jsp";
 		if (url.contains("syslogin")) {
-			forwardUrl = "/WEB-INF/jsp/syslogin.jsp";
+			forwardUrl = "/WEB-INF/pages/syslogin.jsp";
 		}
 		
 		//这里对拉入黑名单的ip进行处理【扩展】
@@ -125,7 +124,7 @@ public class CommonInterceptor extends HandlerInterceptorAdapter {
 	  				  String userName = cookieValues[0];
 	  				  String userType = cookieValues[2];
 	  				  
-	  				  List<User> userList = userService.findUserByName(userName, userType);
+	  				  List<User> userList = userService.findByConditionSql(userName, userType);
 	  				  // 如果user返回不为空,就取出密码,使用用户名(userName)+密码+有效时间+ webSiteKey进行MD5加密。与前面设置的进行比较，看是否是同一个用户
 	  				  if(userList != null && userList.size() > 0){
 	  					  User temp = userList.get(0);

@@ -3,6 +3,10 @@
  */
 package com.crm.domain;
 
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
 import com.wordnik.swagger.annotations.ApiModel;
 import com.wordnik.swagger.annotations.ApiModelProperty;
 
@@ -30,7 +34,7 @@ public class User {
 	@ApiModelProperty(value = "微信号")
 	private String weixin;
 	@ApiModelProperty(value = "注册时间")
-	private String regtime;
+	private Date regTime;
 	private String sysname;
 	private String psysname;
 	@ApiModelProperty(value = "用户类型")
@@ -39,6 +43,15 @@ public class User {
 	private String generateName;
 	@ApiModelProperty(value = "token值")
 	private String token;
+	private String userAlias;
+	private Date loginTime;
+	private Date lastLoginTime;
+	private Role role;  // 根据userType来获取
+	private String roleName;
+	private String creatorId;
+	private String creatorName;
+	private Boolean locked = Boolean.FALSE; // 是否锁定
+	List<SysMenu> menuList = new ArrayList<SysMenu>();
 	
 	public User() {}
 	
@@ -84,11 +97,11 @@ public class User {
 	public void setWeixin(String weixin) {
 		this.weixin = weixin;
 	}
-	public String getRegtime() {
-		return regtime;
+	public Date getRegTime() {
+		return regTime;
 	}
-	public void setRegtime(String regtime) {
-		this.regtime = regtime;
+	public void setRegTime(Date regTime) {
+		this.regTime = regTime;
 	}
 	public String getId() {
 		return id;
@@ -138,13 +151,76 @@ public class User {
 	public void setToken(String token) {
 		this.token = token;
 	}
+	public Role getRole() {
+		return role;
+	}
+
+	public void setRole(Role role) {
+		this.role = role;
+	}
+	public List<SysMenu> getMenuList() {
+		return menuList;
+	}
+	public void setMenuList(List<SysMenu> menuList) {
+		this.menuList = menuList;
+	}
+	public String getUserAlias() {
+		return userAlias;
+	}
+	public void setUserAlias(String userAlias) {
+		this.userAlias = userAlias;
+	}
+
+	public Date getLoginTime() {
+		return loginTime;
+	}
+
+	public Date getLastLoginTime() {
+		return lastLoginTime;
+	}
+
+	public void setLoginTime(Date loginTime) {
+		this.loginTime = loginTime;
+	}
+
+	public void setLastLoginTime(Date lastLoginTime) {
+		this.lastLoginTime = lastLoginTime;
+	}
+	public String getRoleName() {
+		return roleName;
+	}
+	public String getCreatorId() {
+		return creatorId;
+	}
+	public String getCreatorName() {
+		return creatorName;
+	}
+
+	public void setCreatorId(String creatorId) {
+		this.creatorId = creatorId;
+	}
+	public void setCreatorName(String creatorName) {
+		this.creatorName = creatorName;
+	}
+	public void setRoleName(String roleName) {
+		this.roleName = roleName;
+	}
+	public Boolean getLocked() {
+		return locked;
+	}
+
+	public void setLocked(Boolean locked) {
+		this.locked = locked;
+	}
 
 	@Override
 	public String toString() {
 		return "User [id=" + id + ", username=" + username + ", password=" + password + ", email=" + email + ", idcard="
-				+ idcard + ", gender=" + gender + ", qq=" + qq + ", weixin=" + weixin + ", regtime=" + regtime
+				+ idcard + ", gender=" + gender + ", qq=" + qq + ", weixin=" + weixin + ", regTime=" + regTime
 				+ ", sysname=" + sysname + ", psysname=" + psysname + ", userType=" + userType + ", generateName="
-				+ generateName + ", token=" + token + "]";
+				+ generateName + ", token=" + token + ", userAlias=" + userAlias + ", loginTime=" + loginTime
+				+ ", lastLoginTime=" + lastLoginTime + ", role=" + role + ", roleName=" + roleName + ", creatorId="
+				+ creatorId + ", creatorName=" + creatorName + ", locked=" + locked + "]";
 	}
 	
 }

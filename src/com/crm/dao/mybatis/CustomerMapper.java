@@ -34,7 +34,7 @@ public interface CustomerMapper {
 	public List<Customer> getDatagrid();
 
 	//获取总数
-	public Long getDatagridTotal(Customer customer);
+	public Integer getDatagridTotal(Customer customer);
 
 	//分页
 	public List<Customer> datagridCustomer(PageHelper page);

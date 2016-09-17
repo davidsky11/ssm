@@ -5,6 +5,7 @@ import java.util.List;
 import org.apache.ibatis.annotations.Param;
 
 import com.crm.domain.Award;
+import com.crm.domain.Page;
 import com.crm.domain.easyui.PageHelper;
 
 /** 
@@ -23,7 +24,7 @@ public interface AwardMapper {
 	public int updateAward(Award award);
 	
 	//删除
-	public int deleteAward(String id);
+	public int deleteAward(@Param("id") String id);
 
 	//根据奖项编码查询
 	public List<Award> findBySN(@Param("serialNo") String serialNo);
@@ -35,12 +36,13 @@ public interface AwardMapper {
 	public List<Award> getDatagrid(@Param("conditionSql") String conditionSql);
 	
 	//获取总数
-	public Long getDatagridTotal(@Param("activityId") String activityId, @Param("conditionSql") String conditionSql);
+	public Integer getDatagridTotal(@Param("activityId") String activityId, @Param("conditionSql") String conditionSql);
 	
 	public List<Award> datagridAward(@Param("page") PageHelper page, @Param("activityId") String activityId, @Param("conditionSql") String conditionSql);
 	
-	//分页
-	//public List<Award> datagridAward(PageHelper page);
+	public Integer awdPagesTotal(@Param("conditionSql") String conditionSql);
+
+	public List<Award> awdPages(@Param("page") Page page, @Param("conditionSql") String conditionSql);
 	
 }
  

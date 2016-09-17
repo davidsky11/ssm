@@ -3,26 +3,26 @@
 <mapper namespace="com.crm.dao.mybatis.AwardMapper">   
 
 	<resultMap type="com.crm.domain.Award" id="awardMap">
-		<id property="id" column="id" />
-		<result property="title" column="title" />
-		<result property="serialNo" column="serialNo" />
-		<result property="description" column="description" />
-		<result property="hierarchy" column="hierarchy" />
-		<result property="sort" column="sort" />
-		<result property="amount" column="amount" />
-		<result property="activityId" column="activityId" />
-		<result property="total" column="total" />
-		<result property="remain" column="remain" />
+		<id property="id" column="a_id" />
+		<result property="title" column="a_title" />
+		<result property="serialNo" column="a_serialNo" />
+		<result property="description" column="a_description" />
+		<result property="hierarchy" column="a_hierarchy" />
+		<result property="sort" column="a_sort" />
+		<result property="amount" column="a_amount" />
+		<result property="activityId" column="a_activityId" />
+		<result property="total" column="a_total" />
+		<result property="remain" column="a_remain" />
 		
 		<association property="activity" resultMap="activityMap" />
 	</resultMap>
 	
 	<resultMap type="com.crm.domain.Activity" id="activityMap">
-		<id property="id" column="id" />
-		<result property="title" column="title" />
-		<result property="description" column="description" />
-		<result property="publisherName" column="publisherName" />
-		<result property="publicCode" column="publicCode" />
+		<id property="id" column="t_id" />
+		<result property="title" column="t_title" />
+		<result property="description" column="t_description" />
+		<result property="publisherName" column="t_publisherName" />
+		<result property="publicCode" column="t_publicCode" />
 	</resultMap>
 
 	<insert id="addAward" parameterType="com.crm.domain.Award" >
@@ -55,7 +55,7 @@
 	</insert>
 	
 	<delete id="deleteAward" parameterType="String">
-		delete from award where id=#{id}
+		delete from award where 1=1 and id in ${id}
 	</delete>
 	
 	<update id="updateAward">
@@ -78,8 +78,12 @@
 		select t.id,t.title,t.serialNo,t.description,t.hierarchy,t.sort,t.amount,t.activityId,t.total,t.remain from award t where t.serialNo=#{serialNo}
 	</select>
 	
-	<select id="findById" resultType="com.crm.domain.Award">
-		select t.id,t.title,t.serialNo,t.description,t.hierarchy,t.sort,t.amount,t.activityId,t.total,t.remain from award t where t.id=#{id}
+	<select id="findById" resultMap="awardMap">
+		select t.id a_id,t.title a_title,t.serialNo a_serialNo,t.description a_description,
+		t.hierarchy a_hierarchy,t.sort a_sort,t.amount a_amount,t.activityId a_activityId,
+		t.total a_total,t.remain a_remain, a.id t_id, a.title t_title, a.description t_description
+		 from award t left join activity a on t.activityId = a.id
+		 where t.id=#{id}
 	</select> 
 	
 	<select id="getDatagrid" parameterType="String" resultType="com.crm.domain.Award">
@@ -89,7 +93,7 @@
         </if>
 	</select>
 	
-	<select id="getDatagridTotal" resultType="long">
+	<select id="getDatagridTotal" resultType="int">
 		select count(t.id) from award t right join activity a on t.activityId = a.id where 1=1
 		<if test="activityId != null and activityId != ''">
 			and a.id in (${activityId})
@@ -100,8 +104,10 @@
 	</select>
 	
 	<select id="datagridAward" resultMap="awardMap">
-		select t.id,t.title,t.serialNo,t.description,t.hierarchy,t.sort,t.amount,t.activityId,t.total,t.remain,
-		a.id a_id, a.title a_title, a.description a_description, a.publisherName a_publisherName, a.publicCode a_publicCode
+		select t.id a_id, t.title a_title, t.serialNo a_serialNo, t.description a_description, 
+		t.hierarchy a_hierarchy, t.sort a_sort, t.amount a_amount, t.activityId a_activityId,
+		t.total a_total, t.remain a_remain,
+		a.id t_id, a.title t_title, a.description t_description, a.publisherName t_publisherName, a.publicCode t_publicCode
 		from award t right join activity a on t.activityId = a.id
 		where 1=1
 		<if test="activityId != null and activityId != ''">
@@ -110,6 +116,30 @@
 		<if test="conditionSql != null and conditionSql != ''">
 			${conditionSql}
 		</if>
+		<if test="page.sort != null and page.sort != ''">
+            order by #{page.sort} #{page.order}
+        </if>
+        <if test="page.page > 0">
+            limit #{page.start},#{page.end}
+        </if>
+	</select>
+	
+	<select id="awdPagesTotal" resultType="int">
+		select count(1) from award a where 1=1
+		<if test="conditionSql != null and conditionSql != ''">
+			${conditionSql}
+        </if>
+	</select>
+	
+	<select id="awdPages" resultMap="awardMap">
+		select a.id a_id, a.title a_title, a.serialNo a_serialNo, a.description a_description,
+		 a.hierarchy a_hierarchy, a.sort a_sort, a.amount a_amount, a.activityId a_activityId,
+		 a.total a_total, a.remain a_remain,
+		 t.id t_id, t.title t_title, t.description t_description, t.publisherName t_publisherName, t.publicCode t_publicCode
+		from award a left join activity t on a.activityId = t.id where 1=1 
+		<if test="conditionSql != null and conditionSql != ''">
+			${conditionSql}
+        </if>
 		<if test="page.sort != null and page.sort != ''">
             order by #{page.sort} #{page.order}
         </if>

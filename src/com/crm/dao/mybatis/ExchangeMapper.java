@@ -26,9 +26,9 @@ public interface ExchangeMapper {
 	// 修改Account
 	public int updateExchange(Exchange exchange);
 	
-	public Long getDatagridTotal(Exchange exchange);
+	public Integer getDatagridTotal(Exchange exchange);
 	
-	public Long getDatagridTotalByCondition(@Param("conditionSql") String conditionSql);
+	public Integer getDatagridTotalByCondition(@Param("conditionSql") String conditionSql);
 	
 	public List<Exchange> datagridExchange(@Param("page") PageHelper page, @Param("exchange") Exchange exchange);
 	

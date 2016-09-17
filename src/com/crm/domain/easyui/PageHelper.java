@@ -10,12 +10,12 @@ public class PageHelper implements java.io.Serializable {
 
 	private static final long serialVersionUID = 1359594527239575136L;
 	
-	private int page ;			// 当前页
-	private int rows ;			// 每页显示记录数
-	private String sort = null ;// 排序字段名
-	private String order = "asc" ;// 按什么排序(asc,desc)
-	private int start ;			// 起始页
-	private int end ;			// 最终页
+	private int page = 1;				// 当前页
+	private int rows = 10;				// 每页显示记录数
+	private String sort = null ;		// 排序字段名
+	private String order = "asc" ;		// 按什么排序(asc,desc)
+	private int start ;					// 起始页
+	private int end ;					// 最终页
 	
 	public int getPage() {
 		return page;

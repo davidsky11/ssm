@@ -30,7 +30,7 @@ public interface RoleMapper {
 
 	public Role findById(@Param("id") String id);
 	
-	public Long getDatagridTotal(Role role);
+	public Integer getDatagridTotal(Role role);
 
 	public List<Role> datagridRole(@Param("page") PageHelper page, @Param("role") Role role);
 	

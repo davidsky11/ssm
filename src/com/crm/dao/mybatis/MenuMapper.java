@@ -15,7 +15,7 @@ public interface MenuMapper {
 	
 	public List<SysMenu> getAll(PageHelper page);
 
-	public Long getDatagridTotal(SysMenu menu);
+	public Integer getDatagridTotal(SysMenu menu);
 
 	public List<SysMenu> datagridMenu(PageHelper page);
 	

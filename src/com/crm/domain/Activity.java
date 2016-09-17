@@ -1,5 +1,7 @@
 package com.crm.domain;
 
+import java.util.Date;
+
 /** 
  * @ClassName	Activity.java
  * @Description 活动实体/抽象商品
@@ -13,8 +15,8 @@ public class Activity {
 	private String title;  // 活动标题
 	private String description;  // 活动描述
 	private String content;  // 活动内容
-	private String startTime;  // 活动开始时间
-	private String endTime;  // 活动结束时间
+	private Date startTime;  // 活动开始时间
+	private Date endTime;  // 活动结束时间
 	private String publisherId;  // 活动的发布者，系统管理员
 	private String publisherName;  
 	private int enable;  // 活动是否激活
@@ -59,16 +61,16 @@ public class Activity {
 	public void setPublisherName(String publisherName) {
 		this.publisherName = publisherName;
 	}
-	public String getStartTime() {
+	public Date getStartTime() {
 		return startTime;
 	}
-	public String getEndTime() {
+	public Date getEndTime() {
 		return endTime;
 	}
-	public void setStartTime(String startTime) {
+	public void setStartTime(Date startTime) {
 		this.startTime = startTime;
 	}
-	public void setEndTime(String endTime) {
+	public void setEndTime(Date endTime) {
 		this.endTime = endTime;
 	}
 	public int getEnable() {
@@ -97,6 +99,9 @@ public class Activity {
 	}
 	public void setAmount(Double amount) {
 		this.amount = amount;
+	}
+	public Integer getCount() {
+		return count;
 	}
 	
 	@Override

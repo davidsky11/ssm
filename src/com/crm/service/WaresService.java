@@ -48,7 +48,7 @@ public class WaresService {
 	}
 	
 	//获取总数
-	public Long getDatagridTotal(Wares wares) {
+	public Integer getDatagridTotal(Wares wares) {
 		return waresMapper.getDatagridTotal(wares);
 	}
 	
@@ -66,5 +66,8 @@ public class WaresService {
 		return waresMapper.addWaresBatch(waresList);
 	}
 	
+	public int deleteByCondition(String conditionSql) {
+		return waresMapper.deleteByCondition(conditionSql);
+	}
 }
  

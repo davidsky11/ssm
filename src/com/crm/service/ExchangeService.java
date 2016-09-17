@@ -44,7 +44,7 @@ public class ExchangeService {
 		return exchangeMapper.findByCondition(conditionSql);
 	}
 
-	public Long getDatagridTotal(Exchange exchange) {
+	public Integer getDatagridTotal(Exchange exchange) {
 		return exchangeMapper.getDatagridTotal(exchange);
 	}
 

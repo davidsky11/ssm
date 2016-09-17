@@ -4,6 +4,11 @@ package com.crm.util.common;
 public class Const {
 	
 	/**
+	 * 树的顶层ID
+	 */
+	public static final int ROOT_TREE_ID = 0;
+	
+	/**
 	 * 地图相关信息
 	 */
 	public static final String MAP_AK = "47TS2lczgTxANcKZepTmQVrQuhMWHPVK";
@@ -64,7 +69,7 @@ public class Const {
 	public static final String USERTYPE_APPUSER = "3";  // APP用户
 	
     public static final String REDIRECT_HOME = "/";
-	public static final String SESSION_USER = "USER";     // 保存用户
+	public static final String SESSION_USER = "currentUser";     // 保存用户
 	public static final String SESSION_USER_TYPE = "USER_TYPE";  // 保存用户类型
 	public static final String SESSION_ACCOUNT = "ACCOUNT";     // 保存用户
 	public static final String LAST_PAGE = "LAST_PAGE";   //
@@ -141,6 +146,14 @@ public class Const {
      * 参数有误  303
      */
     public static final int ERROR_PARAM_MISS = 303;  // 参数有误
+    /**
+     * 无法判断 304
+     */
+    public static final int WARN_NO_JUDGE = 304;  // 无法判断
+    /**
+     * 账号被锁定
+     */
+    public static final int WARN_ACCOUNT_LOCKED = 305;  // 账号被锁定
     /**
      * 超时 400
      */

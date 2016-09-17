@@ -41,7 +41,7 @@
 		select t.id,t.name,t.roleDesc,t.enabled from sysrole t where t.id=#{id}
 	</select> 
 	
-	<select id="getDatagridTotal" resultType="long">
+	<select id="getDatagridTotal" resultType="int">
 		select count(1) from sysrole where 1=1
 		<if test="name != null and name != ''">
             and name like concat('%',#{name},'%')

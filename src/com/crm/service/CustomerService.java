@@ -64,7 +64,7 @@ public class CustomerService {
 	 * @param user
 	 * @return
 	 */
-	public Long getDatagridTotal(Customer customer) {
+	public Integer getDatagridTotal(Customer customer) {
 		return customerMapper.getDatagridTotal(customer);
 	}
 

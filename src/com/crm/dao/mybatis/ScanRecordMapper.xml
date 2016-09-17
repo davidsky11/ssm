@@ -120,10 +120,16 @@
     	where id = #{id}
     </update>
 
-	<select id="getScanRecordList" resultType="com.crm.domain.ScanRecord">
-		select t.id,t.userId,t.userName,t.longitude,t.latitude,t.scanTime,t.country,t.province,t.city,
+	<select id="getScanRecordList" resultMap="scanRecordMap">
+		<!-- select t.id,t.userId,t.userName,t.longitude,t.latitude,t.scanTime,t.country,t.province,t.city,
 		t.distance,t.street,t.sematicDescription,t.formattedAddress,t.waresId,t.publicCode,t.privateCode,
-		t.insideCode from scan_record t where 1=1
+		t.insideCode from scan_record t where 1=1 -->
+		select t.id,t.userId,t.userName,t.longitude,t.latitude,t.scanTime,t.country,t.province,t.city,t.distance,
+		t.street,t.sematicDescription,t.formattedAddress,t.waresId,t.publicCode,t.privateCode,t.insideCode,
+		u.id u_id, u.username u_username, u.email u_email, u.regtime u_regtime,
+		w.id w_id, w.name w_name, w.creater w_creater, w.awardId w_awardId
+		from scan_record t, sysuser u, wares w 
+		where t.waresId = w.id and t.userId = u.id
 		<if test="conditionSql != null and conditionSql != ''">
 			${conditionSql}
 		</if>
@@ -153,7 +159,7 @@
 		where (t.userId = a.id and a.id = #{id}) or (t.userName like concat('%',#{username},'%'))
 	</select>
 	
-	<select id="getDatagridTotal" resultType="long" parameterType="com.crm.domain.ScanRecord">
+	<select id="getDatagridTotal" resultType="int" parameterType="com.crm.domain.ScanRecord">
 		select count(1) from scan_record t where 1=1
         <if test="userName != null and userName != ''">
             and t.userName like concat('%',#{userName},'%') 
@@ -163,8 +169,8 @@
         </if>
 	</select>
 	
-	<select id="getDatagridTotalByCondition" resultType="long">
-		select count(1) from scan_record where 1=1
+	<select id="getDatagridTotalByCondition" resultType="int">
+		select count(1) from scan_record t where 1=1
         <if test="conditionSql != null and conditionSql != ''">
             ${conditionSql}
         </if>

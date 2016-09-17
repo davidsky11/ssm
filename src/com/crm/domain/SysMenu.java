@@ -9,7 +9,8 @@ import java.util.List;
  * @author zh
  * 2014-8-1
  */
-public class SysMenu {
+public class SysMenu implements Comparable {
+	
 	/**
 	 * 菜单ID
 	 */
@@ -38,6 +39,22 @@ public class SysMenu {
 	 * 可用状态
 	 */
 	private Integer enable;
+	/**
+	 * 优先级
+	 */
+	private Integer priority;
+	/**
+	 * 类型
+	 */
+	private String type;
+	/**
+	 * AdminTLE 图标
+	 */
+	private String iconClz;
+	/**
+	 * 排序
+	 */
+	private String orderNum;
 	/**
 	 * 子节点个数
 	 */
@@ -113,4 +130,64 @@ public class SysMenu {
 	public void setHasMenu(boolean hasMenu) {
 		this.hasMenu = hasMenu;
 	}
+	public Integer getPriority() {
+		return priority;
+	}
+	public String getType() {
+		return type;
+	}
+	public void setPriority(Integer priority) {
+		this.priority = priority;
+	}
+	public void setType(String type) {
+		this.type = type;
+	}
+	public String getIconClz() {
+		return iconClz;
+	}
+	public void setIconClz(String iconClz) {
+		this.iconClz = iconClz;
+	}
+	public String getOrderNum() {
+		return orderNum;
+	}
+	public void setOrderNum(String orderNum) {
+		this.orderNum = orderNum;
+	}
+	
+	public String toTreeNode() {
+		StringBuffer node = new StringBuffer();
+		if (this.getUrl() != null && !this.getUrl().equals("")) {
+			node.append("<li><a class='sidebarMenuHref' href='").append(this.getUrl()).append("'>");
+		} else {
+			node.append("<li><a class='sidebarMenuHref' href='#'>");
+		}
+		
+		if (this.getIconClz() != null && !this.getUrl().equals("")) {
+			node.append("'<i class='fa ").append(this.getIconClz()).append("'></i><span>");
+		} else {
+			node.append("'<i class='fa fa-circle-o'></i><span>");
+		}
+		
+		if (this.getName() != null && !this.getName().equals("")) {
+			node.append(this.getName()).append("</span></a></li>");
+		} else {
+			node.append("XXX</span></a></li>");
+		}
+		
+		return node.toString();
+	}
+	
+	@Override
+	public int compareTo(Object o) {
+		SysMenu menu = (SysMenu) o;
+		if (this.getOrderNum() == null) {
+			return -1;
+		}
+		if (menu.getOrderNum() == null) {
+			return 1;
+		}
+		return this.getOrderNum().compareTo(menu.getOrderNum());
+	}
+	
 }

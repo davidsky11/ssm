@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import com.crm.dao.mybatis.RoleMapper;
 import com.crm.dao.mybatis.UserMapper;
 import com.crm.dao.mybatis.UserRoleMapper;
+import com.crm.domain.Page;
 import com.crm.domain.Role;
 import com.crm.domain.SysMenu;
 import com.crm.domain.User;
@@ -48,8 +49,8 @@ public class UserService {
 	 * @param username
 	 * @return
 	 */
-	public List<User> findUserByName(String username, String userType) {
-		return userMapper.findUserByName(username, userType);
+	public List<User> login(String username, String userType, String password) {
+		return userMapper.login(username, userType, password);
 	}
 	
 	public List<User> findByConditionSql(String username, String userType) {
@@ -60,8 +61,12 @@ public class UserService {
     //通常更新操作只需刷新缓存中的某个值,所以为了准确的清除特定的缓存,故定义了这个唯一的key,从而不会影响其它缓存值  
     @Cacheable(value="myCache", key="#id")  
     public String getUsernameById(String id){  
-        System.out.println("数据库中查到此用户号[" + id + "]对应的用户名为[" + userMapper.getUsernameById(id) + "]");  
-        return userMapper.getUsernameById(id);  
+        User user = userMapper.getUserById(id);
+        
+        String username = "";
+        if (username != null) 
+        	username = user.getUsername();
+        return username;  
     }
 
 	/**
@@ -78,7 +83,7 @@ public class UserService {
 	 * @param user
 	 * @return
 	 */
-	public Long getDatagridTotal(User user,Integer sysid) {
+	public Integer getDatagridTotal(User user,Integer sysid) {
 		return userMapper.getDatagridTotal(user,sysid);  
 	}
 
@@ -105,16 +110,45 @@ public class UserService {
 	 * 编辑用户
 	 * @param user
 	 */
-	public void edit(User user) {
-		userMapper.editUser(user);  
+	public int edit(User user) {
+		return userMapper.editUser(user);  
 	}  
     
 	/**
 	 * 删除用户
 	 * @param id
 	 */
-	public void deleteUser(String id){
-		userMapper.deleteUser(id);
+	public void deleteUser(String ids){
+		userMapper.deleteUser(ids);
+	}
+	
+	/**
+	 * 锁定或解锁用户
+	 * @Title:			lockUser
+	 * @Description:	
+	 * @param user
+	 * @param locked
+	 * @return
+	 */
+	public Boolean lockUser(User user, Boolean locked) {
+		if (user == null || user.getId() == null) {
+			return false;
+		} else {
+			user.setLocked(locked);
+			Boolean success = userMapper.editUser(user) > 0;
+			return success;
+		}
+	}
+	
+	/**
+	 * 根据用户id获取用户
+	 * @Title:			getUserById
+	 * @Description:	
+	 * @param id
+	 * @return
+	 */
+	public User getUserById(String id) {
+		return userMapper.getUserById(id);
 	}
 	
 	/**
@@ -156,5 +190,15 @@ public class UserService {
     public UserRole getById(String id) {
     	return userRoleMapper.getById(id);
     }
+    
+	public Page<User> userPages(Page<User> page, String conditionSql) {
+		page.setStart((page.getPage() - 1)*page.getRows());
+		page.setEnd((page.getPage())*page.getRows());
+		
+		page.setTotal(userMapper.userPagesTotal(conditionSql));
+		page.setContent(userMapper.userPages(page, conditionSql));
+		
+		return page;
+	}
     
 }

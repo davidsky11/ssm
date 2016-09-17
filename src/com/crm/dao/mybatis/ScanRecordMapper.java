@@ -35,9 +35,9 @@ public interface ScanRecordMapper {
 	// 根据用户ID查询
 	public List<ScanRecord> findByUser(User user);
 		
-	public Long getDatagridTotal(ScanRecord scanRecord);
+	public Integer getDatagridTotal(ScanRecord scanRecord);
 	
-	public Long getDatagridTotalByCondition(@Param("conditionSql") String conditionSql);
+	public Integer getDatagridTotalByCondition(@Param("conditionSql") String conditionSql);
 	
 	public List<ScanRecord> datagridScanRecord(@Param("page") PageHelper page, @Param("scanRecord") ScanRecord scanRecord);
 	

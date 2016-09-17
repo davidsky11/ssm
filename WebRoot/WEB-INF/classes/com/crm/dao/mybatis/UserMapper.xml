@@ -1,24 +1,58 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.crm.dao.mybatis.UserMapper"> 
+
+	<resultMap type="com.crm.domain.User" id="userMap">
+		<id property="id" column="u_id" />
+		<result property="username" column="u_username" />
+		<result property="userType" column="u_userType" />
+		<result property="email" column="u_email" />
+		<result property="idcard" column="u_idcard" />
+		<result property="qq" column="u_qq" />
+		<result property="weixin" column="u_weixin" />
+		<result property="regTime" column="u_regTime" />
+		<result property="loginTime" column="u_loginTime" />
+		<result property="userAlias" column="u_userAlias" />
+		<result property="lastLoginTime" column="u_lastLoginTime" />
+		<result property="roleName" column="r_name" />
+		<result property="creatorName" column="r_creatorName" />
+		<result property="locked" column="u_locked" />
+		
+		<association property="role" resultMap="roleMap" />
+	</resultMap>
+	
+	<resultMap type="com.crm.domain.Role" id="roleMap" >
+		<id property="id" column="r_id" />
+		<result property="name" column="r_name" />
+		<result property="roleDesc" column="r_roleDesc" />
+	</resultMap>
    
-	<select id="findUserByName" resultType="com.crm.domain.User">
-		select id, username, password from sysuser where username = #{username} and userType = #{userType}
+	<select id="login" resultMap="userMap">
+		select u.id u_id, u.username u_username, u.userType u_userType, u.email u_email, u.idcard u_idcard,
+		u.qq u_qq, u.weixin u_weixin, u.regTime u_regTime, u.loginTime u_loginTime, u.userAlias u_userAlias,
+		u.locked u_locked, u.lastLoginTime u_lastLoginTime, r.id r_id, r.name r_name, r.roleDesc r_roleDesc
+		from sysuser u left join sysrole r on u.userType = r.id where u.username = #{username} 
+		and u.userType = #{userType} and u.password = #{password}
 	</select>
 	
 	<select id="findByConditionSql" resultType="com.crm.domain.User">
-		select id, username, password, userType, email from sysuser where 1=1
+		select id, username, userType, email, idcard, gender, qq, weixin, regTime, userType,
+		 generateName, loginTime, userAlias, lastLoginTime, creatorName, locked 
+		 from sysuser where locked != 1
 		<if test="conditionSql != null and conditionSql != ''">
 			${conditionSql}
 		</if>
 	</select>
 	
-	<select id="getUsernameById" resultType="String">
-		select username  from sysuser where id = #{id} 
+	<select id="getUserById" resultType="com.crm.domain.User">
+		select id, username, userType, email, idcard, gender, qq, weixin, regTime, userType,
+		 generateName, loginTime, userAlias, lastLoginTime, creatorName, locked 
+		 from sysuser where id = #{id} 
 	</select>
 	
 	<select id="getMenuByUserId" resultType="com.crm.domain.SysMenu">
-		SELECT m.id,m.name,m.parentid,m.iconCls,m.url,
+		SELECT m.id, m.name, m.parentid, m.sequence, m.iconCls, m.url, m.priority, m.type, m.permission, 
+		m.iconClz, m.orderNum,
 			(select count(1) from sysmenu s where s.parentId!=0 and s.parentId=m.id) countChildrens 
 		FROM sysmenu m
 		  LEFT JOIN role_menu rm
@@ -39,10 +73,10 @@
 		  		) tt 
 		  	where countch =0
 		  )
-		  ORDER BY m.sequence
+		  ORDER BY m.parentid
 	</select> 
 	
-	<select id="getDatagridTotal" resultType="long">
+	<select id="getDatagridTotal" resultType="int">
 		select 
 			count(1) 
 		from sysuser u,systemdef t where u.sysid=t.id 
@@ -57,13 +91,35 @@
 
 	<select id="datagridUser" resultType="com.crm.domain.User">
 		select 
-			u.id,u.username,u.password,u.email,u.gender,u.qq,u.weixin,u.regtime,u.idcard,
+			u.id,u.username,u.password,u.email,u.gender,u.qq,u.weixin,u.regTime,u.idcard,u.locked
 			t.name sysname,
   			(select name from systemdef psys where psys.id=t.ptopid) psysname 
 		from sysuser u,systemdef t where u.sysid=t.id 
 		<if test="csysid != null and csysid != ''">
 			and (u.sysid=t.id or u.sysid=t.parentid or u.sysid=t.ptopid) 
             and (t.id = #{csysid} or t.parentid = #{csysid} or t.ptopid = #{csysid})
+        </if>
+		<if test="page.sort != null and page.sort != ''">
+            order by #{page.sort} #{page.order}
+        </if>
+        <if test="page.page > 0">
+            limit #{page.start},#{page.end}
+        </if>
+	</select>
+	
+	<select id="userPagesTotal" resultType="int">
+		select count(1) from sysuser u where 1=1
+		<if test="conditionSql != null and conditionSql != ''">
+			${conditionSql}
+        </if>
+	</select>
+	
+	<select id="userPages" resultMap="userMap">
+		select u.id u_id, u.username u_username, u.email u_email, u.gender u_gender, u.qq u_qq, u.userAlias u_userAlias, u.locked u_locked,
+		u.weixin u_weixin, u.regTime u_regtime, u.idcard u_idcard, u.creatorName u_creatorName, r.id r_id, r.name r_name, r.roleDesc r_roleDesc
+		from sysuser u left join sysrole r on u.userType = r.id where 1=1 
+		<if test="conditionSql != null and conditionSql != ''">
+			${conditionSql}
         </if>
 		<if test="page.sort != null and page.sort != ''">
             order by #{page.sort} #{page.order}
@@ -86,9 +142,13 @@
             <if test="gender !=null and gender !=''">gender,</if>
             <if test="qq !=null and qq !=''">qq,</if>
             <if test="weixin !=null and weixin !=''">weixin,</if>
-            <if test="regtime !=null and regtime !=''">regtime,</if>
+            <if test="regTime !=null and regTime !=''">regTime,</if>
             <if test="userType !=null and userType !=''">userType,</if>
-            <if test="generateName !=null and generateName !=''">generateName</if>
+            <if test="generateName !=null and generateName !=''">generateName,</if>
+            <if test="userAlias != null and userAlias != ''">userAlias,</if>
+            <if test="creatorId != null and creatorId != ''">creatorId,</if>
+            <if test="creatorName != null and creatorName != ''">creatorName,</if>
+            <if test="locked !=null and locked != ''">locked</if>
             </trim>)values(<trim suffixOverrides=",">
             <if test="id !=null and id !=''">#{id},</if>
             <if test="username !=null and username !=''">#{username},</if>
@@ -98,9 +158,13 @@
             <if test="gender !=null and gender !=''">#{gender},</if>
             <if test="qq !=null and qq !=''">#{qq},</if>
             <if test="weixin !=null and weixin !=''">#{weixin},</if>
-            <if test="regtime !=null and regtime !=''">#{regtime},</if>
+            <if test="regTime !=null and regTime !=''">#{regTime},</if>
             <if test="userType !=null and userType !=''">#{userType},</if>
-            <if test="generateName !=null and generateName !=''">#{generateName}</if>
+            <if test="generateName !=null and generateName !=''">#{generateName},</if>
+            <if test="userAlias != null and userAlias != ''">#{userAlias},</if>
+            <if test="creatorId != null and creatorId != ''">#{creatorId},</if>
+            <if test="creatorName != null and creatorName != ''">#{creatorName},</if>
+            <if test="locked !=null and locked != ''">#{locked}</if>
             </trim>)
 	</insert>
 	
@@ -114,15 +178,25 @@
             <if test="gender !=null and gender !=''">gender=#{gender},</if>
             <if test="qq !=null and qq !=''">qq=#{qq},</if>
             <if test="weixin !=null and weixin !=''">weixin=#{weixin},</if>
-            <if test="regtime !=null and regtime !=''">regtime=#{regtime},</if>
+            <if test="regTime !=null and regTime !=''">regTime=#{regTime},</if>
             <if test="userType !=null and userType !=''">userType=#{userType},</if>
-            <if test="generateName !=null and generateName !=''">generateName=#{generateName}</if>
+            <if test="generateName !=null and generateName !=''">generateName=#{generateName},</if>
+            <if test="userAlias != null and userAlias != ''">userAlias=#{userAlias},</if>
+            <if test="creatorId != null and creatorId != ''">creatorId=#{creatorId},</if>
+            <if test="creatorName != null and creatorName != ''">creatorName=#{creatorName},</if>
+            <if test="creatorName != null and creatorName != ''">creatorName=#{creatorName},</if>
+            <if test="loginTime != null and loginTime != ''">loginTime=#{loginTime},</if>
+            <if test="lastLoginTime != null and lastLoginTime != ''">lastLoginTime=#{lastLoginTime},</if>
+            <if test="locked !=null and locked != ''">locked=#{locked}</if>
     	</set>
     	where id = #{id}
     </update>
     
     <delete id="deleteUser" parameterType="String">
-		delete from sysuser where id=#{id}
+		delete from sysuser where 1=1
+		<if test="ids !=null and ids !=''">
+			and id in ${ids}
+		</if>
 	</delete>
 	
 </mapper>

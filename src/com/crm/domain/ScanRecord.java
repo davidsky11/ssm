@@ -29,6 +29,8 @@ public class ScanRecord {
 	private String publicCode;
 	private String privateCode;
 	private String insideCode;
+	private String activityName;
+	private Activity activity;
 	
 	public String getId() {
 		return id;
@@ -150,6 +152,18 @@ public class ScanRecord {
 	public void setUser(User user) {
 		this.user = user;
 	}
+	public String getActivityName() {
+		return activityName;
+	}
+	public void setActivityName(String activityName) {
+		this.activityName = activityName;
+	}
+	public Activity getActivity() {
+		return activity;
+	}
+	public void setActivity(Activity activity) {
+		this.activity = activity;
+	}
 	
 	@Override
 	public String toString() {
@@ -158,7 +172,8 @@ public class ScanRecord {
 				+ scanTime + ", country=" + country + ", province=" + province + ", city=" + city + ", distance="
 				+ distance + ", street=" + street + ", sematicDescription=" + sematicDescription + ", formattedAddress="
 				+ formattedAddress + ", waresId=" + waresId + ", wares=" + wares + ", publicCode=" + publicCode
-				+ ", privateCode=" + privateCode + ", insideCode=" + insideCode + "]";
+				+ ", privateCode=" + privateCode + ", insideCode=" + insideCode + ", activityName=" + activityName
+				+ ", activity=" + activity + "]";
 	}
 	
 }

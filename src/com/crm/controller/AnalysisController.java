@@ -121,7 +121,7 @@ public class AnalysisController {
 		if (user != null) {
 			List<PlaceAnalysis> paList = analysisService.findPlaceAnalysisPage(publicCode, Const.USERTYPE_VENDER, page);
 			
-			dg.setTotal((long)paList.size());
+			dg.setTotal(paList.size());
 			dg.setRows(paList);
 		}
 		return dg;
@@ -184,7 +184,7 @@ public class AnalysisController {
 			 */
 			List<Sale> saleList = saleService.findSaleListPage(page, publicCode, conditionSql.toString());
 			
-			dg.setTotal((long)saleList.size());
+			dg.setTotal(saleList.size());
 			dg.setRows(saleList);
 		}
 		return dg;

@@ -5,6 +5,7 @@ import java.util.List;
 import org.apache.ibatis.annotations.Param;
 
 import com.crm.domain.Activity;
+import com.crm.domain.Page;
 import com.crm.domain.User;
 import com.crm.domain.easyui.PageHelper;
 
@@ -37,11 +38,15 @@ public interface ActivityMapper {
 
 	public Activity findById(@Param("id") String id);
 
-	public Long getDatagridTotal(Activity activity);
+	public Integer getDatagridTotal(Activity activity);
 
 	public List<Activity> datagridActivity(@Param("page") PageHelper page, @Param("activity") Activity activity);
 
 	public List<Activity> getDatagrid(@Param("conditionSql") String conditionSql);
 		
+	public Integer atyPagesTotal(@Param("conditionSql") String conditionSql);
+
+	public List<Activity> atyPages(@Param("page") Page page, @Param("conditionSql") String conditionSql);
+	
 }
  

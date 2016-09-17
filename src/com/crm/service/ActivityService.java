@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import com.crm.dao.mybatis.ActivityMapper;
 import com.crm.domain.Activity;
+import com.crm.domain.Page;
 import com.crm.domain.easyui.PageHelper;
 
 /** 
@@ -36,7 +37,7 @@ public class ActivityService {
 		return activityMapper.findById(id);
 	}
 
-	public Long getDatagridTotal(Activity activity) {
+	public Integer getDatagridTotal(Activity activity) {
 		return activityMapper.getDatagridTotal(activity);
 	}
 
@@ -59,5 +60,15 @@ public class ActivityService {
 		return activityMapper.getDatagrid(conditionSql);
 	}
 
+	public Page<Activity> atyPages(@Param("page") Page<Activity> page, @Param("conditionSql") String conditionSql) {
+		page.setStart((page.getPage() - 1)*page.getRows());
+		page.setEnd((page.getPage())*page.getRows());
+		
+		page.setTotal(activityMapper.atyPagesTotal(conditionSql));
+		page.setContent(activityMapper.atyPages(page, conditionSql));
+		
+		return page;
+	}
+	
 }
  

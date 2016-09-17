@@ -1,4 +1,6 @@
-package com.crm.domain; 
+package com.crm.domain;
+
+import java.util.Date;
 
 /** 
  * @ClassName	Product.java
@@ -16,7 +18,7 @@ public class Wares {
 	private String privateCode;  // 瓶身码
 	private String insideCode;  // 瓶盖码
 	private String status;  // 兑奖状态
-	private String createTime;  // 创建时间
+	private Date createTime;  // 创建时间
 	private String awardId; // 对应的奖项ID，默认为无奖（空值）
 	private Award award;
 	
@@ -38,7 +40,7 @@ public class Wares {
 	public String getInsideCode() {
 		return insideCode;
 	}
-	public String getCreateTime() {
+	public Date getCreateTime() {
 		return createTime;
 	}
 	public void setId(String id) {
@@ -59,7 +61,7 @@ public class Wares {
 	public void setInsideCode(String insideCode) {
 		this.insideCode = insideCode;
 	}
-	public void setCreateTime(String createTime) {
+	public void setCreateTime(Date createTime) {
 		this.createTime = createTime;
 	}
 	public String getStatus() {

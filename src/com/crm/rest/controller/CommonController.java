@@ -108,7 +108,7 @@ public class CommonController {
 		/**
 		 * 1、查询是否已经注册过
 		 */
-		List<User> userList = this.userService.findUserByName(phone, userType);
+		List<User> userList = this.userService.findByConditionSql(phone, userType);
 		
 		if (userList != null && userList.size() > 0) {  // 已经存在
 			result.setCode(Const.ERROR_DUPLICATE);
@@ -119,6 +119,7 @@ public class CommonController {
 		} else {
 			int res = 0;
 			try {
+				user.setLocked(Boolean.FALSE);  // 未锁定
 				res = this.userService.add(user);  // 注册成功返回1
 			} catch (Exception e) {
 				if (e instanceof DuplicateKeyException) {
@@ -180,15 +181,23 @@ public class CommonController {
 					result.setSuccess(false);
 					result.setData(null);
 				} else {  // 密码正确
-					TokenModel tm = tokenService.createToken(user);
-					user.setToken(tm.getToken());
-					user.setPassword(null);
-					
-					result.setCode(Const.INFO_NORMAL);
-					result.setMsg("登录成功");
-					result.setSuccess(true);
-					user.setPassword(null);
-					result.setData(user);
+					if (user.getLocked() == Boolean.TRUE) {
+						result.setCode(Const.WARN_ACCOUNT_LOCKED);
+						result.setMsg("账号涉嫌违规，已被锁定");
+						result.setSuccess(false);
+						user.setPassword(null);
+						result.setData(user);
+					} else {
+						TokenModel tm = tokenService.createToken(user);
+						user.setToken(tm.getToken());
+						user.setPassword(null);
+						
+						result.setCode(Const.INFO_NORMAL);
+						result.setMsg("登录成功");
+						result.setSuccess(true);
+						user.setPassword(null);
+						result.setData(user);
+					}
 				}
 			} else {  // 用户不存在
 				result.setCode(Const.ERROR_NULL_POINTER);

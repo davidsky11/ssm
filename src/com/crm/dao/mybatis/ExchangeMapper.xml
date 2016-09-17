@@ -138,14 +138,14 @@
 		where t.id = #{id}
 	</select>
 	
-	<select id="getDatagridTotal" resultType="long" parameterType="com.crm.domain.Exchange">
+	<select id="getDatagridTotal" resultType="int" parameterType="com.crm.domain.Exchange">
 		select count(1) from exchange where  1=1
 		<if test="userId != null and userId != ''">
             and userId like concat('%',#{userId},'%')
         </if>
 	</select>
 	
-	<select id="getDatagridTotalByCondition" resultType="long" parameterType="String">
+	<select id="getDatagridTotalByCondition" resultType="int" parameterType="String">
 		select count(1) from exchange where 1=1
 		<if test="conditionSql != null and conditionSql != ''">
             ${conditionSql}

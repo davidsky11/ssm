@@ -3,8 +3,10 @@ package com.crm.rest.controller;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +26,7 @@ import com.crm.domain.ScanRecord;
 import com.crm.domain.User;
 import com.crm.domain.Wares;
 import com.crm.domain.dto.PlaceAnalysis;
+import com.crm.domain.dto.ScanRecordDto;
 import com.crm.domain.easyui.DataGrid;
 import com.crm.domain.easyui.PageHelper;
 import com.crm.domain.po.Address;
@@ -383,16 +386,19 @@ public class NoAuthController {
 		StringBuffer conditionsql = new StringBuffer("");
 		
 		if (beginTime != null && !beginTime.equals("")) {
-			conditionsql.append(" and date(scanTime) > '").append(beginTime).append("'");
+			conditionsql.append(" and date(t.scanTime) > '").append(beginTime).append("'");
 		}
 		
 		if (endTime != null && !endTime.equals("")) {
-			conditionsql.append(" and date(scanTime) < '").append(endTime).append("'");
+			conditionsql.append(" and date(t.scanTime) < '").append(endTime).append("'");
 		}
 		
-		conditionsql.append(" and (userId in (select id from sysuser where username = '")
+		/*conditionsql.append(" and (t.userId in (select id from sysuser where username = '")
 			.append(username).append("' and userType = '").append(userType).append("')")
-			.append(" or userName = '").append(username).append("')");
+			.append(" or userName = '").append(username).append("')");*/
+		
+		conditionsql.append(" and t.userName = '").append(username).append("' and t.userType = '")
+			.append(userType).append("'");
 		
 		long total = scanRecordService.getDatagridTotalByCondition(conditionsql.toString());
 		
@@ -406,14 +412,37 @@ public class NoAuthController {
 			List<Activity> activityList = this.activityService.getActivityList("");  // 获取所有的活动记录
 			List<Award> awardList = this.awardService.getDatagrid("");  // 获取所有的奖项信息
 			
+			Map<String, Activity> atyMap = new HashMap<String, Activity>();
+			for (Activity aty : activityList) {
+				atyMap.put(aty.getPublicCode().trim(), aty);
+			}
+			
+			Map<String, Award> awMap = new HashMap<String, Award>();
+			for (Award aw : awardList) {
+				awMap.put(aw.getId(), aw);
+			}
+			
 			List<ScanRecord> scanRecordList = scanRecordService.getScanRecordList(page, conditionsql.toString());
+			List<ScanRecordDto> srdList = new ArrayList<ScanRecordDto>();
 			
 			// TODO 向扫描记录里添加奖项信息 和 活动信息
-			
+			Activity a = null;
+			Wares w = null;
+			Award aw = null;
 			for (ScanRecord sr : scanRecordList) {
+				ScanRecordDto srd = new ScanRecordDto(sr);
 				
+				a = atyMap.get(sr.getPublicCode());
+				srd.setActivityName(a == null ? "" : a.getTitle());
+				
+				w = sr.getWares();
+				aw = awMap.get(w == null ? null : w.getAwardId());
+				srd.setAwardName(aw == null ? "" : aw.getTitle());
+				
+				srdList.add(srd);
 			}
-			dg.setRows(scanRecordList);
+			
+			dg.setRows(srdList);
 			
 			result.setCode(Const.INFO_NORMAL);
 			result.setSuccess(true);
@@ -733,6 +762,7 @@ public class NoAuthController {
 					result.setSuccess(true);
 					result.setMsg("该商品已消费");
 					result.setData(wares);
+					
 					return result;
 				} else {  // 未消费
 					/*conditionSql.setLength(0);  // 清空conditionSql
@@ -741,6 +771,16 @@ public class NoAuthController {
 						.append(" and insideCode = '").append(insideCode).append("'");
 					waresList = waresService.getDatagrid(conditionSql.toString());*/
 					
+					// 如果没有传insideCode，直接返回“无法判断”
+					if (insideCode == null || insideCode.equals("")) {
+						result.setCode(Const.INFO_NORMAL);
+						result.setSuccess(true);
+						result.setCode(Const.WARN_NO_JUDGE);
+						result.setMsg("无法判断");
+						
+						return result;
+					}
+					
 					boolean isWaster = true;  // 是否正品，默认true
 					// 方法1
 					if (wares.getInsideCode().equals(insideCode)) {
@@ -748,12 +788,12 @@ public class NoAuthController {
 					}
 					
 					// 方法2
-					for (Wares w : waresList) {
+					/*for (Wares w : waresList) {
 						if (w.getInsideCode().equals(insideCode)) {
 							isWaster = false;
 							break;
 						}
- 					}
+ 					}*/
 					
 					if (isWaster) {
 						/* --> 返回结果3

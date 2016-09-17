@@ -1,7 +1,6 @@
 package com.crm.dao.mybatis;
 
 import java.util.List;
-import java.util.Map;
 
 import org.apache.ibatis.annotations.Param;
 
@@ -24,7 +23,9 @@ public interface WaresMapper {
 	public int updateWares(Wares wares);
 	
 	//删除
-	public int deleteWares(String id);
+	public int deleteWares(@Param("id") String id);
+	
+	public int deleteByCondition(@Param("conditionSql") String conditionSql);
 
 	//根据id查询
 	public Wares findById(@Param("id") String id);
@@ -33,7 +34,7 @@ public interface WaresMapper {
 	public List<Wares> getDatagrid(@Param("conditionSql") String conditionSql);
 	
 	//获取总数
-	public Long getDatagridTotal(Wares wares);
+	public Integer getDatagridTotal(Wares wares);
 	
 	public List<Wares> datagridWares(@Param("page") PageHelper page, @Param("wares") Wares wares);
 	

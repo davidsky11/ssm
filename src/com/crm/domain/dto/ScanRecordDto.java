@@ -29,6 +29,8 @@ public class ScanRecordDto {
 		
 		if (sr.getUser() != null) {
 			this.username = sr.getUser().getUsername();
+		} else {
+			this.username = sr.getUserName();
 		}
 	}
 	

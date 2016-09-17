@@ -53,11 +53,11 @@ public class ScanRecordService {
 		return scanRecordMapper.findByUser(user);
 	}
 		
-	public Long getDatagridTotalByCondition(String conditionsql) {
+	public Integer getDatagridTotalByCondition(String conditionsql) {
 		return scanRecordMapper.getDatagridTotalByCondition(conditionsql);
 	}
 	
-	public Long getDatagridTotal(ScanRecord scanRecord) {
+	public Integer getDatagridTotal(ScanRecord scanRecord) {
 		return scanRecordMapper.getDatagridTotal(scanRecord);
 	}
 	

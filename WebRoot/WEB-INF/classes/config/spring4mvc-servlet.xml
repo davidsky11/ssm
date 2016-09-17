@@ -63,9 +63,11 @@
 		location="favicon.ico" /> -->
 
 	<!-- 视图解析器:定义跳转的文件的前后缀 -->
-	<bean id="viewResolver"
-		class="org.springframework.web.servlet.view.InternalResourceViewResolver">
-		<property name="prefix" value="/WEB-INF/jsp/" />
+	<bean id="viewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<property name="viewClass" value="org.springframework.web.servlet.view.JstlView"/>
+        <property name="contentType" value="text/html"/>
+		<!-- <property name="prefix" value="/WEB-INF/jsp/" /> -->
+		<property name="prefix" value="/WEB-INF/pages/" />
 		<property name="suffix" value=".jsp" />  <!--可为空,方便实现自已的依据扩展名来选择视图解释类的逻辑 -->
 	</bean>
 	<!-- <mvc:view-controller path="/" view-name="forward:/index.jsp"/> -->
@@ -104,6 +106,15 @@
 	<mvc:resources mapping="swagger/**" location="/WEB-INF/swagger/**"/>
 	<mvc:resources mapping="static/**" location="/WEB-INF/static/**" />
 	<mvc:resources mapping="*.html" location="/" />
+	
+	<!-- 静态资源文件处理，mapping为映射,location为实际路径，根路径为webapp路径 -->
+	<mvc:resources mapping="/resources/**" location="/resources/" /> 
+	<!-- 静态html处理 -->
+	<mvc:resources location="/WEB-INF/pages/static/" mapping="/static/**"></mvc:resources><!-- 静态页面请求，如404.html -->
+	<mvc:resources location="/resources/html/" mapping="/html/**"></mvc:resources>
+	<mvc:resources location="/resources/js/" mapping="/js/**"></mvc:resources>
+	<mvc:resources location="/resources/css/" mapping="/css/**"></mvc:resources>
+	<mvc:resources location="/resources/images/" mapping="/images/**"></mvc:resources>
 	
 	<!-- Serve static content-->
 	<mvc:default-servlet-handler/>
@@ -144,5 +155,15 @@
 		</mvc:interceptor>
 		<!-- 当设置多个拦截器时，先按顺序调用preHandle方法，然后逆序调用每个拦截器的postHandle和afterCompletion方法 -->
 	</mvc:interceptors>
+	
+	 <!-- SpringMVC上传文件时，需要配置MultipartResolver处理器 -->  
+    <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">  
+        <!-- 指定所上传文件的总大小不能超过200KB。注意maxUploadSize属性的限制不是针对单个文件，而是所有文件的容量之和 -->  
+        <property name="maxUploadSize" value="200000"/>  
+    </bean> 
+    
+    <!-- 控制器异常处理 -->
+    <bean id="exceptionHandlerExceptionResolver" class="org.springframework.web.servlet.mvc.method.annotation.ExceptionHandlerExceptionResolver">
+    </bean>
 	
 </beans>   

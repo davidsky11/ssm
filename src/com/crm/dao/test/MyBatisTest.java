@@ -70,9 +70,11 @@ public class MyBatisTest extends AbstractJUnit4SpringContextTests {
 	private SaleMapper saleMapper;
 
 	@Test
-	public void findUserByName() {
-		List<User> user = userMapper.findUserByName("admin", "-1");
-		System.out.println(user.size());
+	public void login() {
+		List<User> user = userMapper.login("app", "3", "123456");
+		for (User u : user) {
+			System.out.println(u);
+		}
 	}
 	
 
@@ -125,7 +127,7 @@ public class MyBatisTest extends AbstractJUnit4SpringContextTests {
 	
 	@Test
 	public void testgetAccountByPublisher() {
-		List<User> userList = userMapper.findUserByName("admin", "0");
+		List<User> userList = userMapper.login("kevin", "2", "123456");
 		Activity ac = new Activity();
 		
 		if (userList != null && userList.size() > 0) {
@@ -144,8 +146,8 @@ public class MyBatisTest extends AbstractJUnit4SpringContextTests {
 		Activity ac = new Activity();
 		ac.setTitle("新增");
 		ac.setDescription("新增描述");
-		ac.setStartTime(sdf.format(new Date()));
-		ac.setEndTime(sdf.format(new Date()));
+		ac.setStartTime(new Date());
+		ac.setEndTime(new Date());
 		ac.setContent("新增内容");
 		ac.setPublisherId("1");
 		ac.setPublisherName("admin");
@@ -395,13 +397,19 @@ public class MyBatisTest extends AbstractJUnit4SpringContextTests {
 			w.setPrivateCode(RandomUtil.generateMixString(5));
 			w.setInsideCode(RandomUtil.generateMixString(3));
 			w.setCreater("root");
-			w.setCreateTime(DateUtil.formatDate(new Date()));
+			w.setCreateTime(new Date());
 			w.setStatus("0");
 			
 			waresList.add(w);
 		}
 		
 		waresMapper.addWaresBatch(waresList);
+	}
+	
+	@Test
+	public void findByConditionSql() {
+		List<User> list = userMapper.findByConditionSql("");
+		System.out.println(list.size());
 	}
 	
 }

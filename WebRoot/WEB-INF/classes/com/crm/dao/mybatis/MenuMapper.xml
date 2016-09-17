@@ -13,7 +13,7 @@
 		<result column="iconCls" property="iconCls"/>
 	</resultMap>
 
-	<select id="getDatagridTotal" resultType="long">
+	<select id="getDatagridTotal" resultType="int">
 		select count(1) from sysmenu where  parentid=0
 		<if test="name != null and name != ''">
             and name like concat('%',#{name},'%')

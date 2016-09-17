@@ -34,7 +34,7 @@ public class RoleService {
 		return roleMapper.findById(id);
 	}
 
-	public Long getDatagridTotal(Role role) {
+	public Integer getDatagridTotal(Role role) {
 		return roleMapper.getDatagridTotal(role);
 	}
 

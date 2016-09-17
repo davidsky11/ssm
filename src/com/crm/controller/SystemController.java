@@ -68,7 +68,7 @@ public class SystemController extends BaseController {
     	}
     	
 		if (code.toLowerCase().equals(request.getSession().getAttribute("RANDOMCODE").toString().toLowerCase())){
-			List<User> userList = userService.findUserByName(username, userType);
+			List<User> userList = userService.login(username, userType, password);
 			if (userList != null && userList.size() > 0) {
 				User user = userList.get(0);
 				if (user == null) {
@@ -76,30 +76,27 @@ public class SystemController extends BaseController {
 		    		request.getSession().setAttribute("message", "用户名不存在，请重新登录");
 		    		return returnUrl; 
 				}else {
-					if (user.getPassword().equals(password)) {
+					
+					List<SysMenu> menuList = userService.getMenu(user.getId());
+					user.setMenuList(menuList);
 						
-						/*if(autologinch !=null && autologinch.equals("Y")){ // 判断是否要添加到cookie中
-							// 保存用户信息到cookie
-							UserCookieUtil.saveCookie(user, response);
-						}*/
-						
-						// 保存用信息到session
-						HttpSession session = request.getSession();
-						session.setAttribute(Const.SESSION_USER, user); 
-						session.setAttribute(Const.SESSION_USER_TYPE, userType);
-						
-						String toUrl = RequestUtil.retrieveSavedRequest();
-						if (toUrl.contains("login") || toUrl.contains("logout")) {
-							return "redirect:/";
-						} else {
-							return "redirect:" + toUrl;//跳转至访问页面
-						}
-						
-					}else {
-						log.info("登陆密码错误");  
-		        		request.getSession().setAttribute("message", "用户名密码错误，请重新登录");
-		        		return returnUrl; 
+					/*if(autologinch !=null && autologinch.equals("Y")){ // 判断是否要添加到cookie中
+						// 保存用户信息到cookie
+						UserCookieUtil.saveCookie(user, response);
+					}*/
+					
+					// 保存用信息到session
+					HttpSession session = request.getSession();
+					session.setAttribute(Const.SESSION_USER, user); 
+					session.setAttribute(Const.SESSION_USER_TYPE, userType);
+					
+					String toUrl = RequestUtil.retrieveSavedRequest();
+					if (toUrl.contains("login") || toUrl.contains("logout")) {
+						return "redirect:/";
+					} else {
+						return "redirect:" + toUrl;//跳转至访问页面
 					}
+						
 				}
 			} else {
 				return returnUrl; 

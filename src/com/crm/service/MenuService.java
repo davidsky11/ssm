@@ -21,7 +21,7 @@ public class MenuService {
 	 * @param user
 	 * @return
 	 */
-	public Long getDatagridTotal(SysMenu menu) {
+	public Integer getDatagridTotal(SysMenu menu) {
 		return menuMapper.getDatagridTotal(menu);  
 	}
 

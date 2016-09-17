@@ -2,11 +2,13 @@ package com.crm.service;
 
 import java.util.List;
 
+import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.crm.dao.mybatis.AwardMapper;
 import com.crm.domain.Award;
+import com.crm.domain.Page;
 import com.crm.domain.easyui.PageHelper;
 
 /** 
@@ -53,7 +55,7 @@ public class AwardService {
 	}
 	
 	//获取总数
-	public Long getDatagridTotal(String activityId, String conditionSql) {
+	public Integer getDatagridTotal(String activityId, String conditionSql) {
 		return awardMapper.getDatagridTotal(activityId, conditionSql);
 	}
 	
@@ -61,6 +63,16 @@ public class AwardService {
 		page.setStart((page.getPage()-1)*page.getRows());
 		page.setEnd(page.getPage()*page.getRows());
 		return awardMapper.datagridAward(page, activityId, conditionSql);
+	}
+	
+	public Page<Award> awdPages(@Param("page") Page<Award> page, @Param("conditionSql") String conditionSql) {
+		page.setStart((page.getPage() - 1)*page.getRows());
+		page.setEnd((page.getPage())*page.getRows());
+		
+		page.setTotal(awardMapper.awdPagesTotal(conditionSql));
+		page.setContent(awardMapper.awdPages(page, conditionSql));
+		
+		return page;
 	}
 	
 }
