@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.crm.dao.mybatis.ScanRecordMapper;
+import com.crm.domain.Page;
 import com.crm.domain.ScanRecord;
 import com.crm.domain.User;
 import com.crm.domain.easyui.PageHelper;
@@ -65,6 +66,16 @@ public class ScanRecordService {
 		page.setStart((page.getPage()-1)*page.getRows());
 		page.setEnd(page.getPage()*page.getRows());
 		return scanRecordMapper.datagridScanRecord(page, scanRecord);
+	}
+	
+	public Page<ScanRecord> srPages(Page<ScanRecord> page, String conditionSql) {
+		page.setStart((page.getPage() - 1)*page.getRows());
+		page.setEnd((page.getPage())*page.getRows());
+		
+		page.setTotal(scanRecordMapper.srPagesTotal(conditionSql));
+		page.setContent(scanRecordMapper.srPages(page, conditionSql));
+		
+		return page;
 	}
 	
 }

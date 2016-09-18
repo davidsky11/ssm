@@ -46,7 +46,7 @@ public interface ActivityMapper {
 		
 	public Integer atyPagesTotal(@Param("conditionSql") String conditionSql);
 
-	public List<Activity> atyPages(@Param("page") Page page, @Param("conditionSql") String conditionSql);
+	public List<Activity> atyPages(@Param("page") Page<Activity> page, @Param("conditionSql") String conditionSql);
 	
 }
  

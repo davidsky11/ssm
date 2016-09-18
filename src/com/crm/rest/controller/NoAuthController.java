@@ -521,7 +521,7 @@ public class NoAuthController {
 		ScanRecord sr = this.pushAddress2SR(address);
 		sr.setLatitude(Double.parseDouble(latitude));
 		sr.setLongitude(Double.parseDouble(longitude));
-		sr.setScanTime(DateUtil.formatDate(new Date()));
+		sr.setScanTime(new Date());
 		if (user != null) {
 			sr.setUserId(user.getId());
 			sr.setUserName(user.getUsername());

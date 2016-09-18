@@ -1,5 +1,7 @@
 package com.crm.domain.dto;
 
+import java.util.Date;
+
 import com.crm.domain.ScanRecord;
 
 /** 
@@ -12,7 +14,7 @@ import com.crm.domain.ScanRecord;
 public class ScanRecordDto {
 	
 	private String username;
-	private String scanTime;
+	private Date scanTime;
 	private String longitude;
 	private String latitude;
 	private String formattedAddress;
@@ -37,7 +39,7 @@ public class ScanRecordDto {
 	public String getUsername() {
 		return username;
 	}
-	public String getScanTime() {
+	public Date getScanTime() {
 		return scanTime;
 	}
 	public String getLongitude() {
@@ -61,7 +63,7 @@ public class ScanRecordDto {
 	public void setUsername(String username) {
 		this.username = username;
 	}
-	public void setScanTime(String scanTime) {
+	public void setScanTime(Date scanTime) {
 		this.scanTime = scanTime;
 	}
 	public void setLongitude(String longitude) {

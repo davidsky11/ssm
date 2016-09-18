@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,10 +15,12 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.crm.domain.Activity;
 import com.crm.domain.Award;
+import com.crm.domain.Page;
 import com.crm.domain.ScanRecord;
 import com.crm.domain.User;
 import com.crm.domain.Wares;
@@ -50,8 +53,8 @@ public class ScanRecordController /*extends BaseController*/ {
 	private AwardService awardService;
 
 	/**
-	 * @Title:			accountList
-	 * @Description:	跳转前端用户列表
+	 * @Title:			scanRecordList
+	 * @Description:	跳转扫码记录列表
 	 * @param req
 	 * @param resp
 	 * @throws IOException
@@ -62,7 +65,7 @@ public class ScanRecordController /*extends BaseController*/ {
 	}
 	
 	/**
-	 * 新增用户
+	 * 新增扫码记录
 	 * @return
 	 */
 	@ResponseBody
@@ -73,7 +76,7 @@ public class ScanRecordController /*extends BaseController*/ {
 		try {
             scanRecordService.saveScanRecord(scanRecord);
             j.setSuccess(true);
-            j.setMsg("用户新增成功！");
+            j.setMsg("扫码记录新增成功！");
             j.setObj(scanRecord);
         } catch (Exception e) {
             j.setMsg(e.getMessage());
@@ -82,7 +85,7 @@ public class ScanRecordController /*extends BaseController*/ {
     }
 	
 	/**
-     * 修改用户
+     * 修改扫码记录
      * 
      * @param user
      * @return
@@ -104,7 +107,7 @@ public class ScanRecordController /*extends BaseController*/ {
     }
 	
 	/**
-	 * 删除某个用户
+	 * 删除某个扫码记录
 	 * @param userId
 	 * @param out
 	 */
@@ -192,6 +195,50 @@ public class ScanRecordController /*extends BaseController*/ {
 		List<ScanRecord> scanRecordList = scanRecordService.datagridScanRecord(page, scanRecord);
 		dg.setRows(scanRecordList);
 		return dg;
+	}
+	
+	
+	///////////////////////////////////////// NEW DASHBOARD  ////////////////////////////
+	
+	@RequestMapping(value = "/scanRecord/srList", method = RequestMethod.GET)
+	public String srList(Model model, HttpSession session,
+			@RequestParam(value="pageNumber",defaultValue="1") int pageNumber) {
+		User user =  (User) session.getAttribute(Const.SESSION_USER);
+		
+		Page<ScanRecord> page = new Page<ScanRecord>();
+		page.setSort("scanTime");
+		page.setOrder("desc");
+		
+		if (user != null) {
+			page = scanRecordService.srPages(page, " and t.userId = '" + user.getId() + "'");
+		}
+		
+		List<Activity> atyList = activityService.getActivityList("");
+		
+		List<Award> awardList = awardService.getDatagrid("");
+		List<ScanRecord> list = page.getContent();
+		for (ScanRecord sr : list) {
+			if (sr.getWares() != null) {
+				for (Award aw : awardList) {
+					if (aw.getId().equals(sr.getWares().getAwardId())) {
+						sr.setAward(aw);
+						continue;
+					}
+				}
+			}
+			
+			for (Activity aty : atyList) {
+				if (sr.getPublicCode().equals(aty.getPublicCode())) {
+					sr.setActivity(aty);
+					continue;
+				}
+			}
+		}
+		
+		model.addAttribute("page", page);
+		model.addAttribute("srs", list);
+		
+		return "scanRecord/srList";
 	}
 	
 }

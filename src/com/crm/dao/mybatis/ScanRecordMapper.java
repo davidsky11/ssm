@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.apache.ibatis.annotations.Param;
 
+import com.crm.domain.Page;
 import com.crm.domain.ScanRecord;
 import com.crm.domain.User;
 import com.crm.domain.easyui.PageHelper;
@@ -40,6 +41,10 @@ public interface ScanRecordMapper {
 	public Integer getDatagridTotalByCondition(@Param("conditionSql") String conditionSql);
 	
 	public List<ScanRecord> datagridScanRecord(@Param("page") PageHelper page, @Param("scanRecord") ScanRecord scanRecord);
+	
+	public Integer srPagesTotal(@Param("conditionSql") String conditionSql);
+	
+	public List<ScanRecord> srPages(@Param("page") Page<ScanRecord> page, @Param("conditionSql") String conditionSql);
 	
 }
  

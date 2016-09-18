@@ -1,5 +1,7 @@
 package com.crm.domain;
 
+import java.util.Date;
+
 /** 
  * @ClassName	ScanRecord.java
  * @Description 扫描记录实体
@@ -16,7 +18,7 @@ public class ScanRecord {
 	private String userType;  // 用户类型
 	private Double longitude;  // 经度
 	private Double latitude;  // 纬度
-	private String scanTime;  // 扫描时间
+	private Date scanTime;  // 扫描时间
 	private String country;  // 国家
 	private String province;  // 省份
 	private String city;  // 城市
@@ -31,6 +33,7 @@ public class ScanRecord {
 	private String insideCode;
 	private String activityName;
 	private Activity activity;
+	private Award award;
 	
 	public String getId() {
 		return id;
@@ -41,7 +44,7 @@ public class ScanRecord {
 	public Double getLatitude() {
 		return latitude;
 	}
-	public String getScanTime() {
+	public Date getScanTime() {
 		return scanTime;
 	}
 	public void setId(String id) {
@@ -53,7 +56,7 @@ public class ScanRecord {
 	public void setLatitude(Double latitude) {
 		this.latitude = latitude;
 	}
-	public void setScanTime(String scanTime) {
+	public void setScanTime(Date scanTime) {
 		this.scanTime = scanTime;
 	}
 	public String getUserId() {
@@ -163,6 +166,12 @@ public class ScanRecord {
 	}
 	public void setActivity(Activity activity) {
 		this.activity = activity;
+	}
+	public Award getAward() {
+		return award;
+	}
+	public void setAward(Award award) {
+		this.award = award;
 	}
 	
 	@Override

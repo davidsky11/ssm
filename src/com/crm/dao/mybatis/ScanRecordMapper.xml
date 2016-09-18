@@ -200,4 +200,31 @@
         </if>
 	</select>
 	
+	<select id="srPagesTotal" resultType="int">
+		select count(1) from scan_record t where 1=1
+		<if test="conditionSql != null and conditionSql != ''">
+			${conditionSql}
+        </if>
+	</select>
+	
+	<select id="srPages" resultMap="scanRecordMap">
+		select t.id,t.userId,t.userName,t.longitude,t.latitude,t.scanTime,t.country,t.province,t.city,t.distance,
+		t.street,t.sematicDescription,t.formattedAddress,t.waresId,t.publicCode,t.privateCode,t.insideCode,
+		u.id u_id, u.username u_username, u.email u_email, u.regtime u_regtime,
+		w.id w_id, w.name w_name, w.creater w_creater, w.awardId w_awardId
+		from scan_record t 
+		left join sysuser u on t.userId = u.id
+		left join wares w on t.waresId = w.id
+		where 1=1
+		<if test="conditionSql != null and conditionSql != ''">
+			${conditionSql}
+        </if>
+		<if test="page.sort != null and page.sort != ''">
+            order by #{page.sort} #{page.order}
+        </if>
+        <if test="page.page > 0">
+            limit #{page.start},#{page.end}
+        </if>
+	</select>
+	
 </mapper>

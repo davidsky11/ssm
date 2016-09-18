@@ -30,6 +30,7 @@ import com.crm.dao.mybatis.WaresMapper;
 import com.crm.domain.Activity;
 import com.crm.domain.Award;
 import com.crm.domain.Exchange;
+import com.crm.domain.Page;
 import com.crm.domain.Sale;
 import com.crm.domain.ScanRecord;
 import com.crm.domain.User;
@@ -242,7 +243,7 @@ public class MyBatisTest extends AbstractJUnit4SpringContextTests {
 		sr.setUserId("888");
 		sr.setLatitude(123.3);
 		sr.setLongitude(11.8);
-		sr.setScanTime(sdf.format(new Date()));
+		sr.setScanTime(new Date());
 		
 		int i = -1;
 		try {
@@ -410,6 +411,21 @@ public class MyBatisTest extends AbstractJUnit4SpringContextTests {
 	public void findByConditionSql() {
 		List<User> list = userMapper.findByConditionSql("");
 		System.out.println(list.size());
+	}
+	
+	@Test
+	public void srPages() {
+		Page<ScanRecord> page = new Page<ScanRecord>();
+		
+		page.setStart((page.getPage() - 1)*page.getRows());
+		page.setEnd((page.getPage())*page.getRows());
+		
+		page.setTotal(scanRecordMapper.srPagesTotal(" and t.userId = '" + 2 + "'"));
+		
+		List<ScanRecord> list = scanRecordMapper.srPages(page, " and t.userId = '" + 2 + "'");
+		for (ScanRecord sr : list) {
+			System.out.println(sr);
+		}
 	}
 	
 }

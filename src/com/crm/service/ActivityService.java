@@ -4,7 +4,6 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
-import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Service;
 
 import com.crm.dao.mybatis.ActivityMapper;
@@ -56,11 +55,11 @@ public class ActivityService {
 	}
 	
 	//根据指定条件查询
-	public List<Activity> getDatagrid(@Param("conditionSql") String conditionSql) {
+	public List<Activity> getDatagrid(String conditionSql) {
 		return activityMapper.getDatagrid(conditionSql);
 	}
 
-	public Page<Activity> atyPages(@Param("page") Page<Activity> page, @Param("conditionSql") String conditionSql) {
+	public Page<Activity> atyPages(Page<Activity> page, String conditionSql) {
 		page.setStart((page.getPage() - 1)*page.getRows());
 		page.setEnd((page.getPage())*page.getRows());
 		
