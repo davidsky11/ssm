@@ -5,6 +5,7 @@ import java.util.List;
 import org.apache.ibatis.annotations.Param;
 
 import com.crm.domain.Exchange;
+import com.crm.domain.Page;
 import com.crm.domain.User;
 import com.crm.domain.easyui.PageHelper;
 
@@ -42,6 +43,10 @@ public interface ExchangeMapper {
 	public List<Exchange> findByUser(User user);
 	
 	public Exchange findById(@Param("id") String id);	
+	
+	public Integer exPagesTotal(@Param("conditionSql") String conditionSql);
+	
+	public List<Exchange> exPages(@Param("page") Page<Exchange> page, @Param("conditionSql") String conditionSql);
 	
 }
  

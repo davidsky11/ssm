@@ -1,137 +1,145 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+	pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>XXX管理系统后台</title>
+<title>快乐兑登录界面</title>
+<link rel="stylesheet" rev="stylesheet" type="text/css" href="css/login1.css" media="all"/>
 
-<link rel="stylesheet" type="text/css" href="css/login.css">
+<script type="text/javascript" src="js/jquery/jQuery1.7.js"></script>
+<script type="text/javascript" src="js/jquery/jquery-1.8.2.min.js"></script>
+<!-- <script type="text/javascript" src="js/jquery/jquery-1.42.min.js"></script> -->
+<script type="text/javascript" src="js/jquery/jquery.SuperSlide.js"></script>
 
-<script src="js/easyui/jquery.min.js" type="text/javascript"></script> 
+<script type="text/javascript">
+	/* $(document).ready(function() {
+		var $tab_li = $('#tab ul li');
+		$tab_li.hover(function() {
+			$(this).addClass('selected').siblings().removeClass('selected');
+			var index = $tab_li.index(this);
+			$('div.tab_box > div').eq(index).show().siblings().hide();
+
+			var type = $(this).val();
+			$("#userType").attr("value", type);
+		});
+	}); */
+</script>
+<script type="text/javascript">
+	function genTimestamp() {
+		var time = new Date();
+		return time.getTime();
+	}
+	
+	function changeCode() {
+		$("img[name='codeImg'").attr("src", "code?t=" + genTimestamp());
+	};
+
+	$(function() {
+		changeCode();
+		$("img[name='codeImg'").each(function() {
+			$(this).bind("click", function() {
+				changeCode();
+			});
+		});
+		
+		/* APP 用户登录*/
+		$("#sys_username_hide").focus(function() {
+			var username = $(this).val();
+			if (username == '请输入用户名') {
+				$(this).val('');
+			}
+		});
+
+		$("#sys_username_hide").focusout(function() {
+			var username = $(this).val();
+			if (username == '') {
+				$(this).val('请输入用户名');
+			}
+		});
+
+		$("#sys_password_hide").focus(function() {
+			var username = $(this).val();
+			if (username == '请输入密码') {
+				$(this).val('');
+			}
+		});
+
+		$("#sys_password_hide").focusout(function() {
+			var username = $(this).val();
+			if (username == '') {
+				$(this).val('请输入密码');
+			}
+		});
+
+		$("#sys_code_hide").focus(function() {
+			var username = $(this).val();
+			if (username == '请输入验证码') {
+				$(this).val('');
+			}
+		});
+
+		$("#sys_code_hide").focusout(function() {
+			var username = $(this).val();
+			if (username == '') {
+				$(this).val('请输入验证码');
+			}
+		});
+
+	});
+</script>
+
 </head>
-<div style="width:100%;height:90%;position: absolute;top:50%;left:50%;margin-top:-320px;margin-left:-50%;">
-	<div class="header">欢迎使用</div>
-	<div class="center">
-		<div class="login_right">
-			<div style="width:100%;height:auto;margin-top:150px;">
-			<form action="login" method="post" name="loginForm" id="loginForm" class="loginForm">
-				<div class="login_info">
-					<label>用户名：</label>
-					<input type="text" name="username" id="username" class="login_input" value="${username }"/>
-					&nbsp;<span id="nameerr" class="errInfo"></span>
-				</div>
-				<div class="login_info">
-					<label>密　码：</label>
-					<input type="password" name="password" id="password" class="login_input" value="${password }"/>
-					&nbsp;<span id="pwderr" class="errInfo"></span>
-				</div>
-				<div class="login_info">
-					<label>验证码：</label>
-					<input type="text" name="code" id="code" class="login_input"/>
-					&nbsp;<span id="codeerr" class="errInfo"></span>
-				</div>
-				<div class="login_info">
-					<label>　　　　</label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-					<img id="codeImg" alt="点击更换" title="点击更换" src=""/>
-				</div>
-				<p>
-				<div class="login_info">
-					<input type="button" name="loginBtn" id="loginBtn" value="登录" class="btn" onclick="login()"/>
-					<label>　　　</label>
-					<input type="reset" name="cancelBtn" id="cancelBtn" value="取消" class="btn"/>
-				</div>
-				<div class="login_info">
-					<input type="checkbox" id="autologin" name="autologin" class="autologin" value="" 
-					style="margin: 0px; vertical-align: middle; padding: 0px; 
-					width: 16px; height: 16px; font-size: 20px;" />&nbsp;一周内自动登录
-					<input type="hidden" id="autologinch" name="autologinch"  class="autologinch" value=""/>
-				</div>
-				<div>
+
+<body>
+	<div id="head">
+		<span> 快  乐  兑 </span>
+	</div>
+	<div id="tab">
+		<div class="tab_box">
+			<!-- 系统用户登录开始 -->
+			<div>
+				<form id="loginForm" name="loginForm" action="login" method="post" >
 					<input type="hidden" id="userType" name="userType" value="0" />
-				</div>
-			</form>
+					<div id="username">
+						<label> 用&nbsp;户&nbsp;名：</label> 
+						<input type="text"
+							id="sys_username_hide" name="username" value="请输入用户名"
+							nullmsg="用户名不能为空!" datatype="s3-18" errormsg="用户名范围在3~18个字符之间!"  />
+						<!--ajaxurl="demo/valid.jsp"-->
+					</div>
+					<div id="password">
+						<label>密&nbsp;&nbsp;&nbsp;码：</label> 
+						<input type="password"
+							id="sys_password_hide" name="password" 
+							nullmsg="密码不能为空!" datatype="*3-16" errormsg="密码范围在3~16之间!"  />
+					</div>
+					<div id="code">
+						<label>验证码：</label> 
+						<input type="text" id="sys_code_hide" name="code" value="请输入验证码" nullmsg="验证码不能为空!" 
+							datatype="*4-4" errormsg="验证码有4位数!"  /> 
+						<img id="codeImg" name="codeImg" alt="验证码占位图" title="点击更换" src="" />
+					</div>
+					<div id="remember">
+						<input type="checkbox" id="remember1" name="remember"> <label>记住密码</label>
+						<!-- <input type="hidden" id="autologinch1" name="autologinch"  class="autologinch" value=""/> -->
+					</div>
+					<div id="login">
+						<button type="submit">登录</button>
+					</div>
+				</form>
 			</div>
-		</div>
-		<div class="login_left">
-			<div style="width:100%;height:auto;margin-top:150px;">
-				<div class="logo"></div>
-				<div class="left_txt">
-				
-				</div>
-			</div>
+			<!-- 系统用户登录结束 -->
+
 		</div>
 	</div>
 	<div class="bottom">
-		Copyright &copy; 2016 xxx
+		<!-- @2016 dest <a href="javascript:;" target="_blank"> 关于</a> <span>
+			copyright </span> -->
 	</div>
-</div>
-	<script type="text/javascript">
-		var errInfo = "${errInfo}";
-		$(document).ready(function(){
-			changeCode();
-			$("#codeImg").bind("click",changeCode);
-			if(errInfo!=""){
-				if(errInfo.indexOf("验证码")>-1){
-					$("#codeerr").show();
-					$("#codeerr").html(errInfo);
-					$("#code").focus();
-				}else{
-					$("#nameerr").show();
-					$("#nameerr").html(errInfo);
-				}
-			}
-			$("#username").focus();
-		});
-	
-		function genTimestamp(){
-			var time = new Date();
-			return time.getTime();
-		}
-	
-		function changeCode(){
-			$("#codeImg").attr("src","code?t="+genTimestamp());
-		}
-		
-		function resetErr(){
-			$("#nameerr").hide();
-			$("#nameerr").html("");
-			$("#pwderr").hide();
-			$("#pwderr").html("");
-			$("#codeerr").hide();
-			$("#codeerr").html("");
-		}
-		
-		function check(){
-			resetErr();
-			if($("#username").val()==""){
-				$("#nameerr").show();
-				$("#nameerr").html("用户名不得为空！");
-				$("#username").focus();
-				return false;
-			}
-			if($("#password").val()==""){
-				$("#pwderr").show();
-				$("#pwderr").html("密码不得为空！");
-				$("#password").focus();
-				return false;
-			}
-			if($("#code").val()==""){
-				$("#codeerr").show();
-				$("#codeerr").html("验证码不得为空！");
-				$("#code").focus();
-				return false;
-			}
-			if($(".autologin").is(":checked")){
-		    	$(".autologinch").val("Y");
-		    }
-			return true;
-		}
-		
-		function login(){
-			check();
-	    	document.loginForm.submit();
-		}    	
-	</script>
+	<div class="screenbg">
+		<img src="img/5.jpg">
+	</div>
 </body>
 </html>

@@ -106,5 +106,15 @@
             ${conditionSql}
         </if>
 	</select>
+	
+	<select id="findSaleList" resultMap="saleMap">
+		select t.id s_id, t.year s_year, t.month s_month, t.amount s_amount, t.activityId s_activityId,
+		 a.id a_id, a.title a_title, a.description a_description, a.publicCode a_publicCode
+		 from sale t right join activity a on t.activityId = a.id 
+		 where 1=1
+		<if test="conditionSql != null and conditionSql != ''">
+            ${conditionSql}
+        </if>
+	</select>
     
 </mapper>

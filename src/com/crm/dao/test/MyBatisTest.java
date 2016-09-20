@@ -259,7 +259,7 @@ public class MyBatisTest extends AbstractJUnit4SpringContextTests {
 	public void saveExchange() {
 		Exchange e = new Exchange();
 		e.setUserId("888");
-		e.setExchangeTime(sdf.format(new Date()));
+		e.setExchangeTime(new Date());
 		e.setInsideCode("123");
 		e.setPrivateCode("234");
 		
@@ -285,12 +285,24 @@ public class MyBatisTest extends AbstractJUnit4SpringContextTests {
 	@Test
 	public void addUser() {
 		User user = new User();
-		user.setUsername("kkk");
+		user.setUsername("tntntntt");
 		user.setPassword("12346");
 		user.setUserType("3");
-		
+		user.setLocked(Const.USER_UNLOCK);
 		
 		int i = userMapper.addUser(user);
+		System.out.println(i);
+	}
+	
+	@Test
+	public void editUser() {
+		User user = new User();
+		user.setId("92cbfeec7ef511e6a36600ac1e83ba5a");
+		user.setLocked(Const.USER_UNLOCK);
+		
+		System.out.println(user);
+		
+		int i = userMapper.editUser(user);
 		System.out.println(i);
 	}
 	
@@ -425,6 +437,24 @@ public class MyBatisTest extends AbstractJUnit4SpringContextTests {
 		List<ScanRecord> list = scanRecordMapper.srPages(page, " and t.userId = '" + 2 + "'");
 		for (ScanRecord sr : list) {
 			System.out.println(sr);
+		}
+	}
+	
+	@Test
+	public void exList() {
+		String sql = " and t.userId = '" + 28 + "'";
+		
+		Page<Exchange> page = new Page<Exchange>();
+		
+		page.setStart((page.getPage() - 1)*page.getRows());
+		page.setEnd((page.getPage())*page.getRows());
+		
+		//page.setTotal(exchangeMapper.exPagesTotal(sql));
+		page.setContent(exchangeMapper.exPages(page, sql));
+		
+		List<Exchange> list = exchangeMapper.exPages(page, sql);
+		for (Exchange ex : list) {
+			System.out.println(ex);
 		}
 	}
 	

@@ -109,7 +109,6 @@ function deleteItemsUseModal(checkboxSelector, action) {
 
 /* 解锁 */
 function lockItemsUseModal(action) {
-	alert(action);
 	$.ajax({
 		async : false,
 		cache : false,

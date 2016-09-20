@@ -205,7 +205,9 @@ public class ScanRecordController /*extends BaseController*/ {
 			@RequestParam(value="pageNumber",defaultValue="1") int pageNumber) {
 		User user =  (User) session.getAttribute(Const.SESSION_USER);
 		
+		model.addAttribute("userType", user.getUserType());
 		Page<ScanRecord> page = new Page<ScanRecord>();
+		page.setPage(pageNumber);
 		page.setSort("scanTime");
 		page.setOrder("desc");
 		

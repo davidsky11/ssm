@@ -1,12 +1,15 @@
 package com.crm.controller;
 
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,6 +24,7 @@ import org.springframework.web.servlet.ModelAndView;
 import com.crm.domain.Activity;
 import com.crm.domain.Sale;
 import com.crm.domain.User;
+import com.crm.domain.dto.AbstractChartDto;
 import com.crm.domain.dto.PlaceAnalysis;
 import com.crm.domain.easyui.DataGrid;
 import com.crm.domain.easyui.PageHelper;
@@ -29,6 +33,7 @@ import com.crm.service.AnalysisService;
 import com.crm.service.SaleService;
 import com.crm.util.Tool;
 import com.crm.util.common.Const;
+import com.google.gson.Gson;
 
 /** 
  * @ClassName	AnalysisController.java
@@ -188,6 +193,122 @@ public class AnalysisController {
 			dg.setRows(saleList);
 		}
 		return dg;
+	}
+	
+	//////////////////////////////////////////////////////////
+	@RequestMapping(value = "/sale/statistic", method = RequestMethod.GET)
+	public String saleDatagrid(HttpServletRequest request) {
+		
+		return "sale/statistic";
+	}
+	
+	@RequestMapping(value = "/ajax_sale_charts.do", method = RequestMethod.POST)
+	public void ajaxLeaveCharts(HttpServletRequest request,
+			HttpServletResponse response) {
+		User user =  (User)request.getSession().getAttribute(Const.SESSION_USER);
+		
+		List<AbstractChartDto> list = new ArrayList<AbstractChartDto>();
+		String publicCode = request.getParameter("publicCode");
+		
+		List<Activity> atyList = new ArrayList<Activity>();
+		
+		Calendar cal = Calendar.getInstance();
+		int year = cal.get(Calendar.YEAR);  // 年
+		int month = cal.get(Calendar.MONTH);  // 月
+		
+		int prevYear = year - 1;  // 上年
+		int nextMonth = month + 1;
+		
+		String begin = prevYear + "-" + (month < 10 ? ("0" + month) : month);
+		String end = year + "-" + (nextMonth < 10 ? "0" + nextMonth : nextMonth);
+		
+		StringBuffer conditionSql = new StringBuffer();
+		
+		List<Sale> saleList = new ArrayList<Sale>();
+		
+		switch (user.getUserType()) {
+			case Const.USERTYPE_VENDER:  // 厂商
+				/**
+				 * 1、获取发布的活动列表
+				 */
+				if (publicCode != null && !publicCode.equals("")) {
+					atyList = activityService.getActivityList(" and t.publisherId = '" + user.getId()
+							+ "' and t.publicCode = '" + publicCode + "'");
+				} else {
+					atyList = activityService.getActivityList(" and t.publisherId = '" + user.getId() + "'");
+				}
+				
+				Set<String> set = new HashSet<String>();
+				for (Activity aty : atyList) {
+					set.add(aty.getId());
+				}
+				String[] idArr = set.toArray(new String[0]);
+				String idStr = Tool.stringArrayToString(idArr, true, ",");
+				
+				conditionSql
+					.append(" and (t.year = '").append(prevYear).append("' and t.month > '").append(month-1).append("') ")
+					.append(" or (t.year = '").append(year).append("' and t.month < '").append(month).append("') ")
+					.append(" and t.activityId in (").append(idStr).append(")");
+				
+				break;
+			case Const.USERTYPE_DEALER:  // 经销商
+				
+				if (publicCode != null && !publicCode.equals("")) {
+					atyList = activityService.getActivityList(" and publicCode = '" + publicCode + "'");
+				} else {
+					atyList = activityService.getActivityList("");
+				}
+				
+				Set<String> set1 = new HashSet<String>();
+				for (Activity aty : atyList) {
+					set1.add(aty.getId());
+				}
+				String[] idArr1 = set1.toArray(new String[0]);
+				String idStr1 = Tool.stringArrayToString(idArr1, true, ",");
+				
+				conditionSql
+					.append(" and (t.year = '").append(prevYear).append("' and t.month > '").append(month-1).append("') ")
+					.append(" or (t.year = '").append(year).append("' and t.month < '").append(month).append("') ")
+					.append(" and t.userId = '").append(user.getId()).append("'")
+					.append(" and t.activityId in (").append(idStr1).append(")");
+				
+				break;
+			default:
+				
+				break;
+		}
+		
+		/**
+		 * 1、直接从销售统计表里获取数据
+		 */
+		saleList = saleService.findSaleList(conditionSql.toString());
+		
+		for (Sale sale : saleList) {
+			AbstractChartDto dto = new AbstractChartDto();
+			dto.setCategory(sale.getAmount() + "");
+			dto.setBar(sale.getYear() + "-" + sale.getMonth());
+			
+			list.add(dto);
+		}
+		
+		//将json数据返回给客户端
+        response.setContentType("application/json; charset=utf-8");
+		
+        PrintWriter out = null;
+		try {
+			out = response.getWriter();
+			Gson gson = new Gson();
+			String json = gson.toJson(list);
+			System.out.println(json);
+			out.write(json);
+			out.flush();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} finally {
+			if (out != null) {
+				out.close();
+			}
+		}
 	}
 	
 }

@@ -1,4 +1,10 @@
-package com.crm.domain.system; 
+package com.crm.domain.system;
+
+import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
+
+import com.crm.util.tree.ITreeNode;
 
 /** 
  * @ClassName	SysDictionary.java
@@ -7,11 +13,11 @@ package com.crm.domain.system;
  * @CreateTime  2016年7月1日 下午5:12:40
  * @Version 	V1.0    
  */
-public class SysDictionary implements java.io.Serializable {
+public class SysDictionary implements ITreeNode, Serializable, Cloneable {
 
 	private static final long serialVersionUID = -5948732206325299221L;
 
-	private Long id;
+	private Integer id;
 	private String entrycode;
 	private String entryvalue;
 	private String additional;
@@ -24,9 +30,9 @@ public class SysDictionary implements java.io.Serializable {
 	private Long dorder;
 	private String isleaf;
 	private Long levelno;
-	private String pGuid;
+	private String parentid;
 	
-	public Long getId() {
+	public Integer getId() {
 		return id;
 	}
 	public String getEntrycode() {
@@ -65,10 +71,7 @@ public class SysDictionary implements java.io.Serializable {
 	public Long getLevelno() {
 		return levelno;
 	}
-	public String getpGuid() {
-		return pGuid;
-	}
-	public void setId(Long id) {
+	public void setId(Integer id) {
 		this.id = id;
 	}
 	public void setEntrycode(String entrycode) {
@@ -107,9 +110,38 @@ public class SysDictionary implements java.io.Serializable {
 	public void setLevelno(Long levelno) {
 		this.levelno = levelno;
 	}
-	public void setpGuid(String pGuid) {
-		this.pGuid = pGuid;
+	public void setParentid(String parentid) {
+		this.parentid = parentid;
+	}
+	public String getParentid() {
+		return parentid;
 	}
 	
+	@Override
+	public Object clone() throws CloneNotSupportedException {
+		return super.clone();
+	}
+	
+	// 树结构(Update)
+	@Override
+	public String parentIdGet() {
+		return this.getParentid();
+	}
+
+	@Override
+	public String idGet() {
+		return this.getEntrycode();
+	}
+
+	@Override
+	public Map attributeForTreeGet() {
+		Map map = new HashMap();
+		map.put("id", this.getEntrycode());
+		map.put("name", this.getEntryvalue());
+		map.put("isleaf", this.getIsleaf());
+		map.put("lvl", this.getLevelno());
+		return map;
+	}
+		
 }
  

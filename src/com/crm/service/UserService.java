@@ -19,6 +19,7 @@ import com.crm.domain.SysMenu;
 import com.crm.domain.User;
 import com.crm.domain.UserRole;
 import com.crm.domain.easyui.PageHelper;
+import com.crm.util.common.Const;
 
 /**
  * @author zh
@@ -134,7 +135,7 @@ public class UserService {
 		if (user == null || user.getId() == null) {
 			return false;
 		} else {
-			user.setLocked(locked);
+			user.setLocked(Const.USER_UNLOCK);
 			Boolean success = userMapper.editUser(user) > 0;
 			return success;
 		}

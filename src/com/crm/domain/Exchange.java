@@ -1,5 +1,7 @@
 package com.crm.domain;
 
+import java.util.Date;
+
 /** 
  * @ClassName	Exchange.java
  * @Description 兑奖实体/兑奖记录
@@ -12,7 +14,7 @@ public class Exchange {
 	private String id;
 	private String userId;  // 兑奖用户
 	private User user;
-	private String exchangeTime;  // 兑奖时间
+	private Date exchangeTime;  // 兑奖时间
 	private String insideCode;  // 瓶盖内码
 	private String privateCode;  // 瓶身码
 	private String publicCode;  // 公共编码
@@ -20,20 +22,23 @@ public class Exchange {
 	private Double latitude;  // 纬度
 	private String flagCode;  // 硬件标识码，例如MAC地址
 	private String waresId;  // 商品ID
+	private String exchangeType;  // 兑奖类型
+	private String beneficiary;  // 受益人
 	private Wares wares;
 	private String awardId;
 	private Award award;
+	private Activity activity;
 	
 	public String getId() {
 		return id;
 	}
-	public String getExchangeTime() {
+	public Date getExchangeTime() {
 		return exchangeTime;
 	}
 	public void setId(String id) {
 		this.id = id;
 	}
-	public void setExchangeTime(String exchangeTime) {
+	public void setExchangeTime(Date exchangeTime) {
 		this.exchangeTime = exchangeTime;
 	}
 	public String getPublicCode() {
@@ -108,13 +113,32 @@ public class Exchange {
 	public void setAwardId(String awardId) {
 		this.awardId = awardId;
 	}
+	public Activity getActivity() {
+		return activity;
+	}
+	public void setActivity(Activity activity) {
+		this.activity = activity;
+	}
+	public String getExchangeType() {
+		return exchangeType;
+	}
+	public String getBeneficiary() {
+		return beneficiary;
+	}
+	public void setExchangeType(String exchangeType) {
+		this.exchangeType = exchangeType;
+	}
+	public void setBeneficiary(String beneficiary) {
+		this.beneficiary = beneficiary;
+	}
 	
 	@Override
 	public String toString() {
 		return "Exchange [id=" + id + ", userId=" + userId + ", user=" + user + ", exchangeTime=" + exchangeTime
 				+ ", insideCode=" + insideCode + ", privateCode=" + privateCode + ", publicCode=" + publicCode
 				+ ", longitude=" + longitude + ", latitude=" + latitude + ", flagCode=" + flagCode + ", waresId="
-				+ waresId + ", wares=" + wares + ", awardId=" + awardId + ", award=" + award + "]";
+				+ waresId + ", exchangeType=" + exchangeType + ", beneficiary=" + beneficiary + ", awardId=" + awardId
+				+ "]";
 	}
 	
 }

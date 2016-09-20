@@ -185,7 +185,7 @@
 								<td><fmt:formatDate pattern="yyyy-MM-dd HH:mm:ss" value="${user.regTime}" /></td>
 								<td>${user.creatorName}</td>
 								<c:choose>
-									<c:when test="${user.locked}">
+									<c:when test="${user.locked eq 1}">
 										<td><span class="badge bg-red">锁定</span></td>
 									</c:when>
 									<c:otherwise>
@@ -197,11 +197,11 @@
 									<button id="updateBtn" type="button" class="btn btn-xs btn-primary " onclick="updateItem('${user.id}')">编辑</button>
 									<button id="detailBtn" type="button" class="btn btn-xs btn-primary " onclick="detailItem('${user.id}')">详情</button>
 									<c:choose>
-										<c:when test="${user.locked}">
-											<button id="lockBtn" type="button" class="btn btn-xs btn-warning" onclick="lockItem('${user.id}')">解锁</button>
+										<c:when test="${user.locked eq 1}">
+											<button id="lockBtn" type="button" class="btn btn-xs btn-warning" onclick="lockItem('${user.id}', 1)">解锁</button>
 										</c:when>
 										<c:otherwise>
-											<button id="lockBtn" type="button" class="btn btn-xs btn-primary" onclick="lockItem('${user.id}')">锁定</button>
+											<button id="lockBtn" type="button" class="btn btn-xs btn-primary" onclick="lockItem('${user.id}', 0)">锁定</button>
 										</c:otherwise>
 									</c:choose>
 								</td>					
@@ -265,27 +265,28 @@
 					aria-label="Close">
 					<span aria-hidden="true">&times;</span>
 				</button>
-				<h4 class="modal-title" id="lockModalLabel">
-					<c:choose>
-						<c:when test="${user.locked}">
+				<h4 id="lockedTitle" class="modal-title" id="lockModalLabel">
+					<%-- <c:choose>
+						<c:when test="${user.locked eq 1}">
 							解锁用户
 						</c:when>
 						<c:otherwise>
 							锁定用户
 						</c:otherwise>
-					</c:choose>
+					</c:choose> --%>
 				</h4>
 			</div>
 			<div class="modal-body">
 				<div>
-					<c:choose>
-						<c:when test="${user.locked}">
+					<h5 id="confirmTitle"></h5>
+					<%-- <c:choose>
+						<c:when test="${user.locked eq 1}">
 							确定要解锁用户吗？
 						</c:when>
 						<c:otherwise>
 							确定要锁定用户吗？
 						</c:otherwise>
-					</c:choose>
+					</c:choose> --%>
 				</div>
 			</div>
 			<div class="modal-footer">
@@ -323,7 +324,6 @@
 	//锁定/解锁确认modal事件处理
 	$('#lockConfirmModal').on('shown.bs.modal', function(event) {
 		$('#lockConfirmBtn').click(function(){
-			alert("user/lock?id="+userId);
 			lockItemsUseModal("user/lock?id="+userId);
 		});
 	});
@@ -373,8 +373,15 @@
 	function bindItem(id){
 		modalLoadAndDisplay('user/prepareBind/'+id);
 	}
-	function lockItem(id){
+	function lockItem(id, locked){
 		userId = id;
+		if (locked == 1) {
+			$("#confirmTitle").text("确定要解锁用户吗？");
+			$("#lockedTitle").text("解锁用户");
+		} else {
+			$("#confirmTitle").text("确定要锁定用户吗？");
+			$("#lockedTitle").text("锁定用户");
+		}
 		$("#lockConfirmModal").modal();	
 	}
 	
@@ -395,6 +402,5 @@
 			
 		});
 	}
-	
 	
 </script>

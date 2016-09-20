@@ -7,7 +7,7 @@
 <!-- Content Header (Page header) -->
 <section class="content-header">
 	<h1>
-		<small>综合管理</small>
+		综合管理<small></small>
 	</h1>
 	<ol class="breadcrumb">
 		<li><a href=""><i class="fa fa-dashboard"></i>系统管理</a></li>

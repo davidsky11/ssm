@@ -43,6 +43,7 @@ public class User {
 	private String generateName;
 	@ApiModelProperty(value = "token值")
 	private String token;
+	@ApiModelProperty(value = "别名")
 	private String userAlias;
 	private Date loginTime;
 	private Date lastLoginTime;
@@ -50,7 +51,9 @@ public class User {
 	private String roleName;
 	private String creatorId;
 	private String creatorName;
-	private Boolean locked = Boolean.FALSE; // 是否锁定
+	@ApiModelProperty(value = "是否锁定")
+	private Integer locked = 0; // 是否锁定
+	
 	List<SysMenu> menuList = new ArrayList<SysMenu>();
 	
 	public User() {}
@@ -205,11 +208,11 @@ public class User {
 	public void setRoleName(String roleName) {
 		this.roleName = roleName;
 	}
-	public Boolean getLocked() {
+	public Integer getLocked() {
 		return locked;
 	}
 
-	public void setLocked(Boolean locked) {
+	public void setLocked(Integer locked) {
 		this.locked = locked;
 	}
 

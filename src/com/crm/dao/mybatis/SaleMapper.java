@@ -38,5 +38,7 @@ public interface SaleMapper {
 	
 	public List<Sale> findSaleListBy(@Param("publicCode") String publicCode, @Param("conditionSql") String conditionSql);
 
+	public List<Sale> findSaleList(@Param("conditionSql") String conditionSql);
+
 }
  

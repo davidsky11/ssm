@@ -1,5 +1,7 @@
 package com.crm.domain.dto;
 
+import java.util.Date;
+
 import com.crm.domain.Exchange;
 
 /** 
@@ -15,7 +17,7 @@ public class ExchangeDto {
 	private String awardName;
 	private String awardDesc;
 	private String awardAmount;
-	private String exchangeTime;
+	private Date exchangeTime;
 	private String publicCode;
 	private String privateCode;
 	private String insideCode;
@@ -51,7 +53,7 @@ public class ExchangeDto {
 	public String getAwardAmount() {
 		return awardAmount;
 	}
-	public String getExchangeTime() {
+	public Date getExchangeTime() {
 		return exchangeTime;
 	}
 	public String getPublicCode() {
@@ -75,7 +77,7 @@ public class ExchangeDto {
 	public void setAwardAmount(String awardAmount) {
 		this.awardAmount = awardAmount;
 	}
-	public void setExchangeTime(String exchangeTime) {
+	public void setExchangeTime(Date exchangeTime) {
 		this.exchangeTime = exchangeTime;
 	}
 	public void setPublicCode(String publicCode) {

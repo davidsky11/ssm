@@ -53,6 +53,22 @@ public class Tool {
 		return sb.toString();
 	}
 	
+	/**
+	 * 验证字符串是否为空
+	 * 
+	 * @param s
+	 * @return
+	 */
+	public static boolean isNotNullOrEmpty(String s) {
+		if (null == s) {
+			return false;
+		}
+		if (s.trim().equals("")) {
+			return false;
+		}
+		return true;
+	}
+	
 	public static void main(String[] args) {
 		String[] str = new String[]{"123", "234"};
 		System.out.println(Tool.stringArrayToString(str, true, ","));

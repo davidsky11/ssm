@@ -36,9 +36,9 @@
 	</select>
 	
 	<select id="findByConditionSql" resultType="com.crm.domain.User">
-		select id, username, userType, email, idcard, gender, qq, weixin, regTime, userType,
+		select id, username, password, userType, email, idcard, gender, qq, weixin, regTime, userType,
 		 generateName, loginTime, userAlias, lastLoginTime, creatorName, locked 
-		 from sysuser where locked != 1
+		 from sysuser where 1=1
 		<if test="conditionSql != null and conditionSql != ''">
 			${conditionSql}
 		</if>
@@ -148,7 +148,7 @@
             <if test="userAlias != null and userAlias != ''">userAlias,</if>
             <if test="creatorId != null and creatorId != ''">creatorId,</if>
             <if test="creatorName != null and creatorName != ''">creatorName,</if>
-            <if test="locked !=null and locked != ''">locked</if>
+            <if test="locked != null ">locked</if>
             </trim>)values(<trim suffixOverrides=",">
             <if test="id !=null and id !=''">#{id},</if>
             <if test="username !=null and username !=''">#{username},</if>
@@ -164,7 +164,7 @@
             <if test="userAlias != null and userAlias != ''">#{userAlias},</if>
             <if test="creatorId != null and creatorId != ''">#{creatorId},</if>
             <if test="creatorName != null and creatorName != ''">#{creatorName},</if>
-            <if test="locked !=null and locked != ''">#{locked}</if>
+            <if test="locked !=null ">#{locked}</if>
             </trim>)
 	</insert>
 	
@@ -187,7 +187,7 @@
             <if test="creatorName != null and creatorName != ''">creatorName=#{creatorName},</if>
             <if test="loginTime != null and loginTime != ''">loginTime=#{loginTime},</if>
             <if test="lastLoginTime != null and lastLoginTime != ''">lastLoginTime=#{lastLoginTime},</if>
-            <if test="locked !=null and locked != ''">locked=#{locked}</if>
+            <if test="locked !=null">locked=#{locked}</if>
     	</set>
     	where id = #{id}
     </update>

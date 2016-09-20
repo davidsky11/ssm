@@ -23,7 +23,7 @@
 					<div class="form-group">
 						<label for="locked" class="control-label">状态:</label> 
 						<c:choose>
-							<c:when test="${user.locked}">
+							<c:when test="${user.locked eq 1}">
 								<label>
 									<input name="locked"  type="radio" checked="checked" class="minimal-red" value="true">锁定
 								</label>

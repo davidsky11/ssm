@@ -119,7 +119,7 @@ public class CommonController {
 		} else {
 			int res = 0;
 			try {
-				user.setLocked(Boolean.FALSE);  // 未锁定
+				user.setLocked(Const.USER_UNLOCK);  // 未锁定
 				res = this.userService.add(user);  // 注册成功返回1
 			} catch (Exception e) {
 				if (e instanceof DuplicateKeyException) {
@@ -181,7 +181,7 @@ public class CommonController {
 					result.setSuccess(false);
 					result.setData(null);
 				} else {  // 密码正确
-					if (user.getLocked() == Boolean.TRUE) {
+					if (user.getLocked() == Const.USER_LOCKED) {
 						result.setCode(Const.WARN_ACCOUNT_LOCKED);
 						result.setMsg("账号涉嫌违规，已被锁定");
 						result.setSuccess(false);

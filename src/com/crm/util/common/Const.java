@@ -62,11 +62,24 @@ public class Const {
 	public static final String INFO_SMS_MSG_OUT_OF_WHITE_LIST = "119";  // 短信内容不在白名单中
 	
 	/**
-	 * 用户类型
+	 * 系统管理员
 	 */
-	public static final String USERTYPE_SYSTEM = "1";  // 系统用户
-	public static final String USERTYPE_VENDER = "2";  // 商户
+	public static final String USERTYPE_SYSTEM = "0";
+	/**
+	 * 厂商类型
+	 */
+	public static final String USERTYPE_VENDER = "1";
+	/**
+	 * 经销商
+	 */
+	public static final String USERTYPE_DEALER = "2";  // 商户
+	/**
+	 * APP用户
+	 */
 	public static final String USERTYPE_APPUSER = "3";  // APP用户
+	
+	public static final int USER_LOCKED = 1;  // 锁定
+	public static final int USER_UNLOCK = 0;  // 无锁
 	
     public static final String REDIRECT_HOME = "/";
 	public static final String SESSION_USER = "currentUser";     // 保存用户

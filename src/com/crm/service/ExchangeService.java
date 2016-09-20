@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import com.crm.dao.mybatis.ExchangeMapper;
 import com.crm.domain.Exchange;
+import com.crm.domain.Page;
 import com.crm.domain.User;
 import com.crm.domain.easyui.PageHelper;
 
@@ -60,6 +61,16 @@ public class ExchangeService {
 	
 	public int deleteExchange(String id) {
 		return exchangeMapper.deleteExchange(id);
+	}
+	
+	public Page<Exchange> exPages(Page<Exchange> page, String conditionSql) {
+		page.setStart((page.getPage() - 1)*page.getRows());
+		page.setEnd((page.getPage())*page.getRows());
+		
+		page.setTotal(exchangeMapper.exPagesTotal(conditionSql));
+		page.setContent(exchangeMapper.exPages(page, conditionSql));
+		
+		return page;
 	}
 
 }

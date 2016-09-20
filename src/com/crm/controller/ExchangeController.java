@@ -6,6 +6,7 @@ import java.util.List;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,14 +14,18 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.crm.domain.Activity;
 import com.crm.domain.Exchange;
+import com.crm.domain.Page;
 import com.crm.domain.User;
 import com.crm.domain.dto.ExchangeDto;
 import com.crm.domain.easyui.DataGrid;
 import com.crm.domain.easyui.Json;
 import com.crm.domain.easyui.PageHelper;
+import com.crm.service.ActivityService;
 import com.crm.service.ExchangeService;
 import com.crm.util.common.Const;
 
@@ -38,6 +43,8 @@ public class ExchangeController {
 	
 	@Resource
 	private ExchangeService exchangeService;
+	@Resource
+	private ActivityService activityService;
 
 	/**
 	 * @Title:			accountList
@@ -139,6 +146,61 @@ public class ExchangeController {
 			dg.setRows(list);
 		}
 		return dg;
+	}
+	
+	/////////////////////////////////////////////////////////////////////////////////
+	
+	@RequestMapping(value = "/exchange/exList", method = RequestMethod.GET)
+	public String srList(Model model, HttpSession session,
+			@RequestParam(value="pageNumber",defaultValue="1") int pageNumber) {
+		User user =  (User) session.getAttribute(Const.SESSION_USER);
+		
+		Page<Exchange> page = new Page<Exchange>();
+		page.setSort("exchangeTime");
+		page.setOrder("desc");
+		
+		if (user != null) {
+			page = exchangeService.exPages(page, " and t.userId = '" + user.getId() + "'");
+		}
+		
+		List<Activity> atyList = activityService.getActivityList("");
+		
+		List<Exchange> list = page.getContent();
+		for (Exchange ex : list) {
+			for (Activity aty : atyList) {
+				if (ex.getPublicCode().equals(aty.getPublicCode())) {
+					ex.setActivity(aty);
+					continue;
+				}
+			}
+		}
+		
+		/*List<Activity> atyList = activityService.getActivityList("");
+		
+		List<Award> awardList = awardService.getDatagrid("");
+		List<ScanRecord> list = page.getContent();
+		for (ScanRecord sr : list) {
+			if (sr.getWares() != null) {
+				for (Award aw : awardList) {
+					if (aw.getId().equals(sr.getWares().getAwardId())) {
+						sr.setAward(aw);
+						continue;
+					}
+				}
+			}
+			
+			for (Activity aty : atyList) {
+				if (sr.getPublicCode().equals(aty.getPublicCode())) {
+					sr.setActivity(aty);
+					continue;
+				}
+			}
+		}*/
+		
+		model.addAttribute("page", page);
+		model.addAttribute("exs", list);
+		
+		return "exchange/exList";
 	}
 	
 }

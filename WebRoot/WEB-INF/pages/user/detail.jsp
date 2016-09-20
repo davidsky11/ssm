@@ -20,7 +20,7 @@
 				<tr><td>注册时间:</td><td><fmt:formatDate pattern="yyyy-MM-dd HH:mm:ss" value="${user.regTime}"/></td></tr>
 				<tr><td>状态:</td>
 					<c:choose>
-						<c:when test="${user.locked}">
+						<c:when test="${user.locked eq 1}">
 							<td><span class="badge bg-red">锁定</span></td>
 						</c:when>
 						<c:otherwise>

@@ -64,6 +64,10 @@ public class SaleService {
 	public List<Sale> findSaleListBy(String publicCode, String conditionSql) {
 		return saleMapper.findSaleListBy(publicCode, conditionSql);
 	}
+	
+	public List<Sale> findSaleList(String conditionSql) {
+		return saleMapper.findSaleList(conditionSql);
+	}
 
 }
  

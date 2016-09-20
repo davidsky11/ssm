@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.crm.dao.mybatis.SysDictionaryMapper">
+
+	<resultMap type="com.crm.domain.system.SysDictionary" id="dicMap">
+		<id column="id" property="id"/>
+		<result column="entrycode" property="entrycode"/>
+		<result column="entryvalue" property="entryvalue"/>
+		<result column="additional" property="additional"/>
+		<result column="additional2" property="additional2"/>
+		<result column="description" property="description"/>
+		<result column="classname" property="classname"/>
+		<result column="classcode" property="classcode"/>
+		<result column="dadistatus" property="dadistatus"/>
+		<result column="dorder" property="dorder"/>
+		<result column="isleaf" property="isleaf"/>
+		<result column="levelno" property="levelno"/>
+		<result column="parentid" property="parentid"/>
+	</resultMap>
+	
+	<insert id="saveDic" parameterType="com.crm.domain.system.SysDictionary" useGeneratedKeys="true" keyProperty="id">
+		insert into sysdictionary (entrycode,entryvalue,additional,additional2,description,classname,classcode,
+		dadistatus,dorder,isleaf,levelno,parentid) values 
+		(#{entrycode},#{entryvalue},#{additional},#{additional2},#{description},#{classname},
+		#{classcode},#{dadistatus},#{dorder},#{isleaf},#{levelno},#{parentid})
+	</insert>
+	
+	<delete id="deleDic" parameterType="int">
+		delete from sysdictionary where id=#{id}
+	</delete>
+	
+	<update id="updateDic" parameterType="com.crm.domain.system.SysDictionary">
+		update sysmenu set 
+		name=#{name},
+		url=#{url},
+		parentid=#{parentid} 
+		where id=#{id}
+	</update>
+
+	<select id="getDicList" resultMap="dicMap" parameterType="String">
+		select * from sysdictionary where 1=1 
+		<if test="conditionSql != null and conditionSql != ''">
+			${conditionSql}
+		</if>
+	</select>
+	
+</mapper>

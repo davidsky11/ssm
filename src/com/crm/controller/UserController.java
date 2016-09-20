@@ -341,7 +341,7 @@ public class UserController {
 			user.setRole(role);
 			user.setRoleName(role.getName());
 			user.setGenerateName(user.getUsername() + "_1");
-			user.setLocked(Boolean.FALSE);
+			user.setLocked(Const.USER_UNLOCK);
 //			user.setPassword("123456");  // 密码默认123456
 			
 			userService.add(user);
@@ -418,10 +418,10 @@ public class UserController {
 	public String lockUser(Model model, @RequestParam("id") String id){
 		User user = userService.getUserById(id);
 		
-		if (user.getLocked())
-			user.setLocked(Boolean.FALSE);
+		if (user.getLocked() == Const.USER_LOCKED)
+			user.setLocked(Const.USER_UNLOCK);
 		else 
-			user.setLocked(Boolean.TRUE);
+			user.setLocked(Const.USER_LOCKED);
 		
 		boolean success = userService.edit(user) > 0;
 		

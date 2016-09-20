@@ -17,15 +17,22 @@
 	
 	<resultMap type="com.crm.domain.Exchange" id="exchangeMap">
 		<id property="id" column="id" />
+		<result property="userId" column="userId" />
 		<result property="exchangeTime" column="exchangeTime" />
+		<result property="waresId" column="waresId" />
 		<result property="publicCode" column="publicCode" />
 		<result property="privateCode" column="privateCode" />
 		<result property="insideCode" column="insideCode" />
 		<result property="longitude" column="longitude" />
 		<result property="latitude" column="latitude" />
 		<result property="flagCode" column="flagCode" />
+		<result property="awardId" column="awardId" />
+		<result property="exchangeType" column="exchangeType" />
+		<result property="beneficiary" column="beneficiary" />
+		
 		<association property="user" resultMap="userMap" />
 		<association property="award" resultMap="awardMap" />
+		
 		<!-- <association property="user" column="userId" select="queryUser" />
 		<association property="award" column="awardId" select="queryAward" /> -->
 	</resultMap>
@@ -164,6 +171,34 @@
 		</if>
 		<if test="exchange.exchangeTime != null and exchange.exchangeTime != ''">
         	and date(t.exchangeTime) = #{exchange.exchangeTime} 
+        </if>
+		<if test="page.sort != null and page.sort != ''">
+            order by #{page.sort} #{page.order}
+        </if>
+        <if test="page.page > 0">
+            limit #{page.start},#{page.end}
+        </if>
+	</select>
+	
+	<select id="exPagesTotal" resultType="int">
+		select count(1) from exchange t where 1=1
+		<if test="conditionSql != null and conditionSql != ''">
+			${conditionSql}
+        </if>
+	</select>
+	
+	<select id="exPages" resultMap="exchangeMap">
+		select t.id, t.userId, t.exchangeTime, t.insideCode, t.privateCode, 
+		t.publicCode, t.longitude, t.latitude, t.flagCode, t.waresId,
+		t.awardId, t.exchangeType, t.beneficiary,
+		u.id u_id, u.username u_username, u.email u_email, u.regtime u_regtime,
+		a.id a_id, a.title a_title, a.description a_description, a.amount a_amount
+		from exchange t
+		left join sysuser u on t.userId = u.id
+		left join award a on t.waresId = a.id
+		where 1=1
+		<if test="conditionSql != null and conditionSql != ''">
+			${conditionSql}
         </if>
 		<if test="page.sort != null and page.sort != ''">
             order by #{page.sort} #{page.order}

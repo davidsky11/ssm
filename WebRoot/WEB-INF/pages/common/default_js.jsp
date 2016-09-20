@@ -20,19 +20,20 @@
 
 
 <!-- AdminLTE App -->
-<script
-	src="<%=request.getContextPath()%>/resources/AdminLTE/dist/js/app.min.js"></script>
-<script
-	src="<%=request.getContextPath()%>/resources/AdminLTE/plugins/iCheck/icheck.min.js"></script>
-<script
-	src="<%=request.getContextPath()%>/resources/AdminLTE/plugins/select2/select2.min.js"></script>
-<script
-	src="<%=request.getContextPath()%>/resources/AdminLTE/plugins/input-mask/jquery.inputmask.js"></script>	
-<script
-	src="<%=request.getContextPath()%>/resources/AdminLTE/plugins/input-mask/jquery.inputmask.date.extensions.js"></script>
-	<script
-	src="<%=request.getContextPath()%>/resources/AdminLTE/plugins/input-mask/jquery.inputmask.extensions.js"></script>
+<script src="<%=request.getContextPath()%>/resources/AdminLTE/dist/js/app.min.js"></script>
+<script src="<%=request.getContextPath()%>/resources/AdminLTE/plugins/iCheck/icheck.min.js"></script>
+<script src="<%=request.getContextPath()%>/resources/AdminLTE/plugins/select2/select2.min.js"></script>
+<script src="<%=request.getContextPath()%>/resources/AdminLTE/plugins/input-mask/jquery.inputmask.js"></script>	
+<script src="<%=request.getContextPath()%>/resources/AdminLTE/plugins/input-mask/jquery.inputmask.date.extensions.js"></script>
+<script src="<%=request.getContextPath()%>/resources/AdminLTE/plugins/input-mask/jquery.inputmask.extensions.js"></script>
 <script src="<%=request.getContextPath()%>/resources/AdminLTE/plugins/daterangepicker/moment.js"></script>
 <script	src="<%=request.getContextPath()%>/resources/AdminLTE/plugins/daterangepicker/daterangepicker.js"></script>
 <script src="<%=request.getContextPath()%>/resources/AdminLTE/plugins/datepicker/bootstrap-datepicker.js"></script>
 <script src="<%=request.getContextPath()%>/resources/AdminLTE/plugins/datepicker/locales/bootstrap-datepicker.zh-CN.js"></script>
+<script src="<%=request.getContextPath()%>/resources/AdminLTE/plugins/flot/jquery.flot.min.js"></script>
+<script src="<%=request.getContextPath()%>/resources/AdminLTE/plugins/flot/jquery.flot.resize.min.js"></script>
+<script src="<%=request.getContextPath()%>/resources/AdminLTE/plugins/flot/jquery.flot.pie.min.js"></script>
+<script src="<%=request.getContextPath()%>/resources/AdminLTE/plugins/flot/jquery.flot.categories.min.js"></script>
+
+<!-- echarts -->
+<script src="<%=request.getContextPath()%>/js/echarts/echarts.min.js"></script>

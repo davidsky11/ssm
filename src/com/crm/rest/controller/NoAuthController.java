@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.crm.authorization.annotation.Authorization;
-import com.crm.common.util.lang.DateUtil;
 import com.crm.domain.Activity;
 import com.crm.domain.Award;
 import com.crm.domain.Exchange;
@@ -619,7 +618,7 @@ public class NoAuthController {
     						 */
     						Exchange ex = new Exchange();
     						ex.setUserId(user.getId());
-    						ex.setExchangeTime(DateUtil.formatDate(new Date()));
+    						ex.setExchangeTime(new Date());
     						ex.setWaresId(wares.getId());
     						ex.setLongitude(Double.parseDouble(longitude));
     						ex.setLatitude(Double.parseDouble(latitude));
