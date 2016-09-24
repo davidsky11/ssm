@@ -19,7 +19,7 @@ import com.crm.domain.easyui.PageHelper;
 public interface ExchangeMapper {
 	
 	// 新增Account
-	public int saveExchange(Exchange exchange) throws Exception;
+	public int saveExchange(Exchange exchange);
 
 	// 删除Account
 	public int deleteExchange(@Param("id") String id);

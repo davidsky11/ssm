@@ -51,7 +51,17 @@
 			
 			<!-- 将Jackson2HttpMessageConverter的默认格式化输出设为true -->  
 			<bean class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter"
-				p:prettyPrint="true" p:supportedMediaTypes-ref="supportedMediaTypes" />
+				p:prettyPrint="true" p:supportedMediaTypes-ref="supportedMediaTypes" >
+				<property name="objectMapper">
+					<bean class="com.fasterxml.jackson.databind.ObjectMapper">
+						<property name="dateFormat">
+							<bean class="java.text.SimpleDateFormat">
+								<constructor-arg type="java.lang.String" value="yyyy-MM-dd HH:mm:ss" />
+							</bean>
+						</property>
+					</bean>
+				</property>
+			</bean>
 		
 		</mvc:message-converters>
 	</mvc:annotation-driven>
@@ -136,6 +146,7 @@
 			<mvc:exclude-mapping path="/api-docs/**"/>
 			<mvc:exclude-mapping path="/api-docs"/>
 			<mvc:exclude-mapping path="/static/**"/>
+			<mvc:exclude-mapping path="/druid/**"/>
 
 			<bean class="com.crm.interceptor.CommonInterceptor"></bean>
 		</mvc:interceptor>

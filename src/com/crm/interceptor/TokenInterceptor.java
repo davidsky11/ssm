@@ -2,11 +2,11 @@ package com.crm.interceptor;
 
 import java.util.List;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.util.AntPathMatcher;
 import org.springframework.util.PathMatcher;
@@ -24,7 +24,7 @@ import com.crm.util.common.Const;
  */
 public class TokenInterceptor extends HandlerInterceptorAdapter  {
 
-	@Autowired
+	@Resource
 	private SessionCache sessionCache;
 	
 	private List<String> allowList; // 放行的URL列表

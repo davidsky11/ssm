@@ -4,16 +4,17 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -47,11 +48,11 @@ public class AnalysisController {
 
 	private final Logger log = LoggerFactory.getLogger(ScanRecordController.class);
 	
-	@Autowired
+	@Resource
 	private ActivityService activityService;
-	@Autowired
+	@Resource
 	private AnalysisService analysisService;
-	@Autowired
+	@Resource
 	private SaleService saleService;
 	
 	/**
@@ -197,18 +198,31 @@ public class AnalysisController {
 	
 	//////////////////////////////////////////////////////////
 	@RequestMapping(value = "/sale/statistic", method = RequestMethod.GET)
-	public String saleDatagrid(HttpServletRequest request) {
+	public String saleDatagrid(Model model, HttpServletRequest request) {
+		User user =  (User)request.getSession().getAttribute(Const.SESSION_USER);
 		
+		List<Activity> atyList = new ArrayList<Activity>();
+
+		switch (user.getUserType()) {
+			case Const.USERTYPE_VENDER:  // 厂商
+				atyList = activityService.getActivityList(" and t.publisherId = '" + user.getId() + "'"); // 发布的活动
+				break;
+			case Const.USERTYPE_DEALER: // 经销商
+				atyList = activityService.getActivityList("");  // 所有活动
+				break;
+		}
+		
+		model.addAttribute("atyList", atyList);
 		return "sale/statistic";
 	}
 	
 	@RequestMapping(value = "/ajax_sale_charts.do", method = RequestMethod.POST)
-	public void ajaxLeaveCharts(HttpServletRequest request,
+	public void ajaxSaleCharts(HttpServletRequest request,
 			HttpServletResponse response) {
 		User user =  (User)request.getSession().getAttribute(Const.SESSION_USER);
 		
 		List<AbstractChartDto> list = new ArrayList<AbstractChartDto>();
-		String publicCode = request.getParameter("publicCode");
+		String activityId = Tool.nvl(request.getParameter("activityId"));
 		
 		List<Activity> atyList = new ArrayList<Activity>();
 		
@@ -228,49 +242,24 @@ public class AnalysisController {
 		
 		switch (user.getUserType()) {
 			case Const.USERTYPE_VENDER:  // 厂商
-				/**
-				 * 1、获取发布的活动列表
-				 */
-				if (publicCode != null && !publicCode.equals("")) {
-					atyList = activityService.getActivityList(" and t.publisherId = '" + user.getId()
-							+ "' and t.publicCode = '" + publicCode + "'");
-				} else {
-					atyList = activityService.getActivityList(" and t.publisherId = '" + user.getId() + "'");
-				}
-				
-				Set<String> set = new HashSet<String>();
-				for (Activity aty : atyList) {
-					set.add(aty.getId());
-				}
-				String[] idArr = set.toArray(new String[0]);
-				String idStr = Tool.stringArrayToString(idArr, true, ",");
-				
 				conditionSql
 					.append(" and (t.year = '").append(prevYear).append("' and t.month > '").append(month-1).append("') ")
-					.append(" or (t.year = '").append(year).append("' and t.month < '").append(month).append("') ")
-					.append(" and t.activityId in (").append(idStr).append(")");
+					.append(" or (t.year = '").append(year).append("' and t.month < '").append(month).append("') ");
+				
+				if (Tool.isNotNullOrEmpty(activityId)) {
+					conditionSql.append(" and t.activityId = '").append(activityId).append("'");
+				}
 				
 				break;
 			case Const.USERTYPE_DEALER:  // 经销商
-				
-				if (publicCode != null && !publicCode.equals("")) {
-					atyList = activityService.getActivityList(" and publicCode = '" + publicCode + "'");
-				} else {
-					atyList = activityService.getActivityList("");
-				}
-				
-				Set<String> set1 = new HashSet<String>();
-				for (Activity aty : atyList) {
-					set1.add(aty.getId());
-				}
-				String[] idArr1 = set1.toArray(new String[0]);
-				String idStr1 = Tool.stringArrayToString(idArr1, true, ",");
-				
 				conditionSql
-					.append(" and (t.year = '").append(prevYear).append("' and t.month > '").append(month-1).append("') ")
-					.append(" or (t.year = '").append(year).append("' and t.month < '").append(month).append("') ")
-					.append(" and t.userId = '").append(user.getId()).append("'")
-					.append(" and t.activityId in (").append(idStr1).append(")");
+					.append(" and ((t.year = '").append(prevYear).append("' and t.month > '").append(month).append("') ")
+					.append(" or (t.year = '").append(year).append("' and t.month <= '").append(month+1).append("')) ")
+					.append(" and t.userId = '").append(user.getId()).append("'");
+				
+				if (Tool.isNotNullOrEmpty(activityId)) {
+					conditionSql.append(" and t.activityId = '").append(activityId).append("'");
+				}
 				
 				break;
 			default:
@@ -283,10 +272,83 @@ public class AnalysisController {
 		 */
 		saleList = saleService.findSaleList(conditionSql.toString());
 		
+		Collections.sort(saleList);  // 对销售记录进行排序
+		
 		for (Sale sale : saleList) {
 			AbstractChartDto dto = new AbstractChartDto();
 			dto.setCategory(sale.getAmount() + "");
 			dto.setBar(sale.getYear() + "-" + sale.getMonth());
+			
+			list.add(dto);
+		}
+		
+		//将json数据返回给客户端
+        response.setContentType("application/json; charset=utf-8");
+		
+        PrintWriter out = null;
+		try {
+			out = response.getWriter();
+			Gson gson = new Gson();
+			String json = gson.toJson(list);
+			System.out.println(json);
+			out.write(json);
+			out.flush();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} finally {
+			if (out != null) {
+				out.close();
+			}
+		}
+	}
+	
+	@RequestMapping(value = "/place/statistic", method = RequestMethod.GET)
+	public String placeDatagrid(Model model, HttpServletRequest request) {
+		User user =  (User)request.getSession().getAttribute(Const.SESSION_USER);
+		
+		List<Activity> atyList = new ArrayList<Activity>();
+
+		switch (user.getUserType()) {
+			case Const.USERTYPE_VENDER:  // 厂商
+				atyList = activityService.getActivityList(" and t.publisherId = '" + user.getId() + "'"); // 发布的活动
+				break;
+			case Const.USERTYPE_DEALER: // 经销商
+				atyList = activityService.getActivityList("");  // 所有活动
+				break;
+		}
+		
+		model.addAttribute("atyList", atyList);
+		return "place/statistic";
+	}
+	
+	@RequestMapping(value = "/ajax_place_charts.do", method = RequestMethod.POST)
+	public void ajaxPlaceCharts(HttpServletRequest request,
+			HttpServletResponse response) {
+		User user =  (User)request.getSession().getAttribute(Const.SESSION_USER);
+		
+		List<AbstractChartDto> list = new ArrayList<AbstractChartDto>();
+		String publicCode = Tool.nvl(request.getParameter("publicCode"));
+		
+		List<PlaceAnalysis> paList = new ArrayList<PlaceAnalysis>();
+		
+		switch (user.getUserType()) {
+			case Const.USERTYPE_VENDER:  // 厂商
+				paList = analysisService.findPlaceAnalysis(publicCode, "");
+				
+				break;
+			case Const.USERTYPE_DEALER:  // 经销商
+				paList = analysisService.findPlaceAnalysis(publicCode, user.getId());
+				
+				break;
+			default:
+				
+				break;
+		}
+		
+		for (PlaceAnalysis pa : paList) {
+			AbstractChartDto dto = new AbstractChartDto();
+			dto.setCategory(pa.getCount() + "");
+			dto.setBar(pa.getProvince());
 			
 			list.add(dto);
 		}

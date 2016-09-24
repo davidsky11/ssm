@@ -289,7 +289,7 @@
 				<form id="loginForm" name="loginForm" action="login" method="post" ><!-- class="stu_login_error" -->
 					<input type="hidden" id="userType" name="userType" value="3" />
 					<div id="username">
-						<label> 用&nbsp;户&nbsp;名：</label> 
+						<label>用户账户：</label> 
 						<input type="text"
 							id="stu_username_hide" name="username" value="请输入用户名"
 							nullmsg="用户名不能为空!" datatype="s3-18" errormsg="用户名范围在3~18个字符之间!"  />
@@ -355,7 +355,7 @@
 				<form action="login" method="post" ><!-- class="sec_login_error" -->
 					<input type="hidden" id="userType" name="userType" value="1" />
 					<div id="username">
-						<label>厂&nbsp;商&nbsp;号：</label> <input type="text"
+						<label>厂商账户：</label> <input type="text"
 							id="sec_username_hide" name="username" value="请输入账号"
 							nullmsg="账号不能为空!" datatype="s3-18" errormsg="账号范围在3~18个字符之间!" />
 					</div>

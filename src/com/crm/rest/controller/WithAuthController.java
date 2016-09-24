@@ -2,10 +2,10 @@ package com.crm.rest.controller;
 
 import java.util.concurrent.atomic.AtomicLong;
 
+import javax.annotation.Resource;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -41,17 +41,18 @@ public class WithAuthController {
 	
 	private final AtomicLong counter = new AtomicLong();
 	
-	@Autowired
-	@Qualifier("ehcacheTokenService")
+	//@Autowired
+	//@Qualifier("ehcacheTokenService")
+	@Resource(name = "ehcacheTokenService")
 	private TokenService<String, String> tokenService;
 	
-	@Autowired
+	@Resource
 	private ExchangeService exchangeService;
-	@Autowired
+	@Resource
 	private AwardService awardService;
-	@Autowired
+	@Resource
 	private UserService userService;
-	@Autowired
+	@Resource
 	private WaresService waresService;
 	
 	/**

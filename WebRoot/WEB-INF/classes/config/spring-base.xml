@@ -50,6 +50,7 @@
     <!-- <bean class="com.crm.filter.SystemInitListener"/> -->
     
     <!-- 导入其它spring配置文件 -->
+    <!-- <import resource="classpath:config/spring-druid.xml" /> -->
     <import resource="classpath:config/spring-mybatis.xml" />
     <import resource="classpath:config/spring-rest.xml" />
     <import resource="classpath:config/spring-cache.xml" />

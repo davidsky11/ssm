@@ -2,16 +2,18 @@ package com.crm.controller;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -27,6 +29,7 @@ import com.crm.domain.easyui.Json;
 import com.crm.domain.easyui.PageHelper;
 import com.crm.service.ActivityService;
 import com.crm.service.ExchangeService;
+import com.crm.util.Tool;
 import com.crm.util.common.Const;
 
 /** 
@@ -151,19 +154,48 @@ public class ExchangeController {
 	/////////////////////////////////////////////////////////////////////////////////
 	
 	@RequestMapping(value = "/exchange/exList", method = RequestMethod.GET)
-	public String srList(Model model, HttpSession session,
+	public String exList(Model model, HttpServletRequest request,
 			@RequestParam(value="pageNumber",defaultValue="1") int pageNumber) {
-		User user =  (User) session.getAttribute(Const.SESSION_USER);
+		User user =  (User) request.getSession().getAttribute(Const.SESSION_USER);
 		
+		String publicCode = Tool.nvl(request.getParameter("publicCode"));
+		String startDate = Tool.nvl(request.getParameter("startDate"));
+		String endDate = Tool.nvl(request.getParameter("endDate"));
+		
+		model.addAttribute("userType", user.getUserType());
 		Page<Exchange> page = new Page<Exchange>();
+		page.setPage(pageNumber);
 		page.setSort("exchangeTime");
 		page.setOrder("desc");
 		
+		StringBuffer conditionSql = new StringBuffer();
+		conditionSql.append(" and t.userId = '" + user.getId() + "'");
+		
+		Map<String, String> paramMap = new HashMap<String, String>();
+		if (Tool.isNotNullOrEmpty(publicCode)) {
+			conditionSql.append(" and t.publicCode = '").append(publicCode).append("'");
+			paramMap.put("publicCode", publicCode);
+			model.addAttribute("publicCode", publicCode);
+		}
+		
+		if (Tool.isNotNullOrEmpty(startDate)) {
+			conditionSql.append(" and t.exchangeTime >= '").append(startDate).append("'");
+			paramMap.put("startDate", startDate);
+			model.addAttribute("startDate", startDate);
+		}
+		
+		if (Tool.isNotNullOrEmpty(endDate)) {
+			conditionSql.append(" and t.exchangeTime <= date_sub('").append(endDate).append("', interval -1 day)");
+			paramMap.put("endDate", endDate);
+			model.addAttribute("endDate", endDate);
+		}
+		
 		if (user != null) {
-			page = exchangeService.exPages(page, " and t.userId = '" + user.getId() + "'");
+			page = exchangeService.exPages(page, conditionSql.toString());
 		}
 		
 		List<Activity> atyList = activityService.getActivityList("");
+		model.addAttribute("atyList", atyList);
 		
 		List<Exchange> list = page.getContent();
 		for (Exchange ex : list) {
@@ -175,32 +207,27 @@ public class ExchangeController {
 			}
 		}
 		
-		/*List<Activity> atyList = activityService.getActivityList("");
-		
-		List<Award> awardList = awardService.getDatagrid("");
-		List<ScanRecord> list = page.getContent();
-		for (ScanRecord sr : list) {
-			if (sr.getWares() != null) {
-				for (Award aw : awardList) {
-					if (aw.getId().equals(sr.getWares().getAwardId())) {
-						sr.setAward(aw);
-						continue;
-					}
-				}
-			}
-			
-			for (Activity aty : atyList) {
-				if (sr.getPublicCode().equals(aty.getPublicCode())) {
-					sr.setActivity(aty);
-					continue;
-				}
-			}
-		}*/
-		
+		model.addAttribute("searchParams", Tool.doneQueryParam(paramMap));
 		model.addAttribute("page", page);
 		model.addAttribute("exs", list);
 		
 		return "exchange/exList";
+	}
+	
+	/**
+	 * 兑奖详情
+	 * @Title:			detailExchange
+	 * @Description:	兑奖详情
+	 * @param model
+	 * @param id
+	 * @return
+	 */
+	@RequestMapping(value="/exchange/detail/{id}", method=RequestMethod.GET)
+	public String detailExchange(Model model, @PathVariable("id") String id) {
+		Exchange exchange = exchangeService.findById(id);
+		model.addAttribute("ex", exchange);
+		
+		return "exchange/detail";
 	}
 	
 }

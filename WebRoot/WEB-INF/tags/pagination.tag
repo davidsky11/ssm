@@ -57,8 +57,8 @@ $(document).ready(function(){
 		 }
 			
 		 $.ajax({
-            async : false,
-            cache:false,
+            async: false,
+            cache: false,
             type: 'GET',            
             url: this.href,//请求的action路径
             error: function () {//请求失败处理函数

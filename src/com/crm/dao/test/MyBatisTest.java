@@ -25,6 +25,7 @@ import com.crm.dao.mybatis.AwardMapper;
 import com.crm.dao.mybatis.ExchangeMapper;
 import com.crm.dao.mybatis.SaleMapper;
 import com.crm.dao.mybatis.ScanRecordMapper;
+import com.crm.dao.mybatis.SysDictionaryMapper;
 import com.crm.dao.mybatis.UserMapper;
 import com.crm.dao.mybatis.WaresMapper;
 import com.crm.domain.Activity;
@@ -37,6 +38,7 @@ import com.crm.domain.User;
 import com.crm.domain.Wares;
 import com.crm.domain.dto.PlaceAnalysis;
 import com.crm.domain.easyui.PageHelper;
+import com.crm.domain.system.SysDictionary;
 import com.crm.util.Tool;
 import com.crm.util.common.Const;
 
@@ -69,6 +71,8 @@ public class MyBatisTest extends AbstractJUnit4SpringContextTests {
 	private AnalysisMapper analysisMapper;
 	@Autowired
 	private SaleMapper saleMapper;
+	@Autowired
+	private SysDictionaryMapper sysDictionaryMapper;
 
 	@Test
 	public void login() {
@@ -456,6 +460,26 @@ public class MyBatisTest extends AbstractJUnit4SpringContextTests {
 		for (Exchange ex : list) {
 			System.out.println(ex);
 		}
+	}
+	
+	@Test
+	public void srfindById() {
+		ScanRecord sr = scanRecordMapper.findById("1");
+		System.out.println(sr);
+	}
+	
+	@Test
+	public void getDicList() {
+		List<SysDictionary> dicList = sysDictionaryMapper.getDicList(" and parentid = 'DJLX'");
+		for (SysDictionary dic : dicList) {
+			System.out.println(dic);
+		}
+	}
+	
+	@Test
+	public void findByIdEx() {
+		Exchange ex = exchangeMapper.findById("1");
+		System.out.println(ex);
 	}
 	
 }

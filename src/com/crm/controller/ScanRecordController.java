@@ -4,15 +4,16 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -31,6 +32,7 @@ import com.crm.domain.easyui.PageHelper;
 import com.crm.service.ActivityService;
 import com.crm.service.AwardService;
 import com.crm.service.ScanRecordService;
+import com.crm.util.Tool;
 import com.crm.util.common.Const;
 
 /** 
@@ -45,11 +47,11 @@ public class ScanRecordController /*extends BaseController*/ {
 	
 	private final Logger log = LoggerFactory.getLogger(ScanRecordController.class);
 	
-	@Autowired
+	@Resource
 	private ScanRecordService scanRecordService;
-	@Autowired
+	@Resource
 	private ActivityService activityService;
-	@Autowired
+	@Resource
 	private AwardService awardService;
 
 	/**
@@ -201,9 +203,13 @@ public class ScanRecordController /*extends BaseController*/ {
 	///////////////////////////////////////// NEW DASHBOARD  ////////////////////////////
 	
 	@RequestMapping(value = "/scanRecord/srList", method = RequestMethod.GET)
-	public String srList(Model model, HttpSession session,
+	public String srList(Model model, HttpServletRequest request,
 			@RequestParam(value="pageNumber",defaultValue="1") int pageNumber) {
-		User user =  (User) session.getAttribute(Const.SESSION_USER);
+		User user =  (User) request.getSession().getAttribute(Const.SESSION_USER);
+		
+		String publicCode = Tool.nvl(request.getParameter("publicCode"));
+		String startDate = Tool.nvl(request.getParameter("startDate"));
+		String endDate = Tool.nvl(request.getParameter("endDate"));
 		
 		model.addAttribute("userType", user.getUserType());
 		Page<ScanRecord> page = new Page<ScanRecord>();
@@ -211,11 +217,34 @@ public class ScanRecordController /*extends BaseController*/ {
 		page.setSort("scanTime");
 		page.setOrder("desc");
 		
+		StringBuffer conditionSql = new StringBuffer();
+		conditionSql.append(" and t.userId = '" + user.getId() + "'");
+		
+		Map<String, String> paramMap = new HashMap<String, String>();
+		if (Tool.isNotNullOrEmpty(publicCode)) {
+			conditionSql.append(" and t.publicCode = '").append(publicCode).append("'");
+			paramMap.put("publicCode", publicCode);
+			model.addAttribute("publicCode", publicCode);
+		}
+		
+		if (Tool.isNotNullOrEmpty(startDate)) {
+			conditionSql.append(" and t.scanTime >= '").append(startDate).append("'");
+			paramMap.put("startDate", startDate);
+			model.addAttribute("startDate", startDate);
+		}
+		
+		if (Tool.isNotNullOrEmpty(endDate)) {
+			conditionSql.append(" and t.scanTime <= date_sub('").append(endDate).append("', interval -1 day)");
+			paramMap.put("endDate", endDate);
+			model.addAttribute("endDate", endDate);
+		}
+		
 		if (user != null) {
-			page = scanRecordService.srPages(page, " and t.userId = '" + user.getId() + "'");
+			page = scanRecordService.srPages(page, conditionSql.toString());
 		}
 		
 		List<Activity> atyList = activityService.getActivityList("");
+		model.addAttribute("atyList", atyList);
 		
 		List<Award> awardList = awardService.getDatagrid("");
 		List<ScanRecord> list = page.getContent();
@@ -230,17 +259,27 @@ public class ScanRecordController /*extends BaseController*/ {
 			}
 			
 			for (Activity aty : atyList) {
-				if (sr.getPublicCode().equals(aty.getPublicCode())) {
+				if (sr.getPublicCode() != null 
+						&& sr.getPublicCode().equals(aty.getPublicCode())) {
 					sr.setActivity(aty);
 					continue;
 				}
 			}
 		}
 		
+		model.addAttribute("searchParams", Tool.doneQueryParam(paramMap));
 		model.addAttribute("page", page);
 		model.addAttribute("srs", list);
 		
 		return "scanRecord/srList";
+	}
+	
+	@RequestMapping(value="/scanRecord/detail/{id}", method=RequestMethod.GET)
+	public String detailScanRecord(Model model, @PathVariable("id") String id) {
+		ScanRecord sr = scanRecordService.findById(id);
+		model.addAttribute("sr", sr);
+		
+		return "scanRecord/detail";
 	}
 	
 }

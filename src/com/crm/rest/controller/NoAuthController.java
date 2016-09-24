@@ -2,6 +2,7 @@ package com.crm.rest.controller;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -9,7 +10,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import javax.annotation.Resource;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -31,6 +33,7 @@ import com.crm.domain.easyui.PageHelper;
 import com.crm.domain.po.Address;
 import com.crm.domain.po.AddressComponent;
 import com.crm.domain.po.Result;
+import com.crm.domain.system.SysDictionary;
 import com.crm.rest.domain.ApiResult;
 import com.crm.rest.domain.ExchangeQuery;
 import com.crm.rest.domain.ScanQuery;
@@ -40,6 +43,7 @@ import com.crm.service.AwardService;
 import com.crm.service.ExchangeService;
 import com.crm.service.SaleService;
 import com.crm.service.ScanRecordService;
+import com.crm.service.SysDictionaryService;
 import com.crm.service.UserService;
 import com.crm.service.ValidService;
 import com.crm.service.WaresService;
@@ -67,26 +71,28 @@ public class NoAuthController {
 	
 	private static PageHelper page = new PageHelper();
 
-	@Autowired
+	@Resource
 	private ExchangeService exchangeSercie;
-	@Autowired
+	@Resource
 	private ScanRecordService scanRecordService;
-	@Autowired
+	@Resource
 	private WaresService waresService;
-	@Autowired
+	@Resource
 	private AwardService awardService;
-	@Autowired
+	@Resource
 	private ActivityService activityService;
-	@Autowired
+	@Resource
 	private UserService userService;
-	@Autowired
+	@Resource
 	private ExchangeService exchangeService;
-	@Autowired
+	@Resource
 	private ValidService validService;
-	@Autowired
+	@Resource
 	private AnalysisService analysisService;
-	@Autowired
+	@Resource
 	private SaleService saleService;
+	@Resource
+	private SysDictionaryService sysDictionaryService;
 	
 	/**
 	 * 测试用
@@ -360,8 +366,8 @@ public class NoAuthController {
 	@ApiOperation(value = "扫码记录", httpMethod = "POST", response = ApiResult.class, notes = "根据用户名、用户类型、时间查询分页查询扫码记录")
 	public ApiResult scanRecord(@ApiParam(required = true, name = "userType", value = "用户类型") @RequestParam("userType") String userType, 
 			@ApiParam(required = true, name = "username", value = "用户名称") @RequestParam("username") String username, 
-			@ApiParam(required = true, name = "beginTime", value = "开始时间") @RequestParam("beginTime") String beginTime,
-			@ApiParam(required = true, name = "endTime", value = "结束时间") @RequestParam("endTime") String endTime, 
+			@ApiParam(required = false, name = "beginTime", value = "开始时间") @RequestParam(value = "beginTime", required = false) String beginTime,
+			@ApiParam(required = false, name = "endTime", value = "结束时间") @RequestParam(value = "endTime", required = false) String endTime, 
 			@ApiParam(required = true, name = "currentPage", value = "当前页数") @RequestParam("currentPage") int currentPage,
 			@ApiParam(required = true, name = "countPerPage", value = "每页记录数") @RequestParam("countPerPage") int countPerPage) {
 	
@@ -413,7 +419,8 @@ public class NoAuthController {
 			
 			Map<String, Activity> atyMap = new HashMap<String, Activity>();
 			for (Activity aty : activityList) {
-				atyMap.put(aty.getPublicCode().trim(), aty);
+				if (aty.getPublicCode() != null)
+					atyMap.put(aty.getPublicCode().trim(), aty);
 			}
 			
 			Map<String, Award> awMap = new HashMap<String, Award>();
@@ -479,7 +486,7 @@ public class NoAuthController {
 			@ApiParam(required = true, name = "latitude", value = "纬度") @RequestParam("latitude") String latitude, 
 			@ApiParam(required = true, name = "publicCode", value = "公共编码") @RequestParam("publicCode") String publicCode, 
 			@ApiParam(required = true, name = "privateCode", value = "唯一码") @RequestParam("privateCode") String privateCode,
-			@ApiParam(required = true, name = "insideCode", value = "内码") @RequestParam("insideCode") String insideCode, 
+			@ApiParam(required = false, name = "insideCode", value = "内码") @RequestParam(value = "insideCode", required= false) String insideCode, 
 			@ApiParam(required = false, name = "exchange", value = "是否立即兑奖")@RequestParam(value = "exchange", required = false) String exchange) {
 		System.out.println("loginWithMessage--userType: " + userType);
 		System.out.println("loginWithMessage--username: " + username);
@@ -576,6 +583,26 @@ public class NoAuthController {
     					e.printStackTrace();
     				}
     				
+    				// 未中奖
+    				if (wares.getStatus().equals(Const.EX_STATUS_EXCHANGED)) {  
+    					result.setCode(Const.INFO_NO_AWARD);
+    					result.setSuccess(false);
+    					result.setMsg("该商品未中奖，欢迎下次惠顾！");
+    					result.setData(wares);
+    					
+    					return result;
+					}
+    				
+    				// 已兑奖
+    				if (wares.getStatus().equals(Const.EX_STATUS_EXCHANGED)) {  
+    					result.setCode(Const.INFO_EXCHANGED);
+    					result.setSuccess(false);
+    					result.setMsg("该商品已经兑过奖！");
+    					result.setData(wares);
+    					
+    					return result;
+					}
+    				
 	    			/**
 	    			 * 3、判断是否中奖
 	    			 */
@@ -588,7 +615,7 @@ public class NoAuthController {
     					
     					/* --> 返回值2  未中奖  【200 + false】
     					 */
-    					result.setCode(Const.INFO_NORMAL);
+    					result.setCode(Const.INFO_NO_AWARD);
     					result.setSuccess(false);
     					result.setMsg("该商品未中奖，欢迎下次惠顾！");
     					result.setData(wares);
@@ -639,7 +666,15 @@ public class NoAuthController {
 								result.setCode(Const.ERROR_SERVER);
 								result.setSuccess(false);
 								result.setMsg("新增兑奖记录失败!");
+								
+								return result;
 							}
+    						
+    						/**
+        					 * 修改商品的兑奖状态
+        					 */
+        					wares.setStatus(Const.EX_STATUS_EXCHANGED);
+        					waresService.updateWares(wares);
     						
     					}
     				}
@@ -647,7 +682,7 @@ public class NoAuthController {
     			}
 	    		
 	    		break;
-	    	case Const.USERTYPE_VENDER:
+	    	case Const.USERTYPE_DEALER:
 	    		result.setOperate(Const.OPERATE_VENDER_SCAN);
 	    		
 	    		// TODO  商户扫码
@@ -680,7 +715,7 @@ public class NoAuthController {
 						result.setCode(Const.INFO_NORMAL);
 		    			result.setMsg("商户扫码 成功");
 		    			result.setSuccess(true);
-		    			result.setData(null);
+		    			result.setData(sr);
 		    			
 	    			} else {
 	    				result.setCode(Const.ERROR_NULL_POINTER);
@@ -722,6 +757,7 @@ public class NoAuthController {
 			@ApiParam(required = true, name = "privateCode", value = "唯一码") @RequestParam("privateCode") String privateCode, 
 			@ApiParam(required = false, name = "insideCode", value = "内码") @RequestParam(value = "insideCode", required = false) String insideCode) {
 		ApiResult result = new ApiResult();
+		result.setOperate(Const.OPERATE_ANTI_FAKE);
 		
 		if (publicCode != null && privateCode != null && !publicCode.equals("") && !privateCode.equals("") ) {
 			
@@ -772,10 +808,9 @@ public class NoAuthController {
 					
 					// 如果没有传insideCode，直接返回“无法判断”
 					if (insideCode == null || insideCode.equals("")) {
-						result.setCode(Const.INFO_NORMAL);
-						result.setSuccess(true);
 						result.setCode(Const.WARN_NO_JUDGE);
-						result.setMsg("无法判断");
+						result.setSuccess(true);
+						result.setMsg("该商品未消费");
 						
 						return result;
 					}
@@ -872,7 +907,9 @@ public class NoAuthController {
 			result.setCode(Const.INFO_NORMAL);
 			result.setSuccess(true);
 			result.setMsg("获取商品信息页面URL");
-			result.setData("http://www.hclinks.cn/crmnew/static/wares_info.html");
+			
+			result.setData(Const.ROOT_HTML_URL + publicCode + ".html");
+			// 类似 "http://www.hclinks.cn/crmnew/static/info/123.html"
 		 }
 		 
 		 return result;
@@ -942,11 +979,12 @@ public class NoAuthController {
 	@RequestMapping(value = "/placeAnalysis", method = RequestMethod.POST)
 	@ResponseBody
 	@ApiOperation(value = "地域统计", httpMethod = "POST", response = ApiResult.class, notes = "统计当前商品在各个地域的销售情况")
-	public ApiResult placeAnalysis(@ApiParam(required = true, name = "publicCode", value = "公共编码") @RequestParam("publicCode") String publicCode) {
+	public ApiResult placeAnalysis(@ApiParam(required = true, name = "publicCode", value = "公共编码") @RequestParam("publicCode") String publicCode,
+			@ApiParam(required = true, name = "userId", value = "用户ID") @RequestParam("userId") String userId) {
 		ApiResult result = new ApiResult();
 		result.setOperate(Const.OPERATE_PLACE_ANALYSIS);
 		
-		List<PlaceAnalysis> paList = analysisService.findPlaceAnalysis(publicCode, Const.USERTYPE_VENDER);
+		List<PlaceAnalysis> paList = analysisService.findPlaceAnalysis(publicCode, userId);
 		result.setSuccess(true);
 		result.setMsg("查询到" + paList.size() + "条数据.");
 		result.setData(paList);
@@ -964,14 +1002,14 @@ public class NoAuthController {
 	@RequestMapping(value = "/saleAnalysis", method = RequestMethod.POST)
 	@ResponseBody
 	@ApiOperation(value = "销售统计", httpMethod = "POST", response = ApiResult.class, notes = "统计当前商品各个月份的的销售情况（向前推算一年）")
-	public ApiResult saleAnalysis(@ApiParam(required = true, name = "username", value = "用户名称") @RequestParam("username") String username,
+	public ApiResult saleAnalysis(@ApiParam(required = true, name = "userId", value = "用户名称") @RequestParam("userId") String userId,
 			@ApiParam(required = true, name = "publicCode", value = "公共编码") @RequestParam("publicCode") String publicCode) {
 		ApiResult result = new ApiResult();
 		result.setOperate(Const.OPERATE_SALE_ANALYSIS);
 		
 		Calendar cal = Calendar.getInstance();
 		int year = cal.get(Calendar.YEAR);  // 年
-		int month = cal.get(Calendar.MONTH);  // 月
+		int month = cal.get(Calendar.MONTH);  // 月  月份数字会-1
 		
 		int prevYear = year - 1;  // 上年
 		int nextMonth = month + 1;
@@ -979,21 +1017,57 @@ public class NoAuthController {
 		String begin = prevYear + "-" + (month < 10 ? ("0" + month) : month);
 		String end = year + "-" + (nextMonth < 10 ? "0" + nextMonth : nextMonth);
 		
+		List<Activity> atyList = activityService.getActivityList(" and t.publicCode = '" + publicCode + "'");
+		Set<String> atyIdSet = new HashSet<String>();
+		
+		for (Activity aty : atyList) {
+			atyIdSet.add(aty.getId().trim());
+		}
+		String[] atyIdArr = atyIdSet.toArray(new String[0]);
+		String atyIds = Tool.stringArrayToString(atyIdArr, true, ",");
+		
 		StringBuffer conditionSql = new StringBuffer();
 		conditionSql
-			.append(" and (t.year = '").append(prevYear).append("' and t.month > '").append(month-1).append("') ")
-			.append(" or (t.year = '").append(year).append("' and t.month < '").append(month).append("') ");
+			.append(" and ((t.year = '").append(prevYear).append("' and t.month > '").append(month).append("') ")
+			.append(" or (t.year = '").append(year).append("' and t.month <= '").append(month+1).append("')) ")
+			.append(" and t.userId = '").append(userId).append("'");
 		
 		/**
 		 * 1、直接从销售统计表里获取数据
 		 */
-		List<Sale> saleList = saleService.findSaleListBy(publicCode, conditionSql.toString());
+		List<Sale> saleList = saleService.findSaleListBy(atyIds, conditionSql.toString());
 		//List<ScanRecord> srList = this.scanRecordService.findByCondition(conditionSql.toString());
+		
+		Collections.sort(saleList);
 		
 		result.setCode(Const.INFO_NORMAL);
 		result.setSuccess(true);
 		result.setMsg("获取" + begin + "到" + end + " 的销售数据，共计" + saleList.size() + "条！");
 		result.setData(saleList);
+		
+		return result;
+	}
+	
+	/**
+	 * 获取兑奖方式列表
+	 * @Title:			saleAnalysis
+	 * @Description:	获取兑奖方式列表
+	 * @param userId
+	 * @param publicCode
+	 * @return
+	 */
+	@RequestMapping(value = "/exchangeType", method = RequestMethod.POST)
+	@ResponseBody
+	@ApiOperation(value = "获取兑奖类型", httpMethod = "POST", response = ApiResult.class, notes = "获取系统当前支持的兑奖类型列表")
+	public ApiResult exchangeType() {
+		ApiResult result = new ApiResult();
+		result.setOperate(Const.OPERATE_EXCHANGE_TYPE);
+		List<SysDictionary> dicList = sysDictionaryService.getDicList(" and parentid = 'DJLX'");
+		
+		result.setCode(Const.INFO_NORMAL);
+		result.setSuccess(true);
+		result.setMsg("获取到" + dicList.size() + "条兑奖类别信息");
+		result.setData(dicList);
 		
 		return result;
 	}

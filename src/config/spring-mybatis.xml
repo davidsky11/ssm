@@ -32,12 +32,15 @@
 		<!-- 配置一个连接在池中最小生存的时间，单位是毫秒 -->
 		<property name="minEvictableIdleTimeMillis" value="${jdbc.minEvictableIdleTimeMillis}" />
 
-		<!-- <property name="validationQuery"><value>SELECT 'x'</value></property> 
+		<property name="validationQuery"><value>SELECT 'x'</value></property> 
 			<property name="testWhileIdle"><value>true</value></property> <property name="testOnBorrow"><value>false</value></property> 
 			<property name="testOnReturn"><value>false</value></property> <property name="poolPreparedStatements"><value>true</value></property> 
-			<property name="maxOpenPreparedStatements"><value>20</value></property> -->
+			<property name="maxOpenPreparedStatements"><value>20</value></property>
 	</bean>
 
+	<!-- 使用druid连接池 -->
+	<!-- <import resource="classpath:config/spring-druid.xml"/> -->
+	
 	<!-- mybatis配置 -->
 	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
 		<property name="dataSource" ref="dataSource" />

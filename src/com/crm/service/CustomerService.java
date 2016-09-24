@@ -5,11 +5,6 @@ package com.crm.service;
 
 import java.util.List;
 
-import javax.annotation.Resource;
-
-import org.springframework.stereotype.Service;
-
-import com.crm.dao.mybatis.CustomerMapper;
 import com.crm.domain.Contact;
 import com.crm.domain.Customer;
 import com.crm.domain.Visitlog;
@@ -29,69 +24,45 @@ import com.crm.domain.easyui.PageHelper;
  * Spring针对Ehcache支持的Java源码位于spring-context-support-*.RELEASE-sources.jar中 
  * ---------------------------------------------------------------------------------------------------------- 
  */
-@Service
-public class CustomerService {
+public interface CustomerService {
 
-	@Resource
-	private CustomerMapper customerMapper;
-
-	public Customer findByName(String name) {
-		return customerMapper.findByName(name);
-	}
+	public Customer findByName(String name);
 	
-    public Customer getUsernameById(int id){  
-        return customerMapper.getCustomerById(id);  
-    }
+    public Customer getUsernameById(int id);
 
 	/**
 	 * 获取该客户的所有联系人
 	 * @return
 	 */
-	public List<Contact> getContactById(int customerId) {
-		return customerMapper.getContactById(customerId);  
-	}
+	public List<Contact> getContactById(int customerId);
 	
 	/**
 	 * 获取该客户的所有拜访记录
 	 * @return
 	 */
-	public List<Visitlog> getVisitlogById(int customerId) {
-		return customerMapper.getVisitlogById(customerId);  
-	}
+	public List<Visitlog> getVisitlogById(int customerId);
 
 	/**
 	 * 获取总数
 	 * @param user
 	 * @return
 	 */
-	public Integer getDatagridTotal(Customer customer) {
-		return customerMapper.getDatagridTotal(customer);
-	}
+	public Integer getDatagridTotal(Customer customer) ;
 
 	/**
 	 * 获列表 分页
 	 * @param page
 	 * @return
 	 */
-	public List<Customer> datagridCustomer(PageHelper page) {
-		page.setStart((page.getPage()-1)*page.getRows());
-		page.setEnd(page.getPage()*page.getRows());
-		return customerMapper.datagridCustomer(page);  
-	}
+	public List<Customer> datagridCustomer(PageHelper page);
 
 	//添加
-	public void addCustomer(Customer customer){
-		customerMapper.addCustomer(customer);
-	};
+	public void addCustomer(Customer customer);
 
 	//修改
-	public void editCustomer(Customer customer){
-		customerMapper.editCustomer(customer);
-	};
+	public void editCustomer(Customer customer);
 	
 	//删除
-	public void deleteCustomer(int id){
-		customerMapper.deleteCustomer(id);
-	};
+	public void deleteCustomer(int id);
     
 }

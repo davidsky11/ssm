@@ -1,2 +1,8 @@
 /com/
+/config/
+/configuration.properties
+/ehcache.xml
+/ehcache1.xml
+/logback.xml
 /ssm/
+/template/

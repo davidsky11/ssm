@@ -16,12 +16,12 @@ import com.crm.domain.easyui.PageHelper;
  */
 public interface AnalysisMapper {
 
-	public List<PlaceAnalysis> findPlaceAnalysis(@Param("publicCode") String publicCode, @Param("userType") String userType);
+	public List<PlaceAnalysis> findPlaceAnalysis(@Param("publicCode") String publicCode, @Param("userId") String userId);
 	
-	public List<PlaceAnalysis> findPlaceAnalysisPage(@Param("publicCode") String publicCode, @Param("userType") String userType,
+	public List<PlaceAnalysis> findPlaceAnalysisPage(@Param("publicCode") String publicCode, @Param("userId") String userId,
 			@Param("page") PageHelper page);
 	
-	public Long getPalceAnalysisTotal(@Param("publicCode") String publicCode, @Param("userType") String userType);
+	public Long getPalceAnalysisTotal(@Param("publicCode") String publicCode, @Param("userId") String userId);
 	
 }
  

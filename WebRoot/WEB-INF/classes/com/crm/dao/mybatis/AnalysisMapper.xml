@@ -4,12 +4,15 @@
 
 	<select id="findPlaceAnalysis" resultType="com.crm.domain.dto.PlaceAnalysis">
 		SELECT province as province, count(*) as count FROM scan_record WHERE publicCode = #{publicCode} 
-		and userType = #{userType} GROUP BY province
+		<if test="userId !=null and userId != ''">
+			and userId = #{userId}
+		</if>
+		 GROUP BY province
 	</select>
 	
 	<select id="findPlaceAnalysisPage" resultType="com.crm.domain.dto.PlaceAnalysis">
 		SELECT province as province, count(*) as count FROM scan_record WHERE publicCode = #{publicCode} 
-		and userType = #{userType} GROUP BY province
+		and userId = #{userId} GROUP BY province
 		<if test="page.sort != null and page.sort != ''">
             order by #{page.sort} #{page.order}
         </if>
@@ -20,7 +23,7 @@
 	
 	<select id="getPalceAnalysisTotal" resultType="long">
 		SELECT province as province, count(*) as count FROM scan_record WHERE publicCode = #{publicCode} 
-		and userType = #{userType} GROUP BY province
+		and userId = #{userId} GROUP BY province
 	</select>
 	
 	<select id="datagridWares" resultType="com.crm.domain.Wares">

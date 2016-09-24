@@ -38,7 +38,9 @@ import com.crm.util.common.Const;
  */
 @Controller
 public class SystemController extends BaseController {
+	
 	private final Logger log = LoggerFactory.getLogger(SystemController.class);
+	
 	@Resource
 	private UserService userService;
 	@Resource

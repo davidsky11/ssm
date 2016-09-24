@@ -36,7 +36,7 @@ public interface SaleMapper {
 	
 	public List<Sale> findSaleListPage(@Param("page") PageHelper page, @Param("publicCode") String publicCode, @Param("conditionSql") String conditionSql);
 	
-	public List<Sale> findSaleListBy(@Param("publicCode") String publicCode, @Param("conditionSql") String conditionSql);
+	public List<Sale> findSaleListBy(@Param("atyIds") String atyIds, @Param("conditionSql") String conditionSql);
 
 	public List<Sale> findSaleList(@Param("conditionSql") String conditionSql);
 

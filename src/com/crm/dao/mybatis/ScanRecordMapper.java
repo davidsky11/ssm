@@ -27,6 +27,8 @@ public interface ScanRecordMapper {
 	// 修改ScanRecord
 	public int updateScanRecord(ScanRecord scanRecord);
 	
+	public ScanRecord findById(@Param("id") String id);
+	
 	// 查询所有扫描记录
 	public List<ScanRecord> getScanRecordList(@Param("page") PageHelper page, @Param("conditionSql") String conditionSql); 
 	

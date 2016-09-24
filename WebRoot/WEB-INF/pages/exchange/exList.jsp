@@ -21,103 +21,46 @@
 		<div class="box">
 			<!-- /.box-header -->
 			<div class="box-body">
-				<%-- <div class="row">
-					<div class="col-md-12">
-						<div class="box box-primary">
-							<div class="box-header with-border">
-								<h3 class="box-title">数据查询</h3>
-							</div>
-							<div class="box-body">
-								<!-- form start -->
-								<form id="searchForm" action="user/search" method="get">
-									<div class="box-body">
-										<div class="row">
-											<input hidden="true" name="pageNumber" id="pageNumber">
-											<div class="form-group col-md-2">
-												<label for="usernameLabel">用户名:</label> <input type="text"
-													class="form-control" id="usernameLabel"
-													name="search_username" value="${searchParamsMap.username }">
-											</div>
-											<div class="form-group col-md-2">
-												<label for="aliasLabel">别名:</label> <input type="text"
-													class="form-control" id="aliasLabel"
-													name="search_userAlias"
-													value="${searchParamsMap.userAlias }">
-											</div>
-											<!-- Date range -->
-											<div class="form-group  col-md-4">
-												<label>创建时间:</label>
-												<div class="input-group">
-													<div class="input-group-addon">
-														<i class="fa fa-calendar"></i>
-													</div>
-													<input type="text" class="form-control pull-right"
-														id="reservation" name="search_createTimeRange"
-														value="${searchParamsMap.createTimeRange}">
-												</div>
-												<!-- /.input group -->
-											</div>
-											<!-- <div class="form-group col-md-2">
-												<label for="isLockedLabel" >是否锁定: </label><br>
-												<input id="isLockedLabel" type="checkbox" name="search_locked">
-											</div> -->
-
-											<!-- /.form group -->
-										</div>
-										<!-- other rows -->
-									</div>
-									<!-- /.box-body -->
-									<div class="box-footer">
-										<button id="searchBtn" type="submit"
-											class="btn btn-info pull-right">查询</button>
-									</div>
-									<!-- /.box-footer -->
-								</form>
-							</div>
-							<!-- /.box-body -->
-						</div>
-						<!-- /.box -->
-					</div>
-					<!-- /.col (right) -->
-				</div> --%>
-				<!-- /.row -->
 				<div class="box box-primary">
 					<div class="box-header with-border">
 						<h3 class="box-title">兑奖列表</h3>
 					</div>
-					<div class="btn-group">
-						<!-- 注意，为了设置正确的内补（padding），务必在图标和文本之间添加一个空格。 -->
-						
-						<%-- <shiro:hasPermission name="user:create"> --%>
-							<!-- <button id="addBtn" type="button"
-								class="btn  btn-primary btn-flat margin" onclick="addItem()">
-								<span class="fa fa-fw  fa-plus" aria-hidden="true"></span> 新增
-							</button> -->
-						<%-- </shiro:hasPermission>
-						<shiro:hasPermission name="user:delete"> --%>
-							<!-- <button id="deleteBtn" type="button"
-								class="btn  btn-danger btn-flat margin">
-								<span class="fa fa-fw fa-remove" aria-hidden="true"></span> 删除
-							</button> -->
-						<%-- </shiro:hasPermission>
-						<shiro:hasPermission name="user:upload"> --%>
-							<!-- <button id="uploadBtn" type="button"
-								class="btn  btn-primary btn-flat margin" onclick="uploadItem()">
-								<span class="fa fa-fw fa-cloud-upload" aria-hidden="true"></span> 上传
-							</button> -->
-							<%-- </shiro:hasPermission> --%>
-							<%-- <shiro:hasPermission name="user:download"> --%>
-							<!-- <form id="downloadForm" action="user/download" method="get" >
-							<button id="downloadBtn" type="submit"
-								class="btn  btn-primary btn-flat margin2" 
-								 onclick="downloadItem()">
-								<span class="fa fa-fw fa-cloud-download" aria-hidden="true"></span> 下载
-							</button>
-							<input id="downloadIds" type="hidden" name="downloadIds[]">
-							</form> -->
-							<%-- </shiro:hasPermission> --%>
-							
-					</div>
+					<div class="form-group">
+						<div class="box-body">
+							<div class="row">
+			                	<div class="col-xs-3">
+									<select class="form-control" id="publicCode" name="publicCode">
+										<option value="">  请 选 择 活 动   </option>
+										<c:forEach items="${atyList}" var="aty">
+											<option value="${aty.publicCode}"
+												<c:if test="${publicCode eq aty.publicCode }">selected=selected</c:if>
+											>${aty.title}</option>							
+										</c:forEach>
+									</select>
+			                	</div>
+				                <div class="col-xs-3">
+				                	<div class="input-group">
+										<div class="input-group-addon">
+											<i class="fa fa-calendar"></i>
+										</div>
+				                  		<input type="text" class="form-control pull-right" id="startDate" name="startDate" value="${startDate}" placeholder="开始时间">
+				                  	</div>
+				                </div>
+				                <div class="col-xs-3">
+				                	<div class="input-group">
+										<div class="input-group-addon">
+											<i class="fa fa-calendar"></i>
+										</div>
+				                  		<input type="text" class="form-control pull-right" id="endDate" name="endDate" value="${endDate}" placeholder="结束时间">
+				                  	</div>
+				                </div>
+				                
+				                <div class="col-xs-3">
+				                	<button id="searchBtn" type="button" class="btn btn-info pull-right">查询</button>
+				                </div>
+			              	</div>
+			            </div>
+				 </div>
 				<div class="table-responsive">
 					<table class="table table-hover center">
 						<tr>
@@ -131,7 +74,7 @@
 							<th>奖项</th>
 							<th>兑奖方式</th>
 							<th>受益者</th>
-							<!-- <th>操作</th> -->
+							<th>操作</th>
 
 						</tr>
 						<c:forEach items="${exs}" var="ex" varStatus="status">
@@ -164,7 +107,7 @@
 											class="btn btn-xs btn-primary btn-flat" onclick="updateItem('${aty.id}');">编辑</button> --%>
 									<%-- </shiro:hasPermission> <shiro:hasPermission name="user:view"> --%>
 										<button id="detailBtn" type="button"
-											class="btn  btn-xs btn-primary btn-flat" onclick="detailItem('${sr.id}');">详情</button>
+											class="btn  btn-xs btn-primary btn-flat" onclick="detailItem('${ex.id}');">详情</button>
 									<%-- </shiro:hasPermission> <shiro:hasPermission name="user:bind"> --%>
 										<%-- <button id="bindRoleBtn" type="button"
 											class="btn  btn-xs btn-primary btn-flat"  onclick='bindItem(${user.id})'>角色绑定</button> --%>
@@ -251,8 +194,12 @@
 			async : false,
 			cache : false,
 			type : 'GET',
-			data : $("#searchForm").serialize(),		 
-			url : "aty/search",//请求的action路径  
+			data : {
+				publicCode: $('#publicCode').val(),
+				startDate: $('#startDate').val(),
+				endDate: $('#endDate').val()
+			},		 
+			url : "exchange/exList",//请求的action路径  
 			error : function() {//请求失败处理函数  
 				alert('失败');
 			},
@@ -276,7 +223,7 @@
 	}
 	
 	function detailItem(id){
-		modalLoadAndDisplay('aty/detail/'+id);
+		modalLoadAndDisplay('exchange/detail/'+id);
 	}
 	
 	function uploadItem(){	
@@ -305,4 +252,17 @@
 			
 		});
 	}
+	
+	// Date picker
+	$('#startDate').datepicker({
+		autoclose: true,
+		language: "zh-CN",
+		format: "yyyy-mm-dd"
+	})
+	
+	$('#endDate').datepicker({
+		autoclose: true,
+		language: "zh-CN",
+		format: "yyyy-mm-dd"
+	})
 </script>

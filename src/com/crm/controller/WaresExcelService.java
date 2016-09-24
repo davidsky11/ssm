@@ -7,7 +7,8 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import javax.annotation.Resource;
+
 import org.springframework.stereotype.Service;
 
 import com.crm.domain.Wares;
@@ -29,7 +30,7 @@ import jxl.write.WriteException;
 @Service("waresExcelService")
 public class WaresExcelService {
 
-	@Autowired
+	@Resource
 	private WaresService waresService;
 	
 	public void saveToExcel(String path, String conditionSql) throws FileNotFoundException{

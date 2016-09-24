@@ -9,7 +9,6 @@ import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
 import com.crm.authorization.interceptor.AuthorizationInterceptor;
-import com.crm.authorization.resolvers.CurrentAccountMethodArgumentResolver;
 
 /** 
  * @ClassName	MvcConfig.java
@@ -24,8 +23,8 @@ public class MvcConfig extends WebMvcConfigurerAdapter {
 	@Autowired
     private AuthorizationInterceptor authorizationInterceptor;
 	
-	@Autowired
-    private CurrentAccountMethodArgumentResolver currentUserMethodArgumentResolver;
+	/*@Autowired
+    private CurrentAccountMethodArgumentResolver currentUserMethodArgumentResolver;*/
 	
 	@Override
     public void addInterceptors(InterceptorRegistry registry) {
@@ -34,7 +33,7 @@ public class MvcConfig extends WebMvcConfigurerAdapter {
 
     @Override
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> argumentResolvers) {
-        argumentResolvers.add(currentUserMethodArgumentResolver);
+        //argumentResolvers.add(currentUserMethodArgumentResolver);
     }
     
 }

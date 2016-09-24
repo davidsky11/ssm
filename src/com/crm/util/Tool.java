@@ -1,5 +1,8 @@
 package com.crm.util;
 
+import java.util.Collection;
+import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 /** 
@@ -53,6 +56,10 @@ public class Tool {
 		return sb.toString();
 	}
 	
+	public static String nvl(String nvlString) {
+		return nvlString == null ? "" : nvlString;
+	}
+	
 	/**
 	 * 验证字符串是否为空
 	 * 
@@ -67,6 +74,48 @@ public class Tool {
 			return false;
 		}
 		return true;
+	}
+	
+	public static boolean isNullOrEmpty(Object obj) {
+		if (obj == null)
+			return true;
+
+		if (obj instanceof CharSequence)
+			return ((CharSequence) obj).length() == 0;
+
+		if (obj instanceof Collection)
+			return ((Collection) obj).isEmpty();
+
+		if (obj instanceof Map)
+			return ((Map) obj).isEmpty();
+
+		if (obj instanceof Object[]) {
+			Object[] object = (Object[]) obj;
+			if (object.length == 0) {
+				return true;
+			}
+			boolean empty = true;
+			for (int i = 0; i < object.length; i++) {
+				if (!isNullOrEmpty(object[i])) {
+					empty = false;
+					break;
+				}
+			}
+			return empty;
+		}
+		return false;
+	}
+	
+	public static String doneQueryParam(Map<String, String> paramMap) {
+		StringBuffer str = new StringBuffer();
+		Set<String> keySet = paramMap.keySet();
+		for (String key : keySet) {
+			if (Tool.isNotNullOrEmpty(key.trim())) {
+				str.append("&").append(key).append("=").append(paramMap.get(key).trim());
+			}
+		}
+		
+		return str.toString();
 	}
 	
 	public static void main(String[] args) {

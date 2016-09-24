@@ -91,8 +91,8 @@
 						
 						<%-- <shiro:hasPermission name="user:create"> --%>
 							<button id="addBtn" type="button"
-								class="btn  btn-primary btn-flat margin" onclick="addItem()">
-								<span class="fa fa-fw  fa-plus" aria-hidden="true"></span> 新增
+								class="btn btn-primary btn-flat margin" onclick="addItem()">
+								<span class="fa fa-fw fa-plus" aria-hidden="true"></span> 新增
 							</button>
 						<%-- </shiro:hasPermission>
 						<shiro:hasPermission name="user:delete"> --%>
@@ -153,10 +153,10 @@
 											class="btn btn-xs btn-primary btn-flat" onclick="updateItem('${aty.id}');">编辑</button>
 									<%-- </shiro:hasPermission> <shiro:hasPermission name="user:view"> --%>
 										<button id="detailBtn" type="button"
-											class="btn  btn-xs btn-primary btn-flat" onclick="detailItem('${aty.id}');">详情</button>
+											class="btn btn-xs btn-primary btn-flat" onclick="detailItem('${aty.id}');">详情</button>
 									<%-- </shiro:hasPermission> <shiro:hasPermission name="user:bind"> --%>
-										<%-- <button id="bindRoleBtn" type="button"
-											class="btn  btn-xs btn-primary btn-flat"  onclick='bindItem(${user.id})'>角色绑定</button> --%>
+										<button id="buildInfoBtn" type="button"
+											class="btn btn-xs btn-primary btn-flat" onclick="buildItem('${aty.id}');">生成页面</button>
 									<%-- </shiro:hasPermission></td> --%>
 							</tr>
 						</c:forEach>
@@ -273,7 +273,24 @@
 	}
 	function bindItem(id){
 		modalLoadAndDisplay('aty/prepareBind/'+id);
-		
+	}
+	
+	function buildItem(id) {
+		$.ajax({
+			async : false,
+			cache : false,
+			type : 'GET',
+			data : {},
+			dateType: "text/html",
+			url : "aty/makeAtyInfo/" + id,//请求的action路径  
+			error : function() {//请求失败处理函数  
+				alert('失败');
+			},
+			success : function(data) { //请求成功后处理函数。    
+				alert(data);
+				//$("#content-wrapper").html(data);//刷新content页面		
+			}
+		});
 	}
 	
 	

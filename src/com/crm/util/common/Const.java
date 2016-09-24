@@ -4,6 +4,27 @@ package com.crm.util.common;
 public class Const {
 	
 	/**
+	 * 访问的项目地址
+	 */
+	public static final String ROOT_HTML_URL = "http://www.hclinks.cn/crmnew/static/info/";
+	/**
+	 * HTML模板的路径
+	 */
+	public static final String HTML_TEMPLATE_FILE = "template/info.jsp";
+	/**
+	 * 导出HTML的路径
+	 */
+	public static final String HTML_OUTPUT_PATH = "static/info/";
+	/**
+	 * 访问层级
+	 */
+	public static final String HTML_LEVEL = "../../upload/img/";
+	/**
+	 * 上传文件的保存路径
+	 */
+	public static final String UPLOAD_PATH = "upload/img/";
+	
+	/**
 	 * 树的顶层ID
 	 */
 	public static final int ROOT_TREE_ID = 0;
@@ -140,6 +161,18 @@ public class Const {
      * 错误代码
      */
     /**
+     * 未兑奖
+     */
+    public static final int INFO_UNEXCHANGE = 100;
+    /**
+     * 未中奖
+     */
+    public static final int INFO_NO_AWARD = 101;
+    /**
+     * 已兑奖
+     */
+    public static final int INFO_EXCHANGED = 102;
+    /**
      * 正常 200
      */
     public static final int INFO_NORMAL = 200; // 正常
@@ -200,6 +233,7 @@ public class Const {
     public static final String OPERATE_USER_LOGIN = "LOGIN";
     public static final String OPERATE_USER_LOGOUT = "LOGOUT";
     public static final String OPERATE_AUTHORIZATION = "AUTHORIZATION";
+    public static final String OPERATE_ANTI_FAKE = "ANTI_FAKE";
     public static final String OPERATE_VENDER_SCAN = "VENDER_SCAN";
     public static final String OPERATE_APP_SCAN = "APP_SCAN";
     public static final String OPERATE_SCAN_RECORD = "SCAN_RECORD";
@@ -210,4 +244,5 @@ public class Const {
     public static final String OPERATE_AWARD_ANALYSIS = "AWARD_ANALYSIS";
     public static final String OPERATE_PLACE_ANALYSIS = "PLACE_ANALYSIS";
     public static final String OPERATE_SALE_ANALYSIS = "SALE_ANALYSIS";
+    public static final String OPERATE_EXCHANGE_TYPE = "EXCHANGE_TYPE";
 }

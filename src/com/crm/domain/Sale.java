@@ -7,7 +7,7 @@ package com.crm.domain;
  * @CreateTime  2016年9月2日 下午7:28:32
  * @Version 	V1.0    
  */
-public class Sale {
+public class Sale implements Comparable<Sale> {
 	
 	private Integer id;
 	private Integer year;
@@ -66,6 +66,32 @@ public class Sale {
 	public String toString() {
 		return "Sale [id=" + id + ", year=" + year + ", month=" + month + ", amount=" + amount + ", activityId="
 				+ activityId + ", activity=" + activity + ", publicCode=" + publicCode + "]";
+	}
+	
+	@Override
+	public int compareTo(Sale o) {
+		if (o == null) {
+			return 1;
+		}
+		if (this.getYear() == null) {
+			return -1;
+		}
+		if (o.getYear() == null) {
+			return 1;
+		}
+		if (this.getYear() > o.getYear()) {
+			return 1;
+		} else if (this.getYear() < o.getYear()) {
+			return -1;
+		}else if (this.getYear() == o.getYear()) {
+			if (this.getMonth() > o.getMonth()) {
+				return 1;
+			} else {
+				return -1;
+			}
+		}
+		
+		return 0;
 	}
 	
 }

@@ -1,6 +1,7 @@
 package com.crm.dao.mybatis;
 
 import java.util.List;
+
 import com.crm.domain.LogInfo;
 import com.crm.domain.query.LogInfoQuery;
 

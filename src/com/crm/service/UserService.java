@@ -5,21 +5,12 @@ package com.crm.service;
 
 import java.util.List;
 
-import javax.annotation.Resource;
-
-import org.springframework.cache.annotation.Cacheable;
-import org.springframework.stereotype.Service;
-
-import com.crm.dao.mybatis.RoleMapper;
-import com.crm.dao.mybatis.UserMapper;
-import com.crm.dao.mybatis.UserRoleMapper;
 import com.crm.domain.Page;
 import com.crm.domain.Role;
 import com.crm.domain.SysMenu;
 import com.crm.domain.User;
 import com.crm.domain.UserRole;
 import com.crm.domain.easyui.PageHelper;
-import com.crm.util.common.Const;
 
 /**
  * @author zh
@@ -36,92 +27,58 @@ import com.crm.util.common.Const;
  * Spring针对Ehcache支持的Java源码位于spring-context-support-*.RELEASE-sources.jar中 
  * ---------------------------------------------------------------------------------------------------------- 
  */
-@Service
-public class UserService {
-
-	@Resource
-	private UserMapper userMapper;
-	@Resource
-	private RoleMapper roleMapper;
-	@Resource
-	private UserRoleMapper userRoleMapper;
+public interface UserService {
 	
 	/**
 	 * @param username
 	 * @return
 	 */
-	public List<User> login(String username, String userType, String password) {
-		return userMapper.login(username, userType, password);
-	}
+	public List<User> login(String username, String userType, String password);
 	
-	public List<User> findByConditionSql(String username, String userType) {
-		return userMapper.findByConditionSql(" AND username = '" + username + "' AND userType = '" + userType + "'");
-	}
+	public List<User> findByConditionSql(String username, String userType);
 	
 	//将查询到的数据缓存到myCache中,并使用方法名称加上参数中的userNo作为缓存的key  
     //通常更新操作只需刷新缓存中的某个值,所以为了准确的清除特定的缓存,故定义了这个唯一的key,从而不会影响其它缓存值  
-    @Cacheable(value="myCache", key="#id")  
-    public String getUsernameById(String id){  
-        User user = userMapper.getUserById(id);
-        
-        String username = "";
-        if (username != null) 
-        	username = user.getUsername();
-        return username;  
-    }
+    public String getUsernameById(String id);
 
 	/**
 	 * 获取该用户权限的菜单
 	 * @param userId
 	 * @return
 	 */
-	public List<SysMenu> getMenu(String userId) {
-		return userMapper.getMenuByUserId(userId);  
-	}
+	public List<SysMenu> getMenu(String userId);
 
 	/**
 	 * 获取用户总数
 	 * @param user
 	 * @return
 	 */
-	public Integer getDatagridTotal(User user,Integer sysid) {
-		return userMapper.getDatagridTotal(user,sysid);  
-	}
+	public Integer getDatagridTotal(User user,Integer sysid);
 
 	/**
 	 * 获取用户列表
 	 * @param page
 	 * @return
 	 */
-	public List<User> datagridUser(PageHelper page,Integer sysid) {
-		page.setStart((page.getPage()-1)*page.getRows());
-		page.setEnd(page.getPage()*page.getRows());
-		return userMapper.datagridUser(page,sysid);  
-	}
+	public List<User> datagridUser(PageHelper page,Integer sysid);
 
 	/**
 	 * 新增用户
 	 * @param user
 	 */
-	public int add(User user) {
-		return userMapper.addUser(user);  
-	}
+	public int add(User user);
 
 	/**
 	 * 编辑用户
 	 * @param user
 	 */
-	public int edit(User user) {
-		return userMapper.editUser(user);  
-	}  
+	public int edit(User user);
     
 	/**
 	 * 删除用户
 	 * @param id
 	 */
-	public void deleteUser(String ids){
-		userMapper.deleteUser(ids);
-	}
+	public void deleteUser(String ids);
 	
 	/**
 	 * 锁定或解锁用户
@@ -131,15 +88,7 @@ public class UserService {
 	 * @param locked
 	 * @return
 	 */
-	public Boolean lockUser(User user, Boolean locked) {
-		if (user == null || user.getId() == null) {
-			return false;
-		} else {
-			user.setLocked(Const.USER_UNLOCK);
-			Boolean success = userMapper.editUser(user) > 0;
-			return success;
-		}
-	}
+	public Boolean lockUser(User user, Boolean locked);
 	
 	/**
 	 * 根据用户id获取用户
@@ -148,9 +97,7 @@ public class UserService {
 	 * @param id
 	 * @return
 	 */
-	public User getUserById(String id) {
-		return userMapper.getUserById(id);
-	}
+	public User getUserById(String id);
 	
 	/**
 	 * @Title:			getRoleByUserId
@@ -158,9 +105,7 @@ public class UserService {
 	 * @param userId
 	 * @return
 	 */
-	public List<Role> getRoleByUserId(String userId) {
-		return userRoleMapper.findRoleByUserId(userId);
-	}
+	public List<Role> getRoleByUserId(String userId);
     
 	/**
 	 * @Title:			updateUserRole
@@ -168,9 +113,7 @@ public class UserService {
 	 * @param userRole
 	 * @return
 	 */
-    public int updateUserRole(UserRole userRole) {
-    	return userRoleMapper.updateUserRole(userRole);
-    }
+    public int updateUserRole(UserRole userRole);
     
     /**
      * @Title:			deleteUserRole
@@ -178,9 +121,7 @@ public class UserService {
      * @param conditionsql
      * @return
      */
-    public int deleteUserRole(String conditionsql) {
-    	return userRoleMapper.deleteUserRoleBySQL(conditionsql);
-    }
+    public int deleteUserRole(String conditionsql);
     
     /**
      * @Title:			getByUserId
@@ -188,18 +129,8 @@ public class UserService {
      * @param userId
      * @return
      */
-    public UserRole getById(String id) {
-    	return userRoleMapper.getById(id);
-    }
+    public UserRole getById(String id);
     
-	public Page<User> userPages(Page<User> page, String conditionSql) {
-		page.setStart((page.getPage() - 1)*page.getRows());
-		page.setEnd((page.getPage())*page.getRows());
-		
-		page.setTotal(userMapper.userPagesTotal(conditionSql));
-		page.setContent(userMapper.userPages(page, conditionSql));
-		
-		return page;
-	}
+	public Page<User> userPages(Page<User> page, String conditionSql);
     
 }

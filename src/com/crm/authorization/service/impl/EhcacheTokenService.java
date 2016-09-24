@@ -4,7 +4,8 @@ import java.text.ParseException;
 import java.util.Date;
 import java.util.UUID;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import javax.annotation.Resource;
+
 import org.springframework.stereotype.Service;
 
 import com.crm.authorization.model.TokenModel;
@@ -28,7 +29,7 @@ import com.crm.wechat.utils.MD5Util;
 @Service("ehcacheTokenService")
 public class EhcacheTokenService implements TokenService<String, String> {
 	
-	@Autowired
+	@Resource
 	private SessionCache sessionCache;
 	//@Autowired
 	//private ValidCache validCache;

@@ -1,21 +1,20 @@
 package com.crm.controller;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -25,6 +24,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -54,13 +54,13 @@ public class WaresController {
 
 	private final Logger log = LoggerFactory.getLogger(WaresController.class);
 
-	@Autowired
+	@Resource
 	private WaresService waresService;
-	@Autowired
+	@Resource
 	private ActivityService activityService;
-	@Autowired
+	@Resource
 	private AwardService awardService;
-	@Autowired
+	@Resource
 	private WaresExcelService waresExcelService;
 
 	/**
@@ -438,13 +438,31 @@ public class WaresController {
 		 * 1、根据编码数目 生成商品 码
 		 */
 		List<Wares> waresList = new ArrayList<Wares>();
+		
+		Integer maxPrivateTitle = 0;
+		Integer maxInsideTitle = 0;
+		if (Integer.parseInt(aty.getPublicCode()) > 99) {
+			maxPrivateTitle = 0;
+		} else {
+			maxPrivateTitle = 1;
+		}
+		
+		if (Integer.parseInt(aty.getPublicCode()) < 294) {
+			maxInsideTitle = 4;
+		} else {
+			maxInsideTitle = 3;
+		}
+
+		Random ran = new Random();
 
 		for (int i = 0; i < count; i++) {
 			Wares w = new Wares();
 			w.setId(Tool.generateMajorKey());
-			w.setPublicCode(aty.getPublicCode());
-			w.setPrivateCode(aty.getPublicCode() + RandomUtil.generateNumberString(16));
-			w.setInsideCode(aty.getPublicCode() + RandomUtil.generateNumberString(32));
+			w.setPublicCode(aty.getPublicCode());  // publicCode 三位 000-999
+			
+			w.setPrivateCode(maxPrivateTitle + aty.getPublicCode() + ran.nextInt(4) + RandomUtil.generateNumberString(7) + ran.nextInt(9));  // 1 099 5116277 76
+			w.setInsideCode(ran.nextInt(maxInsideTitle) + aty.getPublicCode() + ran.nextInt(8) + RandomUtil.generateNumberString(4) + ran.nextInt(9));   // 4 294 967269
+			
 			w.setCreater(user.getUsername());
 			w.setCreateTime(new Date());
 			w.setStatus("0");
@@ -466,10 +484,9 @@ public class WaresController {
 		/**
 		 * 2、批量插入商品编码信息
 		 */
-		boolean isSuccess = waresService.deleteByCondition(" publicCode = '" + aty.getPublicCode() + "'") > 0;
-		if(isSuccess) {
-			waresService.addWaresBatch(waresList);
-		}
+		waresService.deleteByCondition(" publicCode = '" + aty.getPublicCode() + "'");
+		waresService.addWaresBatch(waresList);
+		
 
 		/**
 		 * 3、修改活动的奖项经费数据
@@ -485,18 +502,20 @@ public class WaresController {
 		return mv;
 	}
 	
-	@RequestMapping(value = "/wes/downloadCfg/{id}", method = RequestMethod.GET)
-	public ResponseEntity<byte[]> editConfig(HttpSession session, @PathVariable("id") String id) throws Exception {
+	@RequestMapping(value = "/wes/downloadCfg", method = RequestMethod.GET)
+	public ResponseEntity<String> editConfig(HttpSession session, @RequestParam("id") String id) throws Exception {
 		String realPath = session.getServletContext().getRealPath("/WEB-INF/upload");
 		String fileName="waresExport"+System.currentTimeMillis()+".xls";
 		
 		Activity aty = activityService.findById(id);
-		waresExcelService.saveToExcel(realPath+"\\"+fileName, " and t.publicCode = '" + aty.getId() + "'");
+		waresExcelService.saveToExcel(realPath+"\\"+fileName, " and t.publicCode = '" + aty.getPublicCode() + "'");
 		
 		HttpHeaders headers = new HttpHeaders();    
 		headers.setContentDispositionFormData("attachment", fileName); 	
 	    headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);  
-	    return new ResponseEntity<byte[]>(FileUtils.readFileToByteArray(new File(realPath+"\\"+fileName)),    
+	    return new ResponseEntity<String>(realPath+"\\"+fileName,    
                 headers, HttpStatus.CREATED);
+	    // FileUtils.readFileToByteArray(new File(realPath+"\\"+fileName)
 	}
+	
 }

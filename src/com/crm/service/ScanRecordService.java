@@ -2,10 +2,6 @@ package com.crm.service;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import com.crm.dao.mybatis.ScanRecordMapper;
 import com.crm.domain.Page;
 import com.crm.domain.ScanRecord;
 import com.crm.domain.User;
@@ -18,65 +14,35 @@ import com.crm.domain.easyui.PageHelper;
  * @CreateTime  2016年7月19日 下午8:52:19
  * @Version 	V1.0    
  */
-@Service
-public class ScanRecordService {
-	
-	@Autowired
-	private ScanRecordMapper scanRecordMapper;
+public interface ScanRecordService {
 
 	// 新增ScanRecord
-	public int saveScanRecord(ScanRecord scanRecord) throws Exception {
-		return scanRecordMapper.saveScanRecord(scanRecord);
-	}
+	public int saveScanRecord(ScanRecord scanRecord) throws Exception;
 
 	// 删除ScanRecord
-	public int deleteScanRecord(String id) {
-		return scanRecordMapper.deleteScanRecord(id);
-	}
+	public int deleteScanRecord(String id);
 	
 	// 修改ScanRecord
-	public int updateScanRecord(ScanRecord scanRecord) {
-		return scanRecordMapper.updateScanRecord(scanRecord);
-	}
+	public int updateScanRecord(ScanRecord scanRecord);
 	
 	// 查询所有扫描记录
-	public List<ScanRecord> getScanRecordList(PageHelper page, String conditionsql) {
-		return scanRecordMapper.getScanRecordList(page, conditionsql);
-	}
+	public List<ScanRecord> getScanRecordList(PageHelper page, String conditionsql);
 	
 	// 根据用户名查询
-	public List<ScanRecord> findByCondition(String conditionSql) {
-		return scanRecordMapper.findByCondition(conditionSql);
-	}
+	public List<ScanRecord> findByCondition(String conditionSql);
 
 	// 根据用户ID查询
-	public List<ScanRecord> findByUser(User user) {
-		return scanRecordMapper.findByUser(user);
-	}
+	public List<ScanRecord> findByUser(User user);
 		
-	public Integer getDatagridTotalByCondition(String conditionsql) {
-		return scanRecordMapper.getDatagridTotalByCondition(conditionsql);
-	}
+	public Integer getDatagridTotalByCondition(String conditionsql);
 	
-	public Integer getDatagridTotal(ScanRecord scanRecord) {
-		return scanRecordMapper.getDatagridTotal(scanRecord);
-	}
+	public Integer getDatagridTotal(ScanRecord scanRecord);
 	
-	public List<ScanRecord> datagridScanRecord(PageHelper page, ScanRecord scanRecord) {
-		page.setStart((page.getPage()-1)*page.getRows());
-		page.setEnd(page.getPage()*page.getRows());
-		return scanRecordMapper.datagridScanRecord(page, scanRecord);
-	}
+	public List<ScanRecord> datagridScanRecord(PageHelper page, ScanRecord scanRecord);
 	
-	public Page<ScanRecord> srPages(Page<ScanRecord> page, String conditionSql) {
-		page.setStart((page.getPage() - 1)*page.getRows());
-		page.setEnd((page.getPage())*page.getRows());
-		
-		page.setTotal(scanRecordMapper.srPagesTotal(conditionSql));
-		page.setContent(scanRecordMapper.srPages(page, conditionSql));
-		
-		return page;
-	}
+	public Page<ScanRecord> srPages(Page<ScanRecord> page, String conditionSql);
+	
+	public ScanRecord findById(String id);
 	
 }
  

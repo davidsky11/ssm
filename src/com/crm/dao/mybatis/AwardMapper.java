@@ -42,7 +42,7 @@ public interface AwardMapper {
 	
 	public Integer awdPagesTotal(@Param("conditionSql") String conditionSql);
 
-	public List<Award> awdPages(@Param("page") Page page, @Param("conditionSql") String conditionSql);
+	public List<Award> awdPages(@Param("page") Page<Award> page, @Param("conditionSql") String conditionSql);
 	
 }
  

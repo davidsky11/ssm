@@ -31,6 +31,7 @@ import javax.servlet.http.HttpServletResponse;
 @Controller
 @RequestMapping(value = "/menu")
 public class MenuController extends BaseController {
+	
     @Resource
     private MenuService menuService;
 

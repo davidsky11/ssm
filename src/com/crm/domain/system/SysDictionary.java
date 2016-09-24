@@ -142,6 +142,14 @@ public class SysDictionary implements ITreeNode, Serializable, Cloneable {
 		map.put("lvl", this.getLevelno());
 		return map;
 	}
+	
+	@Override
+	public String toString() {
+		return "SysDictionary [id=" + id + ", entrycode=" + entrycode + ", entryvalue=" + entryvalue + ", additional="
+				+ additional + ", additional2=" + additional2 + ", description=" + description + ", classname="
+				+ classname + ", classcode=" + classcode + ", classnameab=" + classnameab + ", dadistatus=" + dadistatus
+				+ ", dorder=" + dorder + ", isleaf=" + isleaf + ", levelno=" + levelno + ", parentid=" + parentid + "]";
+	}
 		
 }
  

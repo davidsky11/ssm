@@ -3,10 +3,10 @@ package com.crm.rest.controller;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 
+import javax.annotation.Resource;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
@@ -45,14 +45,15 @@ public class CommonController {
 	
 	private final AtomicLong counter = new AtomicLong();
 	
-	@Autowired
-	@Qualifier("ehcacheTokenService")
+	//@Resource(value = "ehcacheTokenService")
+	//@Qualifier("ehcacheTokenService")
+	@Resource(name = "ehcacheTokenService")
 	private TokenService<String, String> tokenService;
 	
-	@Autowired
+	@Resource
 	private UserService userService;
 	
-	@Autowired
+	@Resource
 	private ValidService validService;
 	
 	/**

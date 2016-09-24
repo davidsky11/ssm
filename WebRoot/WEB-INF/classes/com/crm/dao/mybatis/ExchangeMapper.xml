@@ -1,19 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.crm.dao.mybatis.ExchangeMapper">
-
-	<!-- <resultMap type="com.crm.domain.Exchange" id="datagridExchange">
-		<association property="award" javaType="com.crm.domain.Award" resultMap="getAward"/>
-	</resultMap>
-	
-	<select id="getAwardBy" resultMap="getAward">
-		select
-		<include refid="titledesc" />
-		from award
-	</select>
-	
-	定义sql片段，用于重用
-	<sql id="titledesc">title, description</sql> -->
 	
 	<resultMap type="com.crm.domain.Exchange" id="exchangeMap">
 		<id property="id" column="id" />
@@ -46,6 +33,7 @@
 		<result property="qq" column="u_qq" />
 		<result property="weixin" column="u_weixin" />
 		<result property="userType" column="u_userType" />
+		<result property="userAlias" column="u_userAlias" />
 		<result property="generateName" column="u_generateName" />
 	</resultMap>
 	
@@ -140,8 +128,15 @@
 		where (t.userId = a.id and a.id = #{id}) or (t.userName like concat('%',#{username},'%'))
 	</select> 
 	
-	<select id="findById" resultType="com.crm.domain.Exchange" >
-		select t.id, t.userId, t.exchangeTime, t.insideCode, t.privateCode, t.publicCode, t.longitude, t.latitude, t.flagCode,t.waresId from exchange t
+	<select id="findById" resultMap="exchangeMap" >
+		select t.id, t.userId, t.exchangeTime, t.insideCode, t.privateCode, 
+		t.publicCode, t.longitude, t.latitude, t.flagCode, t.waresId,
+		t.awardId, t.exchangeType, t.beneficiary,
+		u.id u_id, u.username u_username, u.email u_email, u.regtime u_regtime, u.userAlias u_userAlias,
+		a.id a_id, a.title a_title, a.description a_description, a.amount a_amount
+		from exchange t
+		left join award a on t.awardId = a.id
+		left join sysuser u on t.userId = u.id
 		where t.id = #{id}
 	</select>
 	
@@ -195,7 +190,7 @@
 		a.id a_id, a.title a_title, a.description a_description, a.amount a_amount
 		from exchange t
 		left join sysuser u on t.userId = u.id
-		left join award a on t.waresId = a.id
+		left join award a on t.awardId = a.id
 		where 1=1
 		<if test="conditionSql != null and conditionSql != ''">
 			${conditionSql}
