@@ -172,7 +172,7 @@ public class PhoneRecharge {
 		String orderId = RandomUtil.getRandomNumber(8);
 		String result = "";
 		try {
-			result = onlineOrder("15071493575", 1, orderId);
+			result = onlineOrder("18771137567", 2, orderId);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

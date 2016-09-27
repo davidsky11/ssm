@@ -54,6 +54,11 @@ public class User {
 	@ApiModelProperty(value = "是否锁定")
 	private Integer locked = 0; // 是否锁定
 	
+	private String address;  // 用户地址
+	private String wxOpenId;  // 微信用户对应的openid
+	private String merchant;  // 商户名
+	private Integer loginFrequency;  // 用户登录的频次
+	
 	List<SysMenu> menuList = new ArrayList<SysMenu>();
 	
 	public User() {}
@@ -214,6 +219,38 @@ public class User {
 
 	public void setLocked(Integer locked) {
 		this.locked = locked;
+	}
+	
+	public String getWxOpenId() {
+		return wxOpenId;
+	}
+
+	public String getMerchant() {
+		return merchant;
+	}
+
+	public Integer getLoginFrequency() {
+		return loginFrequency;
+	}
+
+	public void setWxOpenId(String wxOpenId) {
+		this.wxOpenId = wxOpenId;
+	}
+
+	public void setMerchant(String merchant) {
+		this.merchant = merchant;
+	}
+
+	public void setLoginFrequency(Integer loginFrequency) {
+		this.loginFrequency = loginFrequency;
+	}
+
+	public String getAddress() {
+		return address;
+	}
+
+	public void setAddress(String address) {
+		this.address = address;
 	}
 
 	@Override

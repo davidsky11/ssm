@@ -116,6 +116,7 @@
 	<mvc:resources mapping="swagger/**" location="/WEB-INF/swagger/**"/>
 	<mvc:resources mapping="static/**" location="/WEB-INF/static/**" />
 	<mvc:resources mapping="*.html" location="/" />
+	<mvc:resources mapping="wechat/**" location="/WEB-INF/wechat/**"/>
 	
 	<!-- 静态资源文件处理，mapping为映射,location为实际路径，根路径为webapp路径 -->
 	<mvc:resources mapping="/resources/**" location="/resources/" /> 
@@ -147,6 +148,7 @@
 			<mvc:exclude-mapping path="/api-docs"/>
 			<mvc:exclude-mapping path="/static/**"/>
 			<mvc:exclude-mapping path="/druid/**"/>
+			<mvc:exclude-mapping path="/wechat/**"/>
 
 			<bean class="com.crm.interceptor.CommonInterceptor"></bean>
 		</mvc:interceptor>
