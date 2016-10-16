@@ -56,7 +56,7 @@ public class UserServiceImpl implements UserService {
 	}
 	
 	public List<User> findByConditionSql(String username, String userType) {
-		return userMapper.findByConditionSql(" AND username = '" + username + "' AND userType = '" + userType + "'");
+		return userMapper.findByConditionSql(" and username = '" + username + "' and userType = '" + userType + "'");
 	}
 	
 	//将查询到的数据缓存到myCache中,并使用方法名称加上参数中的userNo作为缓存的key  
@@ -96,7 +96,7 @@ public class UserServiceImpl implements UserService {
 	 */
 	public List<User> datagridUser(PageHelper page,Integer sysid) {
 		page.setStart((page.getPage()-1)*page.getRows());
-		page.setEnd(page.getPage()*page.getRows());
+		page.setEnd(page.getRows());
 		return userMapper.datagridUser(page,sysid);  
 	}
 
@@ -195,7 +195,7 @@ public class UserServiceImpl implements UserService {
     
 	public Page<User> userPages(Page<User> page, String conditionSql) {
 		page.setStart((page.getPage() - 1)*page.getRows());
-		page.setEnd((page.getPage())*page.getRows());
+		page.setEnd(page.getRows());
 		
 		page.setTotal(userMapper.userPagesTotal(conditionSql));
 		page.setContent(userMapper.userPages(page, conditionSql));

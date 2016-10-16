@@ -41,7 +41,7 @@ public class RoleServiceImpl implements RoleService {
 
 	public List<Role> datagridRole(PageHelper page, Role role) {
 		page.setStart((page.getPage()-1)*page.getRows());
-		page.setEnd(page.getPage()*page.getRows());
+		page.setEnd(page.getRows());
 		return roleMapper.datagridRole(page, role);
 	}
 

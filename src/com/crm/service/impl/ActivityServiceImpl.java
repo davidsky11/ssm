@@ -62,7 +62,7 @@ public class ActivityServiceImpl implements ActivityService {
 
 	public Page<Activity> atyPages(Page<Activity> page, String conditionSql) {
 		page.setStart((page.getPage() - 1)*page.getRows());
-		page.setEnd((page.getPage())*page.getRows());
+		page.setEnd(page.getRows());
 		
 		page.setTotal(activityMapper.atyPagesTotal(conditionSql));
 		page.setContent(activityMapper.atyPages(page, conditionSql));

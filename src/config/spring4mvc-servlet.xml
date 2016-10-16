@@ -49,6 +49,16 @@
 				</property>
 			</bean> -->
 			
+			<!-- <bean class="org.springframework.http.converter.ResourceHttpMessageConverter"/>
+			
+			<bean class="org.springframework.http.converter.StringHttpMessageConverter">
+                <property name="supportedMediaTypes">
+                    <list>
+                        <value>text/html;charset=UTF-8</value>
+                    </list>
+                </property>
+            </bean> -->
+			
 			<!-- 将Jackson2HttpMessageConverter的默认格式化输出设为true -->  
 			<bean class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter"
 				p:prettyPrint="true" p:supportedMediaTypes-ref="supportedMediaTypes" >

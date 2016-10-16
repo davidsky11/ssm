@@ -5,7 +5,7 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>快乐兑登录界面</title>
+<title>快乐兑登录界面</title>
 <link rel="stylesheet" rev="stylesheet" type="text/css" href="css/login1.css" media="all"/>
 
 <script type="text/javascript" src="js/jquery/jQuery1.7.js"></script>
@@ -291,7 +291,7 @@
 					<div id="username">
 						<label>用户账户：</label> 
 						<input type="text"
-							id="stu_username_hide" name="username" value="请输入用户名"
+							id="stu_username_hide" name="username" value=""
 							nullmsg="用户名不能为空!" datatype="s3-18" errormsg="用户名范围在3~18个字符之间!"  />
 						<!--ajaxurl="demo/valid.jsp"-->
 					</div>
@@ -303,12 +303,12 @@
 					</div>
 					<div id="code">
 						<label>验证码：</label> 
-						<input type="text" id="stu_code_hide" name="code" value="请输入验证码" nullmsg="验证码不能为空!" 
+						<input type="text" id="stu_code_hide" name="code" value="" nullmsg="验证码不能为空!" 
 							datatype="*4-4" errormsg="验证码有4位数!"  /> 
 						<img id="codeImg" name="codeImg" alt="验证码占位图" title="点击更换" src="" />
 					</div>
 					<div id="remember">
-						<input type="checkbox" id="remember1" name="remember"> <label>记住密码</label>
+						<!-- <input type="checkbox" id="remember1" name="remember"> <label>记住密码</label> -->
 						<!-- <input type="hidden" id="autologinch1" name="autologinch"  class="autologinch" value=""/> -->
 					</div>
 					<div id="login">
@@ -324,7 +324,7 @@
 					<input type="hidden" id="userType" name="userType" value="2" />
 					<div id="username">
 						<label>商户账号： </label> <input type="text" id="tea_username_hide"
-							name="username" value="请输入商户账号" nullmsg="商户账号不能为空!"
+							name="username" value="" nullmsg="商户账号不能为空!"
 							datatype="s3-18" errormsg="商户账号范围在3~18个字符之间1" />
 					</div>
 					<div id="password">
@@ -335,12 +335,12 @@
 					</div>
 					<div id="code">
 						<label>验证码：</label> <input type="text" id="tea_code_hide"
-							name="code" value="请输入验证码" nullmsg="验证码不能为空!" datatype="*4-4"
+							name="code" value="" nullmsg="验证码不能为空!" datatype="*4-4"
 							errormsg="验证码有4位数!" /> 
 						<img id="codeImg" name="codeImg" alt="验证码占位图" title="点击更换" src="" />
 					</div>
 					<div id="remember">
-						<input type="checkbox" id="remember2" name="remember"> <label>记住密码</label>
+						<!-- <input type="checkbox" id="remember2" name="remember"> <label>记住密码</label> -->
 						<!-- <input type="hidden" id="autologinch2" name="autologinch"  class="autologinch" value=""/> -->
 					</div>
 					<div id="login">
@@ -356,17 +356,17 @@
 					<input type="hidden" id="userType" name="userType" value="1" />
 					<div id="username">
 						<label>厂商账户：</label> <input type="text"
-							id="sec_username_hide" name="username" value="请输入账号"
+							id="sec_username_hide" name="username" value=""
 							nullmsg="账号不能为空!" datatype="s3-18" errormsg="账号范围在3~18个字符之间!" />
 					</div>
 					<div id="password">
 						<label>密&nbsp;&nbsp;&nbsp;码：</label> <input type="password"
-							id="sec_password_hide" name="password" value="请输入密码"
+							id="sec_password_hide" name="password" value=""
 							nullmsg="密码不能为空!" datatype="*3-16" errormsg="密码在3~16位之间!" />
 					</div>
 					<div id="code">
 						<label>验证码：</label> 
-						<input type="text" id="sec_code_hide" name="code" value="请输入验证码" nullmsg="验证码不能为空!" datatype="*4-4"
+						<input type="text" id="sec_code_hide" name="code" value="" nullmsg="验证码不能为空!" datatype="*4-4"
 							 /> 
 						<img id="codeImg" name="codeImg" alt="验证码占位图" title="点击更换" src="" />
 					</div>

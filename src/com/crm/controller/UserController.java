@@ -342,6 +342,8 @@ public class UserController {
 			user.setRoleName(role.getName());
 			user.setGenerateName(user.getUsername() + "_1");
 			user.setLocked(Const.USER_UNLOCK);
+			user.setCreatorId(curUser.getId());
+			user.setCreatorName(curUser.getUsername());
 //			user.setPassword("123456");  // 密码默认123456
 			
 			userService.add(user);
@@ -386,6 +388,7 @@ public class UserController {
 	public String detailUsers(Model model, @PathVariable("id") String id){
 		User user = userService.getUserById(id);
 		model.addAttribute("user", user);
+		model.addAttribute("userType", user.getUserType());
 		
 		return "user/detail";
 	}
@@ -402,8 +405,38 @@ public class UserController {
 	public String editUsers(Model model, @PathVariable("id") String id){
 		User user = userService.getUserById(id);
 		model.addAttribute("user", user);
+		model.addAttribute("userType", user.getUserType());
 		
 		return "user/edit";
+	}
+	
+	/**
+	 * 更新用户
+	 * @Title:			updateUser
+	 * @Description:	更新用户
+	 * @param model
+	 * @param activity
+	 * @return
+	 */
+	@RequestMapping(value = "/user/update", method = RequestMethod.POST)
+	public String updateUser(Model model, User user,
+			@RequestParam(value="pageNumber",defaultValue="1") int pageNumber,
+			@RequestParam("userType") String userType) {
+		userService.edit(user);
+		
+		StringBuffer conditionSql = new StringBuffer();
+		if (Tool.isNotNullOrEmpty(userType))
+			conditionSql.append(" and u.userType = '").append(userType).append("'");
+
+		Page<User> page = new Page<User>();
+		page.setPage(pageNumber);
+		page = userService.userPages(page, conditionSql.toString());
+		
+		model.addAttribute("userType", userType);
+		model.addAttribute("page", page);
+		model.addAttribute("users", page.getContent());
+		
+        return "user/userList";
 	}
 	
 	/**
@@ -428,6 +461,7 @@ public class UserController {
 		Page<User> page = new Page<User>();
 		Page<User> userPage = userService.userPages(page, " and u.userType ='" + user.getUserType() + "'");
 		
+		model.addAttribute("userType", user.getUserType());
 		model.addAttribute("users", userPage.getContent());
 		model.addAttribute("page", userPage);
 		return "user/userList";

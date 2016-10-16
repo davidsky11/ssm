@@ -17,6 +17,10 @@
 		<result property="roleName" column="r_name" />
 		<result property="creatorName" column="r_creatorName" />
 		<result property="locked" column="u_locked" />
+		<result property="address" column="u_address" />
+		<result property="telephone" column="u_telephone" />
+		<result property="loginFrequency" column="u_loginFrequency" />
+		<result property="merchant" column="merchant" />
 		
 		<association property="role" resultMap="roleMap" />
 	</resultMap>
@@ -30,6 +34,7 @@
 	<select id="login" resultMap="userMap">
 		select u.id u_id, u.username u_username, u.userType u_userType, u.email u_email, u.idcard u_idcard,
 		u.qq u_qq, u.weixin u_weixin, u.regTime u_regTime, u.loginTime u_loginTime, u.userAlias u_userAlias,
+		u.telephone u_telephone, u.address u_address, u.merchant u_merchant, u.loginFrequency u_loginFrequency,
 		u.locked u_locked, u.lastLoginTime u_lastLoginTime, r.id r_id, r.name r_name, r.roleDesc r_roleDesc
 		from sysuser u left join sysrole r on u.userType = r.id where u.username = #{username} 
 		and u.userType = #{userType} and u.password = #{password}
@@ -37,7 +42,8 @@
 	
 	<select id="findByConditionSql" resultType="com.crm.domain.User">
 		select id, username, password, userType, email, idcard, gender, qq, weixin, regTime, userType,
-		 generateName, loginTime, userAlias, lastLoginTime, creatorName, locked 
+		 generateName, loginTime, userAlias, lastLoginTime, creatorName, locked,
+		 telephone, address, merchant, loginFrequency
 		 from sysuser where 1=1
 		<if test="conditionSql != null and conditionSql != ''">
 			${conditionSql}
@@ -46,7 +52,8 @@
 	
 	<select id="getUserById" resultType="com.crm.domain.User">
 		select id, username, userType, email, idcard, gender, qq, weixin, regTime, userType,
-		 generateName, loginTime, userAlias, lastLoginTime, creatorName, locked 
+		 generateName, loginTime, userAlias, lastLoginTime, creatorName, locked, wxOpenId, telephone,
+		 merchant, loginFrequency, address
 		 from sysuser where id = #{id} 
 	</select>
 	
@@ -116,7 +123,9 @@
 	
 	<select id="userPages" resultMap="userMap">
 		select u.id u_id, u.username u_username, u.email u_email, u.gender u_gender, u.qq u_qq, u.userAlias u_userAlias, u.locked u_locked,
-		u.weixin u_weixin, u.regTime u_regtime, u.idcard u_idcard, u.creatorName u_creatorName, r.id r_id, r.name r_name, r.roleDesc r_roleDesc
+		u.weixin u_weixin, u.regTime u_regtime, u.idcard u_idcard, u.creatorName u_creatorName,
+		u.telephone u_telephone, u.address u_address, u.merchant u_merchant, u.loginFrequency u_loginFrequency,
+		r.id r_id, r.name r_name, r.roleDesc r_roleDesc
 		from sysuser u left join sysrole r on u.userType = r.id where 1=1 
 		<if test="conditionSql != null and conditionSql != ''">
 			${conditionSql}
@@ -148,7 +157,11 @@
             <if test="userAlias != null and userAlias != ''">userAlias,</if>
             <if test="creatorId != null and creatorId != ''">creatorId,</if>
             <if test="creatorName != null and creatorName != ''">creatorName,</if>
-            <if test="locked != null ">locked</if>
+            <if test="locked != null">locked,</if>
+            <if test="loginFrequency != null and loginFrequency !=''">loginFrequency,</if>
+            <if test="address != null and address != ''">address,</if>
+            <if test="telephone != null and telephone != ''">telephone,</if>
+            <if test="merchant != null and merchant != ''">merchant</if>
             </trim>)values(<trim suffixOverrides=",">
             <if test="id !=null and id !=''">#{id},</if>
             <if test="username !=null and username !=''">#{username},</if>
@@ -164,7 +177,11 @@
             <if test="userAlias != null and userAlias != ''">#{userAlias},</if>
             <if test="creatorId != null and creatorId != ''">#{creatorId},</if>
             <if test="creatorName != null and creatorName != ''">#{creatorName},</if>
-            <if test="locked !=null ">#{locked}</if>
+            <if test="locked !=null ">#{locked},</if>
+            <if test="loginFrequency != null and loginFrequency !=''">#{loginFrequency},</if>
+            <if test="address != null and address != ''">#{address},</if>
+            <if test="telephone != null and telephone != ''">#{telephone},</if>
+            <if test="merchant != null and merchant != ''">#{merchant}</if>
             </trim>)
 	</insert>
 	
@@ -187,7 +204,11 @@
             <if test="creatorName != null and creatorName != ''">creatorName=#{creatorName},</if>
             <if test="loginTime != null and loginTime != ''">loginTime=#{loginTime},</if>
             <if test="lastLoginTime != null and lastLoginTime != ''">lastLoginTime=#{lastLoginTime},</if>
-            <if test="locked !=null">locked=#{locked}</if>
+            <if test="locked !=null">locked=#{locked},</if>
+            <if test="loginFrequency != null and loginFrequency !=''">loginFrequency=#{loginFrequency},</if>
+            <if test="address != null and address != ''">address=#{address},</if>
+            <if test="telephone != null and telephone != ''">telephone=#{telephone},</if>
+            <if test="merchant != null and merchant != ''">merchant=#{merchant}</if>
     	</set>
     	where id = #{id}
     </update>

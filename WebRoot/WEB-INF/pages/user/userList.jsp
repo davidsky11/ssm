@@ -8,8 +8,8 @@
 <section class="content-header">
 	<h1>
 		<c:if test="${userType eq '1'}">
-				厂商管理
-			</c:if>
+			厂商管理
+		</c:if>
 		<c:if test="${userType eq '2'}">
 			经销商管理
 		</c:if>
@@ -103,7 +103,7 @@
 				</div> --%>
 				<!-- /.row -->
 				<div class="box box-primary">
-					<div class="box-header with-border">
+					<%-- <div class="box-header with-border">
 						<h3 class="box-title">
 							<c:if test="${userType eq '1'}">
 								厂商列表
@@ -115,7 +115,7 @@
 								前端用户列表
 							</c:if>
 						</h3>
-					</div>
+					</div> --%>
 					<div class="btn-group">
 						<!-- 注意，为了设置正确的内补（padding），务必在图标和文本之间添加一个空格。 -->
 						
@@ -152,13 +152,16 @@
 						<tr>
 							<c:if test="${userType eq '1'}">
 								<th style="width: 10px"><label> <input id="allCheck"
-									type="checkbox" class="minimal" value="0">
+									type="checkbox" class="minimal" value="0"></label>
+								</th>
 							</c:if>
-							</label></th>
 							<th style="width: 10px">#</th>
 							<th>用户名</th>
 							<th>别名</th>
-							<th>角色</th>
+							<c:if test="${userType eq '1'}">
+								<th>商户名</th>
+								<th>联系电话</th>
+							</c:if>
 							<th>创建时间</th>
 							<th>创建人</th>
 							<th>状态</th>
@@ -174,14 +177,11 @@
 								<td>${status.count}</td>
 								<td>${user.username}</td>
 								<td>${user.userAlias}</td>
-								<%-- <td>
-									<c:forEach var="role" items="${roleList}">
-										<c:if test="${user.userType eq role.id}">
-											${role.name}&nbsp;&nbsp;&nbsp;&nbsp;
-										</c:if>
-									</c:forEach>
-								</td> --%>
-								<td>${user.roleName}</td>
+								
+								<c:if test="${userType eq '1'}">
+									<td>${user.merchant}</td>
+									<td>${user.telephone}</td>
+								</c:if>
 								<td><fmt:formatDate pattern="yyyy-MM-dd HH:mm:ss" value="${user.regTime}" /></td>
 								<td>${user.creatorName}</td>
 								<c:choose>

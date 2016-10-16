@@ -27,8 +27,10 @@ import com.crm.domain.dto.ExchangeDto;
 import com.crm.domain.easyui.DataGrid;
 import com.crm.domain.easyui.Json;
 import com.crm.domain.easyui.PageHelper;
+import com.crm.domain.system.SysDictionary;
 import com.crm.service.ActivityService;
 import com.crm.service.ExchangeService;
+import com.crm.service.SysDictionaryService;
 import com.crm.util.Tool;
 import com.crm.util.common.Const;
 
@@ -48,6 +50,8 @@ public class ExchangeController {
 	private ExchangeService exchangeService;
 	@Resource
 	private ActivityService activityService;
+	@Resource
+	private SysDictionaryService sysDictionaryService;
 
 	/**
 	 * @Title:			accountList
@@ -197,6 +201,12 @@ public class ExchangeController {
 		List<Activity> atyList = activityService.getActivityList("");
 		model.addAttribute("atyList", atyList);
 		
+		/**
+		 * 2、获取兑奖方式字典
+		 */
+		List<SysDictionary> dicList = sysDictionaryService.getDicList(" and classcode = 'DJLX' and parentid <> 0");
+		model.addAttribute("dicList", dicList);
+		
 		List<Exchange> list = page.getContent();
 		for (Exchange ex : list) {
 			for (Activity aty : atyList) {
@@ -228,6 +238,75 @@ public class ExchangeController {
 		model.addAttribute("ex", exchange);
 		
 		return "exchange/detail";
+	}
+	
+	/**
+	 * 针对厂商
+	 * @Title:			list4Vender
+	 * @Description:	针对厂商的兑奖记录
+	 * @param model
+	 * @param request
+	 * @param pageNumber
+	 * @return
+	 */
+	@RequestMapping(value = "/exchange/list4Vender", method = RequestMethod.GET)
+	public String list4Vender(Model model, HttpServletRequest request,
+			@RequestParam(value="pageNumber",defaultValue="1") int pageNumber) {
+		User user =  (User) request.getSession().getAttribute(Const.SESSION_USER);
+		
+		/**
+		 * 1、获取的当前厂商发布的活动列表
+		 */
+		List<Activity> atyList = activityService.getActivityList(" and t.publisherId = '" + user.getId() + "'");
+		model.addAttribute("atyList", atyList);
+		
+		/**
+		 * 2、获取兑奖方式字典
+		 */
+		List<SysDictionary> dicList = sysDictionaryService.getDicList(" and classcode = 'DJLX' and parentid <> 0");
+		model.addAttribute("dicList", dicList);
+		
+		String publicCode = Tool.nvl(request.getParameter("publicCode"));
+		String startDate = Tool.nvl(request.getParameter("startDate"));
+		String endDate = Tool.nvl(request.getParameter("endDate"));
+		
+		model.addAttribute("userType", user.getUserType());
+		Page<Exchange> page = new Page<Exchange>();
+		page.setPage(pageNumber);
+		page.setSort("exchangeTime");
+		page.setOrder("desc");
+		
+		StringBuffer conditionSql = new StringBuffer();
+		
+		Map<String, String> paramMap = new HashMap<String, String>();
+		if (Tool.isNotNullOrEmpty(publicCode)) {
+			conditionSql.append(" and t.publicCode = '").append(publicCode).append("'");
+			paramMap.put("publicCode", publicCode);
+			model.addAttribute("publicCode", publicCode);
+		}
+		
+		if (Tool.isNotNullOrEmpty(startDate)) {
+			conditionSql.append(" and t.exchangeTime >= '").append(startDate).append("'");
+			paramMap.put("startDate", startDate);
+			model.addAttribute("startDate", startDate);
+		}
+		
+		if (Tool.isNotNullOrEmpty(endDate)) {
+			conditionSql.append(" and t.exchangeTime <= date_sub('").append(endDate).append("', interval -1 day)");
+			paramMap.put("endDate", endDate);
+			model.addAttribute("endDate", endDate);
+		}
+		
+		if (user != null) {
+			page = exchangeService.selectByPublisher(page, conditionSql.toString(), user.getId());
+		}
+		
+		model.addAttribute("searchParams", Tool.doneQueryParam(paramMap));
+		model.addAttribute("page", page);
+		model.addAttribute("exs", (page == null ? new ArrayList<Exchange>() : page.getContent()));
+		
+		
+		return "exchange/list4Vender";
 	}
 	
 }

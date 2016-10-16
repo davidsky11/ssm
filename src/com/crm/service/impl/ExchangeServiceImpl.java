@@ -52,7 +52,7 @@ public class ExchangeServiceImpl implements ExchangeService {
 
 	public List<Exchange> datagridExchange(PageHelper page, Exchange exchange) {
 		page.setStart((page.getPage()-1)*page.getRows());
-		page.setEnd(page.getPage()*page.getRows());
+		page.setEnd(page.getRows());
 		return exchangeMapper.datagridExchange(page, exchange);
 	}
 
@@ -66,11 +66,21 @@ public class ExchangeServiceImpl implements ExchangeService {
 	
 	public Page<Exchange> exPages(Page<Exchange> page, String conditionSql) {
 		page.setStart((page.getPage() - 1)*page.getRows());
-		page.setEnd((page.getPage())*page.getRows());
+		page.setEnd(page.getRows());
 		
 		page.setTotal(exchangeMapper.exPagesTotal(conditionSql));
 		page.setContent(exchangeMapper.exPages(page, conditionSql));
 		
+		return page;
+	}
+	
+	@Override
+	public Page<Exchange> selectByPublisher(Page<Exchange> page, String conditionSql, String publisherId) {
+		page.setStart((page.getPage() - 1)*page.getRows());
+		page.setEnd(page.getRows());
+		
+		page.setTotal(exchangeMapper.selectByPublisherTotal(conditionSql, publisherId));
+		page.setContent(exchangeMapper.selectByPublisher(page, conditionSql, publisherId));
 		return page;
 	}
 

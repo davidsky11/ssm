@@ -48,5 +48,11 @@ public interface ExchangeMapper {
 	
 	public List<Exchange> exPages(@Param("page") Page<Exchange> page, @Param("conditionSql") String conditionSql);
 	
+	public Integer selectByPublisherTotal(@Param("conditionSql") String conditionSql,
+			@Param("publisherId") String publisherId);
+	
+	public List<Exchange> selectByPublisher(@Param("page") Page<Exchange> page, @Param("conditionSql") String conditionSql,
+			@Param("publisherId") String publisherId);
+	
 }
  

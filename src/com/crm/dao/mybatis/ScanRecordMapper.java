@@ -48,5 +48,11 @@ public interface ScanRecordMapper {
 	
 	public List<ScanRecord> srPages(@Param("page") Page<ScanRecord> page, @Param("conditionSql") String conditionSql);
 	
+	public Integer selectByPublisherTotal(@Param("conditionSql") String conditionSql,
+			@Param("publisherId") String publisherId);
+	
+	public List<ScanRecord> selectByPublisher(@Param("page") Page<ScanRecord> page, @Param("conditionSql") String conditionSql,
+			@Param("publisherId") String publisherId);
+	
 }
  

@@ -14,7 +14,11 @@
 				<table  class="table table-striped">
 				<tr><td>用户名:</td><td>${user.username}	</td></tr>
 				<tr><td>别名:</td><td>${user.userAlias}</td></tr>
-				<%-- <tr><td>角色:</td><td>${user.roleName}</td></tr> --%>
+				<c:if test="${userType eq '1'}">
+					<tr><td>商户名:</td><td>${user.merchant}</td></tr>
+					<tr><td>联系电话:</td><td>${user.telephone}</td></tr>
+					<tr><td>地址:</td><td>${user.address}</td></tr>
+				</c:if>
 				<tr><td>上次登录时间:</td><td><fmt:formatDate pattern="yyyy-MM-dd HH:mm:ss" value="${user.lastLoginTime}"/></td></tr>
 				<tr><td>创建者:</td><td>${user.creatorName}</td></tr>
 				<tr><td>注册时间:</td><td><fmt:formatDate pattern="yyyy-MM-dd HH:mm:ss" value="${user.regTime}"/></td></tr>

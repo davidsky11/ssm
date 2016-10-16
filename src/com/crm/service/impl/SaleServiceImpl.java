@@ -52,13 +52,13 @@ public class SaleServiceImpl implements SaleService {
 	
 	public List<Sale> datagridSale(PageHelper page, Sale sale) {
 		page.setStart((page.getPage()-1)*page.getRows());
-		page.setEnd(page.getPage()*page.getRows());
+		page.setEnd(page.getRows());
 		return saleMapper.datagridSale(page, sale);
 	}
 	
 	public List<Sale> findSaleListPage(PageHelper page, String publicCode, String conditionSql) {
 		page.setStart((page.getPage()-1)*page.getRows());
-		page.setEnd(page.getPage()*page.getRows());
+		page.setEnd(page.getRows());
 		return saleMapper.findSaleListPage(page, publicCode, conditionSql);
 	}
 	

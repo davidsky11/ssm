@@ -83,9 +83,9 @@
 				</div> --%>
 				<!-- /.row -->
 				<div class="box box-primary">
-					<div class="box-header with-border">
+					<!-- <div class="box-header with-border">
 						<h3 class="box-title">厂商列表</h3>
-					</div>
+					</div> -->
 					<div class="btn-group">
 						<!-- 注意，为了设置正确的内补（padding），务必在图标和文本之间添加一个空格。 -->
 						
@@ -128,7 +128,7 @@
 							<th style="width: 10px">#</th>
 							<th>用户名</th>
 							<th>别名</th>
-							<th>角色</th>
+							<th>电话</th>
 							<th>创建时间</th>
 							<th>创建人</th>
 							<th >状态</th>
@@ -142,18 +142,11 @@
 								<td>${status.count}</td>
 								<td>${user.username}</td>
 								<td>${user.userAlias}</td>
-								<%-- <td>
-									<c:forEach var="role" items="${roleList}">
-										<c:if test="${user.userType eq role.id}">
-											${role.name}&nbsp;&nbsp;&nbsp;&nbsp;
-										</c:if>
-									</c:forEach>
-								</td> --%>
-								<td>${user.roleName}</td>
+								<td>${user.telephone}</td>
 								<td><fmt:formatDate pattern="yyyy-MM-dd HH:mm:ss" value="${user.regTime}" /></td>
 								<td>${user.creatorName}</td>
 								<c:choose>
-									<c:when test="${user.locked}">
+									<c:when test="${user.locked eq 1}">
 										<td><span class="badge bg-red">锁定</span></td>
 									</c:when>
 									<c:otherwise>
@@ -168,10 +161,14 @@
 									<%-- </shiro:hasPermission> <shiro:hasPermission name="user:view"> --%>
 										<button id="detailBtn" type="button"
 											class="btn  btn-xs btn-primary btn-flat"  onclick="detailItem('${user.id}')">详情</button>
-									<%-- </shiro:hasPermission> <shiro:hasPermission name="user:bind"> --%>
-										<%-- <button id="bindRoleBtn" type="button"
-											class="btn  btn-xs btn-primary btn-flat"  onclick='bindItem(${user.id})'>角色绑定</button> --%>
-									<%-- </shiro:hasPermission></td> --%>
+									<c:choose>
+										<c:when test="${user.locked eq 1}">
+											<button id="lockBtn" type="button" class="btn btn-xs btn-warning" onclick="lockItem('${user.id}', 1)">解锁</button>
+										</c:when>
+										<c:otherwise>
+											<button id="lockBtn" type="button" class="btn btn-xs btn-primary" onclick="lockItem('${user.id}', 0)">锁定</button>
+										</c:otherwise>
+									</c:choose>
 							</tr>
 						</c:forEach>
 					</table>

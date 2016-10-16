@@ -20,6 +20,10 @@ public interface SysDictionaryService {
 	public int updateDic(SysDictionary dic);
 	
 	public List<SysDictionary> getDicList(String conditionSql);
+	
+	public SysDictionary findById(Integer id);
+	
+	public int deleDics(Integer[] ids);
 
 }
  

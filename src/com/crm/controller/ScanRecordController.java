@@ -202,6 +202,15 @@ public class ScanRecordController /*extends BaseController*/ {
 	
 	///////////////////////////////////////// NEW DASHBOARD  ////////////////////////////
 	
+	/**
+	 * 针对APP用户和商户
+	 * @Title:			srList
+	 * @Description:	TODO(这里用一句话描述这个方法的作用)
+	 * @param model
+	 * @param request
+	 * @param pageNumber
+	 * @return
+	 */
 	@RequestMapping(value = "/scanRecord/srList", method = RequestMethod.GET)
 	public String srList(Model model, HttpServletRequest request,
 			@RequestParam(value="pageNumber",defaultValue="1") int pageNumber) {
@@ -214,7 +223,7 @@ public class ScanRecordController /*extends BaseController*/ {
 		model.addAttribute("userType", user.getUserType());
 		Page<ScanRecord> page = new Page<ScanRecord>();
 		page.setPage(pageNumber);
-		page.setSort("scanTime");
+		page.setSort("t.scanTime");
 		page.setOrder("desc");
 		
 		StringBuffer conditionSql = new StringBuffer();
@@ -280,6 +289,71 @@ public class ScanRecordController /*extends BaseController*/ {
 		model.addAttribute("sr", sr);
 		
 		return "scanRecord/detail";
+	}
+	
+	/**
+	 * 针对厂商
+	 * @Title:			srList
+	 * @Description:	针对厂商的扫码记录
+	 * @param model
+	 * @param request
+	 * @param pageNumber
+	 * @return
+	 */
+	@RequestMapping(value = "/scanRecord/list4Vender", method = RequestMethod.GET)
+	public String list4Vender(Model model, HttpServletRequest request,
+			@RequestParam(value="pageNumber",defaultValue="1") int pageNumber) {
+		User user =  (User) request.getSession().getAttribute(Const.SESSION_USER);
+		
+		/**
+		 * 1、获取的当前厂商发布的活动列表
+		 */
+		List<Activity> atyList = activityService.getActivityList(" and t.publisherId = '" + user.getId() + "'");
+		model.addAttribute("atyList", atyList);
+		
+		/**
+		 * 2、根据条件查询
+		 */
+		String publicCode = Tool.nvl(request.getParameter("publicCode"));
+		String startDate = Tool.nvl(request.getParameter("startDate"));
+		String endDate = Tool.nvl(request.getParameter("endDate"));
+		
+		model.addAttribute("userType", user.getUserType());
+		Page<ScanRecord> page = new Page<ScanRecord>();
+		page.setPage(pageNumber);
+		page.setSort("scanTime");
+		page.setOrder("desc");
+		
+		StringBuffer conditionSql = new StringBuffer();
+		
+		Map<String, String> paramMap = new HashMap<String, String>();
+		if (Tool.isNotNullOrEmpty(publicCode)) {
+			conditionSql.append(" and t.publicCode = '").append(publicCode).append("'");
+			paramMap.put("publicCode", publicCode);
+			model.addAttribute("publicCode", publicCode);
+		}
+		
+		if (Tool.isNotNullOrEmpty(startDate)) {
+			conditionSql.append(" and t.scanTime >= '").append(startDate).append("'");
+			paramMap.put("startDate", startDate);
+			model.addAttribute("startDate", startDate);
+		}
+		
+		if (Tool.isNotNullOrEmpty(endDate)) {
+			conditionSql.append(" and t.scanTime <= date_sub('").append(endDate).append("', interval -1 day)");
+			paramMap.put("endDate", endDate);
+			model.addAttribute("endDate", endDate);
+		}
+		
+		if (user != null) {
+			page = scanRecordService.selectByPublisher(page, conditionSql.toString(), user.getId());
+		}
+		
+		model.addAttribute("searchParams", Tool.doneQueryParam(paramMap));
+		model.addAttribute("page", page);
+		model.addAttribute("srs", (page == null ? new ArrayList<ScanRecord>() : page.getContent()));
+		
+		return "scanRecord/list4Vender";
 	}
 	
 }

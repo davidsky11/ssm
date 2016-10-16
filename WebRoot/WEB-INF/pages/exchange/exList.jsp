@@ -10,7 +10,7 @@
 		兑奖管理 <small></small>
 	</h1>
 	<ol class="breadcrumb">
-		<li><a href="#"><i class="fa fa-dashboard"></i>系统管理</a></li>
+		<li><a href=""><i class="fa fa-dashboard"></i>主页</a></li>
 		<li class="active">兑奖管理</li>
 	</ol>
 </section>
@@ -22,9 +22,9 @@
 			<!-- /.box-header -->
 			<div class="box-body">
 				<div class="box box-primary">
-					<div class="box-header with-border">
+					<!-- <div class="box-header with-border">
 						<h3 class="box-title">兑奖列表</h3>
-					</div>
+					</div> -->
 					<div class="form-group">
 						<div class="box-body">
 							<div class="row">
@@ -98,8 +98,14 @@
 										${ex.award.title}(${ex.award.description})
 									</c:if>
 								</td>
-								<td>兑奖方式</td>
-								<td>受益者</td>
+								<td>
+									<c:forEach items="${dicList}" var="dic" varStatus="status">
+										<c:if test="${dic.entrycode eq ex.exchangeType}" >
+											${dic.entryvalue}
+										</c:if>
+									</c:forEach>
+								</td>
+								<td>${ex.beneficiary}</td>
 
 								<td>
 									<%-- <shiro:hasPermission name="user:update"> --%>

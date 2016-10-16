@@ -36,7 +36,7 @@ public class QbRecharge {
     public static final String APPKEY = Const.JUHE_QB_APPKEY;
  
     //1.商品小类列表
-    public static void getRequest1(){
+    public static void cardList(){
         String result =null;
         String url ="http://op.juhe.cn/ofpay/game/cardlist";//请求接口地址
         Map params = new HashMap();//请求参数
@@ -56,7 +56,7 @@ public class QbRecharge {
     }
  
     //2.商品信息
-    public static void getRequest2(String cardId) {
+    public static void cardInfo(String cardId) {
         String result =null;
         String url ="http://op.juhe.cn/ofpay/game/cardinfo";//请求接口地址
         Map params = new HashMap();//请求参数
@@ -77,12 +77,12 @@ public class QbRecharge {
     }
  
     //3.商品价格查询
-    public static void getRequest3(String cardId) {
+    public static void cardPrice(String cardId) {
         String result =null;
         String url ="http://op.juhe.cn/ofpay/game/cardprice";//请求接口地址
         Map params = new HashMap();//请求参数
             params.put("cardid", cardId);//对应接口2的cardid
-            params.put("key",APPKEY);//应用APPKEY(应用详细页查询)
+            params.put("key", APPKEY);//应用APPKEY(应用详细页查询)
  
         try {
             result = net(url, params, "GET");
@@ -98,7 +98,7 @@ public class QbRecharge {
     }
  
     //4.游戏直充区服查询
-    public static void getRequest4(String cardId){
+    public static void areaServer(String cardId){
         String result =null;
         String url ="http://op.juhe.cn/ofpay/game/areaserver";//请求接口地址
         Map params = new HashMap();//请求参数
@@ -119,18 +119,18 @@ public class QbRecharge {
     }
  
     //5.游戏直充
-    public static void getRequest5(){
+    public static void order(){
         String result =null;
         String url ="http://op.juhe.cn/ofpay/game/order";//请求接口地址
         Map params = new HashMap();//请求参数
-            params.put("cardid","");//商品编码，对应接口3的cardid
-            params.put("cardnum","");//购买数量
-            params.put("orderid","");//订单号，8-32位数字字母组合
-            params.put("game_userid","");//游戏玩家账号(game_userid=xxx@162.com$xxx001 xxx@162.com是通行证xxx001是玩家账号)
-            params.put("game_area","");//游戏所在区域，没有则不填，具体参照接口4返回，URLEncode UTF8
-            params.put("game_srv","");//游戏所在服务器，没有则不填，具体参照接口4返回，URLEncode UTF8
-            params.put("key",APPKEY);//应用APPKEY(应用详细页查询)
-            params.put("sign","");//校验值，md5(<b>OpenID</b>+key+cardid+cardnum+orderid+game_userid+game_area+game_srv)
+        params.put("cardid","");//商品编码，对应接口3的cardid
+        params.put("cardnum","");//购买数量
+        params.put("orderid","");//订单号，8-32位数字字母组合
+        params.put("game_userid","");//游戏玩家账号(game_userid=xxx@162.com$xxx001 xxx@162.com是通行证xxx001是玩家账号)
+        params.put("game_area","");//游戏所在区域，没有则不填，具体参照接口4返回，URLEncode UTF8
+        params.put("game_srv","");//游戏所在服务器，没有则不填，具体参照接口4返回，URLEncode UTF8
+        params.put("key",APPKEY);//应用APPKEY(应用详细页查询)
+        params.put("sign","");//校验值，md5(<b>OpenID</b>+key+cardid+cardnum+orderid+game_userid+game_area+game_srv)
  
         try {
             result =net(url, params, "GET");
@@ -146,24 +146,26 @@ public class QbRecharge {
     }
  
     //6.订单状态查询
-    public static void getRequest6(String orderId){
+    public static String orderSta(String orderId){
         String result =null;
         String url ="http://op.juhe.cn/ofpay/game/ordersta";//请求接口地址
         Map params = new HashMap();//请求参数
             params.put("orderid", orderId);//商家订单号，8-32位字母数字组合
-            params.put("key",APPKEY);//应用APPKEY(应用详细页查询)
+            params.put("key", APPKEY);//应用APPKEY(应用详细页查询)
  
         try {
             result =net(url, params, "GET");
-            JSONObject object = JSONObject.fromObject(result);
+            /*JSONObject object = JSONObject.fromObject(result);
             if(object.getInt("error_code")==0){
                 System.out.println(object.get("result"));
             }else{
                 System.out.println(object.get("error_code")+":"+object.get("reason"));
-            }
+            }*/
         } catch (Exception e) {
             e.printStackTrace();
         }
+        
+        return result;
     }
  
     /**
@@ -238,6 +240,46 @@ public class QbRecharge {
         return sb.toString();
     }
     
+    /**
+     * Q币充值
+     * @Title:			qbRecharge
+     * @Description:	Q币充值
+     * @param qq
+     * @return
+     */
+    public static String qbRecharge(final String qq, final Integer amount) throws Exception {
+    	String result =null;
+        String url ="http://op.juhe.cn/ofpay/game/order";//请求接口地址
+        String cardId = "220612";
+        cardId = "2272901";
+        int cardnum = amount;
+        String orderId = RandomUtil.getRandomNumber(8);
+        String game_userid = qq;
+        String key = APPKEY;
+        
+        Map params = new HashMap();//请求参数
+        params.put("cardid", cardId);//商品编码，对应接口3的cardid
+        params.put("cardnum", cardnum);//购买数量
+        params.put("orderid", orderId);//订单号，8-32位数字字母组合
+        params.put("game_userid", game_userid);//游戏玩家账号(game_userid=xxx@162.com$xxx001 xxx@162.com是通行证xxx001是玩家账号)
+        params.put("game_area","");//游戏所在区域，没有则不填，具体参照接口4返回，URLEncode UTF8
+        params.put("game_srv","");//游戏所在服务器，没有则不填，具体参照接口4返回，URLEncode UTF8
+        params.put("key", key);//应用APPKEY(应用详细页查询)
+        
+        String sign = MD5Util.MD5(Const.JUHE_OPENID + key + cardId + cardnum + orderId + game_userid + "" + "");
+        params.put("sign", sign);//校验值，md5(<b>OpenID</b>+key+cardid+cardnum+orderid+game_userid+game_area+game_srv)
+        
+        result = net(url, params, "GET");
+        JSONObject object = JSONObject.fromObject(result);
+        if(object.getInt("error_code")==0){
+            System.out.println(object.get("result"));
+        }else{
+            System.out.println(object.get("error_code")+":"+object.get("reason"));
+        }
+        
+        return result;
+    }
+    
     public static void main(String[] args) {
     	String result =null;
         String url ="http://op.juhe.cn/ofpay/game/order";//请求接口地址
@@ -249,16 +291,16 @@ public class QbRecharge {
         String key = APPKEY;
         
         Map params = new HashMap();//请求参数
-            params.put("cardid", cardId);//商品编码，对应接口3的cardid
-            params.put("cardnum", cardnum);//购买数量
-            params.put("orderid", orderId);//订单号，8-32位数字字母组合
-            params.put("game_userid", game_userid);//游戏玩家账号(game_userid=xxx@162.com$xxx001 xxx@162.com是通行证xxx001是玩家账号)
-            params.put("game_area","");//游戏所在区域，没有则不填，具体参照接口4返回，URLEncode UTF8
-            params.put("game_srv","");//游戏所在服务器，没有则不填，具体参照接口4返回，URLEncode UTF8
-            params.put("key", key);//应用APPKEY(应用详细页查询)
-            
-            String sign = MD5Util.MD5(Const.JUHE_OPENID + key + cardId + cardnum + orderId + game_userid + "" + "");
-            params.put("sign", sign);//校验值，md5(<b>OpenID</b>+key+cardid+cardnum+orderid+game_userid+game_area+game_srv)
+        params.put("cardid", cardId);//商品编码，对应接口3的cardid
+        params.put("cardnum", cardnum);//购买数量
+        params.put("orderid", orderId);//订单号，8-32位数字字母组合
+        params.put("game_userid", game_userid);//游戏玩家账号(game_userid=xxx@162.com$xxx001 xxx@162.com是通行证xxx001是玩家账号)
+        params.put("game_area","");//游戏所在区域，没有则不填，具体参照接口4返回，URLEncode UTF8
+        params.put("game_srv","");//游戏所在服务器，没有则不填，具体参照接口4返回，URLEncode UTF8
+        params.put("key", key);//应用APPKEY(应用详细页查询)
+        
+        String sign = MD5Util.MD5(Const.JUHE_OPENID + key + cardId + cardnum + orderId + game_userid + "" + "");
+        params.put("sign", sign);//校验值，md5(<b>OpenID</b>+key+cardid+cardnum+orderid+game_userid+game_area+game_srv)
  
         try {
             result = net(url, params, "GET");

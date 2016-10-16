@@ -35,12 +35,12 @@ public class VenderPayController {
 	@Autowired
 	private IWeixinSendRedPackService iWeixinSendRedPackService;
 	
-	@RequestMapping(value = "/vender", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value = "/vender", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
-    @ApiOperation(value = "企业付款", httpMethod = "GET", response = WeixinVenderPayResponse.class, notes = "指定openid进行企业付款")
+    @ApiOperation(value = "企业付款", httpMethod = "POST", response = WeixinVenderPayResponse.class, notes = "指定openid进行企业付款")
 	public WeixinVenderPayResponse payout(@ApiParam(required = true, name = "openid", value = "接收方openid") @RequestParam("openid") String openid, 
 			@ApiParam(required = true, name = "amount", value = "付款金额，单位：分") @RequestParam("amount") Integer amount, 
-			@ApiParam(required = true, name = "re_user_name", value = "接收方名称") @RequestParam("re_user_name") String re_user_name, 
+			@ApiParam(required = false, name = "re_user_name", value = "接收方名称") @RequestParam(value = "re_user_name", required = false) String re_user_name, 
 			@ApiParam(required = true, name = "desc", value = "描述信息") @RequestParam("desc") String desc, 
 			@ApiParam(required = true, name = "spbill_create_ip", value = "发送方ip") @RequestParam("spbill_create_ip") String spbill_create_ip){
 		WeixinVenderPayRequest request = new WeixinVenderPayRequest();
@@ -60,9 +60,9 @@ public class VenderPayController {
 		return response;
 	}
 	
-	@RequestMapping(value = "/redpack", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value = "/redpack", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
-    @ApiOperation(value = "红包接口", httpMethod = "GET", response = WeixinRedPackResponse.class, notes = "指定openid发送红包")
+    @ApiOperation(value = "红包接口", httpMethod = "POST", response = WeixinRedPackResponse.class, notes = "指定openid发送红包")
 	public WeixinRedPackResponse redpack(
 			@ApiParam(required = true, name = "openid", value = "接收方openid") @RequestParam("openid") String openid, 
 			@ApiParam(required = true, name = "amount", value = "红包金额，单位：分") @RequestParam("amount") Integer amount, 

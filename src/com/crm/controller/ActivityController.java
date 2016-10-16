@@ -236,11 +236,6 @@ public class ActivityController {
 	public String deleteAtys(Model model, @RequestParam("deleteIds[]") String[] deleteIds) {
 
 		String ids = Tool.stringArrayToString(deleteIds, true, ",");
-		/*
-		 * StringBuffer sql = new StringBuffer();
-		 * sql.append("and id in (").append(ids).append(")");
-		 */
-
 		activityService.deleteActivity("(" + ids + ")");
 
 		Page<Activity> page = new Page<Activity>();

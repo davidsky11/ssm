@@ -10,7 +10,7 @@
 		活动管理 <small></small>
 	</h1>
 	<ol class="breadcrumb">
-		<li><a href="#"><i class="fa fa-dashboard"></i>系统管理</a></li>
+		<li><a href=""><i class="fa fa-dashboard"></i>主页</a></li>
 		<!-- <li><a href="#">用户管理</a></li> -->
 		<li class="active">活动管理</li>
 	</ol>
@@ -83,9 +83,9 @@
 				</div> --%>
 				<!-- /.row -->
 				<div class="box box-primary">
-					<div class="box-header with-border">
+					<!-- <div class="box-header with-border">
 						<h3 class="box-title">活动列表</h3>
-					</div>
+					</div> -->
 					<div class="btn-group">
 						<!-- 注意，为了设置正确的内补（padding），务必在图标和文本之间添加一个空格。 -->
 						

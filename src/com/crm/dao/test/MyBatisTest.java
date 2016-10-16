@@ -38,7 +38,11 @@ import com.crm.domain.User;
 import com.crm.domain.Wares;
 import com.crm.domain.dto.PlaceAnalysis;
 import com.crm.domain.easyui.PageHelper;
+import com.crm.domain.po.Address;
+import com.crm.domain.po.AddressComponent;
+import com.crm.domain.po.Result;
 import com.crm.domain.system.SysDictionary;
+import com.crm.util.MapUtil;
 import com.crm.util.Tool;
 import com.crm.util.common.Const;
 
@@ -480,6 +484,65 @@ public class MyBatisTest extends AbstractJUnit4SpringContextTests {
 	public void findByIdEx() {
 		Exchange ex = exchangeMapper.findById("1");
 		System.out.println(ex);
+	}
+	
+	private ScanRecord pushAddress2SR(Address address) {
+		ScanRecord sr = new ScanRecord();
+		Result result = address.getResult();
+		AddressComponent ac = null;
+		
+		if (result != null) {
+			ac = result.getAddressComponent();
+			sr.setSematicDescription(result.getSematic_description());
+			sr.setFormattedAddress(result.getFormatted_address());
+		}
+		
+		if (ac != null) {
+			sr.setCountry(ac.getCountry());
+			sr.setProvince(ac.getProvince());
+			sr.setCity(ac.getCity());
+			sr.setDistance(ac.getDistance());
+			sr.setStreet(ac.getStreet());
+		}
+		
+		return sr;
+	}
+	
+	@Test
+	public void addSR() throws Exception {
+		Address address = MapUtil.location2Address(30.54, 114.35);
+		ScanRecord sr = this.pushAddress2SR(address);
+		sr.setLatitude(30.54);
+		sr.setLongitude(114.35);
+		sr.setScanTime(new Date());
+		
+		sr.setUserId("28");
+		sr.setUserName("app");
+		sr.setUserType("3");
+		
+		sr.setPublicCode("123");
+		sr.setPrivateCode("0123029399108");
+		sr.setInsideCode("0123621312");
+		
+		System.out.println(sr);
+		
+		scanRecordMapper.saveScanRecord(sr);
+	}
+	
+	@Test
+	public void addDic() {
+		SysDictionary dic = new SysDictionary();
+		dic.setParentid(1);
+		dic.setEntryvalue("企业付款");
+		dic.setEntrycode("COMP");
+		
+		sysDictionaryMapper.saveDic(dic);
+	}
+	
+	@Test
+	public void atyList() {
+		List<Activity> atyList = activityMapper.getActivityList(" and t.publicCode = '" + "123" + "'");
+    	System.out.println(atyList);
 	}
 	
 }

@@ -15,9 +15,13 @@ import com.crm.domain.system.SysDictionary;
  */
 public interface SysDictionaryMapper {
 	
+	public SysDictionary findById(Integer id);
+	
 	public int saveDic(SysDictionary dic);
 	
 	public int deleDic(@Param("id") Integer id);
+	
+	public int deleDics(Integer[] ids);
 	
 	public int updateDic(SysDictionary dic);
 	

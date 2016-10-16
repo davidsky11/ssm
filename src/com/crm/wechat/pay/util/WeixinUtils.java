@@ -1,6 +1,8 @@
 package com.crm.wechat.pay.util;
 
 import java.lang.reflect.Field;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -70,6 +72,24 @@ public class WeixinUtils {
     public static String getMchBillno(){
         SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
     	return WxConfig.MCH_ID + sdf.format(new Date()) + RandomCodeUtil.randomInt(10);
+    }
+    
+    /**
+     * 获取IP
+     * @Title:			main
+     * @Description:	获取ip地址
+     */
+    public static String getHostIp() {
+    	String ip = "0.0.0.0";
+    	InetAddress addr = null;
+    	try {
+			addr = InetAddress.getLocalHost();
+			ip = addr.getHostAddress();
+		} catch (UnknownHostException e) {
+			e.printStackTrace();
+		}
+    	
+    	return ip;
     }
     
     public static void main(String[] args) throws IllegalAccessException {

@@ -19,6 +19,7 @@
 		
 		<association property="user" resultMap="userMap" />
 		<association property="award" resultMap="awardMap" />
+		<association property="activity" resultMap="activityMap" />
 		
 		<!-- <association property="user" column="userId" select="queryUser" />
 		<association property="award" column="awardId" select="queryAward" /> -->
@@ -44,6 +45,13 @@
 		<result property="hierarchy" column="a_hierarchy" />
 		<result property="sort" column="a_sort" />
 		<result property="amount" column="a_amount" />
+	</resultMap>
+	
+	<resultMap type="com.crm.domain.Activity" id="activityMap" >
+		<id property="id" column="ac_id" />
+		<result property="title" column="ac_title" />
+		<result property="description" column="ac_description" />
+		<result property="content" column="ac_content" />
 	</resultMap>
 	
 	<select id="queryUser" resultMap="userMap">
@@ -195,9 +203,47 @@
 		<if test="conditionSql != null and conditionSql != ''">
 			${conditionSql}
         </if>
-		<if test="page.sort != null and page.sort != ''">
+		<!-- <if test="page.sort != null and page.sort != ''">
             order by #{page.sort} #{page.order}
         </if>
+        <if test="page.sort == null or page.sort == ''"> -->
+            order by t.exchangeTime desc
+        <!-- </if> -->
+        <if test="page.page > 0">
+            limit #{page.start},#{page.end}
+        </if>
+	</select>
+	
+	<select id="selectByPublisherTotal" resultType="int">
+		select count(1) from exchange t where t.publicCode in 
+		(select a.publicCode from activity a where a.publisherId = #{publisherId})
+		<if test="conditionSql != null and conditionSql != ''">
+			${conditionSql}
+        </if>
+	</select>
+	
+	<select id="selectByPublisher" resultMap="exchangeMap">
+		select t.id, t.userId, t.exchangeTime, t.insideCode, t.privateCode, 
+		t.publicCode, t.longitude, t.latitude, t.flagCode, t.waresId,
+		t.awardId, t.exchangeType, t.beneficiary,
+		u.id u_id, u.username u_username, u.email u_email, u.regtime u_regtime,
+		a.id a_id, a.title a_title, a.description a_description, a.amount a_amount,
+		ac.id ac_id, ac.title ac_title, ac.description ac_description, ac.content ac_content
+		from exchange t
+		left join sysuser u on t.userId = u.id
+		left join award a on t.awardId = a.id
+		left join activity ac on t.publicCode = ac.publicCode
+		where t.publicCode in 
+		(select a.publicCode from activity a where a.publisherId = #{publisherId})
+		<if test="conditionSql != null and conditionSql != ''">
+			${conditionSql}
+        </if>
+		<!-- <if test="page.sort != null and page.sort != ''">
+            order by #{page.sort} #{page.order}
+        </if>
+        <if test="page.sort == null or page.sort == ''"> -->
+            order by t.exchangeTime desc
+        <!-- </if> -->
         <if test="page.page > 0">
             limit #{page.start},#{page.end}
         </if>

@@ -76,6 +76,15 @@
 		<servlet-name>CallBackAction</servlet-name>
 		<url-pattern>/wechat/callBack.do</url-pattern>
 	</servlet-mapping>
+	
+	<servlet>
+		<servlet-name>TokenAction</servlet-name>
+		<servlet-class>com.crm.wechat.pay.action.TokenAction</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>TokenAction</servlet-name>
+		<url-pattern>/wechat/token.do</url-pattern>
+	</servlet-mapping>
 
 	<!-- 连接池监控 -->
 	<servlet>

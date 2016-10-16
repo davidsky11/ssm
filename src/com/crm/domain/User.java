@@ -58,6 +58,7 @@ public class User {
 	private String wxOpenId;  // 微信用户对应的openid
 	private String merchant;  // 商户名
 	private Integer loginFrequency;  // 用户登录的频次
+	private String telephone;  // 手机号码
 	
 	List<SysMenu> menuList = new ArrayList<SysMenu>();
 	
@@ -251,6 +252,14 @@ public class User {
 
 	public void setAddress(String address) {
 		this.address = address;
+	}
+
+	public String getTelephone() {
+		return telephone;
+	}
+
+	public void setTelephone(String telephone) {
+		this.telephone = telephone;
 	}
 
 	@Override

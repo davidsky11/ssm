@@ -36,5 +36,7 @@ public interface ExchangeService {
 	
 	public Page<Exchange> exPages(Page<Exchange> page, String conditionSql);
 
+	public Page<Exchange> selectByPublisher(Page<Exchange> page, String conditionSql, String publisherId);
+		
 }
  

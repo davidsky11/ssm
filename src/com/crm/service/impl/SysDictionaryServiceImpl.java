@@ -39,5 +39,15 @@ public class SysDictionaryServiceImpl implements SysDictionaryService {
 		return sysDictionaryMapper.getDicList(conditionSql);
 	}
 
+	@Override
+	public SysDictionary findById(Integer id) {
+		return sysDictionaryMapper.findById(id);
+	}
+
+	@Override
+	public int deleDics(Integer[] ids) {
+		return sysDictionaryMapper.deleDics(ids);
+	}
+
 }
  

@@ -44,5 +44,7 @@ public interface ScanRecordService {
 	
 	public ScanRecord findById(String id);
 	
+	public Page<ScanRecord> selectByPublisher(Page<ScanRecord> page, String conditionSql, String publisherId);
+	
 }
  

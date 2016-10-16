@@ -9,14 +9,14 @@ public interface ITreeNode {
 	 * 
 	 * @return
 	 */
-	public String parentIdGet();
+	public Integer parentIdGet();
 
 	/**
 	 * 获取自身节点编号
 	 * 
 	 * @return
 	 */
-	public String idGet();
+	public Integer idGet();
 
 	/**
 	 * 获取一个Tree对象的属性Map
@@ -24,4 +24,5 @@ public interface ITreeNode {
 	 * @return
 	 */
 	public Map attributeForTreeGet();
+	
 }

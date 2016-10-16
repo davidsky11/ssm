@@ -20,20 +20,27 @@
 	</resultMap>
 	
 	<insert id="saveDic" parameterType="com.crm.domain.system.SysDictionary" useGeneratedKeys="true" keyProperty="id">
-		insert into sysdictionary (entrycode,entryvalue,additional,additional2,description,classname,classcode,
-		dadistatus,dorder,isleaf,levelno,parentid) values 
-		(#{entrycode},#{entryvalue},#{additional},#{additional2},#{description},#{classname},
-		#{classcode},#{dadistatus},#{dorder},#{isleaf},#{levelno},#{parentid})
+		insert into sysdictionary 
+		(entrycode,entryvalue,additional,additional2,description,classname,classcode,dadistatus,dorder,isleaf,levelno,parentid) 
+		values 
+		(#{entrycode},#{entryvalue},#{additional},#{additional2},#{description},#{classname},#{classcode},#{dadistatus},#{dorder},#{isleaf},#{levelno},#{parentid})
 	</insert>
 	
 	<delete id="deleDic" parameterType="int">
 		delete from sysdictionary where id=#{id}
 	</delete>
 	
+	<delete id="deleDics" parameterType="java.lang.Integer">
+		delete from sysdictionary where id in
+		<foreach collection="ids" item="id" open="(" separator="," close=")">
+			#{id}
+		</foreach>
+	</delete>
+	
 	<update id="updateDic" parameterType="com.crm.domain.system.SysDictionary">
-		update sysmenu set 
-		name=#{name},
-		url=#{url},
+		update sysdictionary set 
+		entryvalue=#{entryvalue},
+		entrycode=#{entrycode},
 		parentid=#{parentid} 
 		where id=#{id}
 	</update>
@@ -43,6 +50,10 @@
 		<if test="conditionSql != null and conditionSql != ''">
 			${conditionSql}
 		</if>
+	</select>
+	
+	<select id="findById" resultMap="dicMap" parameterType="java.lang.Integer">
+		select * from sysdictionary where id = #{id}
 	</select>
 	
 </mapper>

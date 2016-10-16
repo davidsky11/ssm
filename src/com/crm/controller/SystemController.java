@@ -4,6 +4,7 @@
 package com.crm.controller;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -78,6 +79,14 @@ public class SystemController extends BaseController {
 		    		request.getSession().setAttribute("message", "用户名不存在，请重新登录");
 		    		return returnUrl; 
 				}else {
+					/**
+					 * 更新登录次数
+					 */
+					Integer loginFrequency = user.getLoginFrequency(); // 该用户登录的次数
+					user.setLoginFrequency(loginFrequency == null ? 0 : loginFrequency++);
+					user.setLastLoginTime(user.getLoginTime() == null ? new Date() : user.getLoginTime());
+					user.setLoginTime(new Date());
+					userService.edit(user);
 					
 					List<SysMenu> menuList = userService.getMenu(user.getId());
 					user.setMenuList(menuList);

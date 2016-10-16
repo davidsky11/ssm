@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.annotation.Resource;
+import javax.jws.soap.SOAPBinding.Use;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -36,7 +37,6 @@ import com.crm.domain.po.Result;
 import com.crm.domain.system.SysDictionary;
 import com.crm.rest.domain.ApiResult;
 import com.crm.rest.domain.ExchangeQuery;
-import com.crm.rest.domain.ScanQuery;
 import com.crm.service.ActivityService;
 import com.crm.service.AnalysisService;
 import com.crm.service.AwardService;
@@ -52,10 +52,21 @@ import com.crm.util.RandomUtil;
 import com.crm.util.Tool;
 import com.crm.util.ValidUtil;
 import com.crm.util.common.Const;
+import com.crm.util.recharge.PhoneRecharge;
+import com.crm.util.recharge.QbRecharge;
 import com.crm.util.sms.HttpSender;
+import com.crm.wechat.pay.domain.request.WeixinNormalRedPackRequest;
+import com.crm.wechat.pay.domain.request.WeixinVenderPayRequest;
+import com.crm.wechat.pay.domain.response.WeixinRedPackResponse;
+import com.crm.wechat.pay.domain.response.WeixinVenderPayResponse;
+import com.crm.wechat.pay.service.IWeixinSendRedPackService;
+import com.crm.wechat.pay.service.IWeixinVenderPayService;
+import com.crm.wechat.pay.util.WeixinUtils;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
+
+import net.sf.json.JSONObject;
 
 /** 
  * @ClassName	BussinessController.java
@@ -93,6 +104,10 @@ public class NoAuthController {
 	private SaleService saleService;
 	@Resource
 	private SysDictionaryService sysDictionaryService;
+	@Resource
+	private IWeixinVenderPayService iWeixinVenderPayService;
+	@Resource
+	private IWeixinSendRedPackService iWeixinSendRedPackService;
 	
 	/**
 	 * 测试用
@@ -407,7 +422,7 @@ public class NoAuthController {
 		
 		long total = scanRecordService.getDatagridTotalByCondition(conditionsql.toString());
 		
-		List<ScanQuery> sqList = new ArrayList<ScanQuery>();
+		/*List<ScanQuery> sqList = new ArrayList<ScanQuery>();*/
 		if (total <= Const.DEFAULT_COUNT_PER_PAGE * (currentPage-1)) {
 			result.setCode(Const.WARN_NO_MORE_DATA);
 			result.setSuccess(false);
@@ -431,7 +446,6 @@ public class NoAuthController {
 			List<ScanRecord> scanRecordList = scanRecordService.getScanRecordList(page, conditionsql.toString());
 			List<ScanRecordDto> srdList = new ArrayList<ScanRecordDto>();
 			
-			// TODO 向扫描记录里添加奖项信息 和 活动信息
 			Activity a = null;
 			Wares w = null;
 			Award aw = null;
@@ -471,7 +485,8 @@ public class NoAuthController {
 	 * @param publicCode	公共编码
 	 * @param privateCode	瓶身编码
 	 * @param insideCode	瓶盖内码
-	 * @param exchange      是否兑奖
+	 * @param exType      	兑奖类型， WECHAT——微信红包，PHONE——手机充值，Q_BILL——Q币
+	 * @param recNo			兑奖账号， WECHAT——
 	 * @return
 	 */
 	@RequestMapping(value = "/userWithInfo", method = RequestMethod.POST)
@@ -487,20 +502,23 @@ public class NoAuthController {
 			@ApiParam(required = true, name = "publicCode", value = "公共编码") @RequestParam("publicCode") String publicCode, 
 			@ApiParam(required = true, name = "privateCode", value = "唯一码") @RequestParam("privateCode") String privateCode,
 			@ApiParam(required = false, name = "insideCode", value = "内码") @RequestParam(value = "insideCode", required= false) String insideCode, 
-			@ApiParam(required = false, name = "exchange", value = "是否立即兑奖")@RequestParam(value = "exchange", required = false) String exchange) {
-		System.out.println("loginWithMessage--userType: " + userType);
-		System.out.println("loginWithMessage--username: " + username);
-    	System.out.println("loginWithMessage--flagCode: " + flagCode);
-    	System.out.println("loginWithMessage--time: " + time);
-    	System.out.println("loginWithMessage--longitude: " + longitude);
-    	System.out.println("loginWithMessage--latitude: " + latitude);
-		System.out.println("loginWithMessage--publicCode: " + publicCode);
-    	System.out.println("loginWithMessage--privateCode: " + privateCode);
-    	System.out.println("loginWithMessage--insideCode: " + insideCode);
-    	
+			@ApiParam(required = false, name = "exType", value = "兑奖类型")@RequestParam(value = "exType", required = false) String exType,
+			@ApiParam(required = false, name = "recNo", value = "兑奖账号，如果不设置，就对应当前用户的对应账号")@RequestParam(value = "recNo", required = false) String recNo) {
     	StringBuffer conditionSql = new StringBuffer();
     	ApiResult result = new ApiResult();
     	result.setOperate(Const.OPERATE_USER_WITH_INFO);
+    	
+    	Activity aty = null;
+    	List<Activity> atyList = activityService.getActivityList(" and t.publicCode = '" + publicCode + "'");
+    	if (atyList != null && atyList.size() > 0) {
+    		aty = atyList.get(0);
+    	} else {
+    		result.setCode(Const.ERROR_PARAM_MISS);
+    		result.setMsg("该publicCode对应的活动不存在");
+    		result.setSuccess(false);
+    		
+    		return result;
+    	}
     	
     	/**
 		 * 0、添加扫码记录
@@ -509,11 +527,21 @@ public class NoAuthController {
 		User user = null;
 		if (userList != null && userList.size() > 0) {
 			user = userList.get(0);
+		} else {
+			result.setCode(Const.ERROR_NULL_POINTER);
+			result.setSuccess(false);
+			result.setMsg("用户不存在");
+			return result;
 		}
 		
+		ScanRecord sr = new ScanRecord();
 		Address address = null;
 		try {
 			address = MapUtil.location2Address(Double.parseDouble(latitude), Double.parseDouble(longitude));
+			
+			sr = this.pushAddress2SR(address);
+			sr.setLatitude(Double.parseDouble(latitude));
+			sr.setLongitude(Double.parseDouble(longitude));
 		} catch (NumberFormatException e) {
 			result.setCode(Const.ERROR_PARAM_MISS);
 			result.setSuccess(false);
@@ -524,9 +552,6 @@ public class NoAuthController {
 			e.printStackTrace();
 		} 
 		
-		ScanRecord sr = this.pushAddress2SR(address);
-		sr.setLatitude(Double.parseDouble(latitude));
-		sr.setLongitude(Double.parseDouble(longitude));
 		sr.setScanTime(new Date());
 		if (user != null) {
 			sr.setUserId(user.getId());
@@ -535,7 +560,6 @@ public class NoAuthController {
 		}
 		sr.setPublicCode(publicCode);
 		sr.setPrivateCode(privateCode);
-		sr.setInsideCode(insideCode);
 		
 		/**
 		 * 1、查询该商品信息
@@ -553,6 +577,7 @@ public class NoAuthController {
 		
     	switch (userType) {
 	    	case Const.USERTYPE_APPUSER:
+	    		sr.setInsideCode(insideCode);
 	    		result.setOperate(Const.OPERATE_APP_SCAN);
 	    		
 	    		/**
@@ -584,7 +609,7 @@ public class NoAuthController {
     				}
     				
     				// 未中奖
-    				if (wares.getStatus().equals(Const.EX_STATUS_EXCHANGED)) {  
+    				if (wares.getStatus().equals(Const.EX_STATUS_NO_AWARD)) {  
     					result.setCode(Const.INFO_NO_AWARD);
     					result.setSuccess(false);
     					result.setMsg("该商品未中奖，欢迎下次惠顾！");
@@ -622,61 +647,200 @@ public class NoAuthController {
     				} else {
     					/* --> 返回值3  中奖  【200 + false】
     					 */
-    					result.setCode(Const.INFO_NORMAL);
-    					result.setSuccess(true);
-    					
     					Award award = awardService.findById(awardId);
     					
-    					result.setMsg("您中了" + award.getTitle() + ", " + award.getDescription());
-    					result.setData(award);
-    					
-    					if (exchange != null && !exchange.equals("")) {  // 兑奖
-    						/*
-    						 * TODO  兑奖处理
-    						 * 	先兑奖，再添加兑奖记录
-    						 */
-    						/**
-    						 * I 兑奖
-    						 */
-    						// TODO 
-    						
-    						/**
-    						 * II 添加兑奖记录
-    						 */
-    						Exchange ex = new Exchange();
-    						ex.setUserId(user.getId());
-    						ex.setExchangeTime(new Date());
-    						ex.setWaresId(wares.getId());
-    						ex.setLongitude(Double.parseDouble(longitude));
-    						ex.setLatitude(Double.parseDouble(latitude));
-    						ex.setFlagCode(flagCode);
-    						ex.setPublicCode(publicCode);
-    						ex.setPrivateCode(privateCode);
-    						ex.setInsideCode(insideCode);
-    						ex.setAward(award);
-    						
-    						result.setMsg("您中了" + award.getTitle() + ", 系统正在为您开奖！");
-        					result.setData(ex);
-        					
-    						try {
-								exchangeSercie.saveExchange(ex);
-							} catch (Exception e) {
-								e.printStackTrace();
-								
-								result.setCode(Const.ERROR_SERVER);
-								result.setSuccess(false);
-								result.setMsg("新增兑奖记录失败!");
-								
-								return result;
-							}
-    						
-    						/**
-        					 * 修改商品的兑奖状态
-        					 */
-        					wares.setStatus(Const.EX_STATUS_EXCHANGED);
-        					waresService.updateWares(wares);
-    						
+    					/**
+    					 * 如果不兑奖，直接返回
+    					 */
+    					if (!Tool.isNotNullOrEmpty(exType)) {
+	    					result.setCode(Const.INFO_NORMAL);
+	    					result.setSuccess(true);
+	    					
+	    					result.setMsg("您中了" + award.getTitle() + ", " + award.getDescription());
+	    					result.setData(award);
+	    					return result;
     					}
+    					
+    					/**
+						 * TODO  兑奖处理
+						 * 	先兑奖，再添加兑奖记录
+						 */
+						/**
+						 * I 兑奖
+						 */
+    					switch (exType) {
+    					case Const.EX_WECHAT:
+    						String openid = user.getWxOpenId();
+
+    						if (Tool.isNullOrEmpty(recNo) && Tool.isNullOrEmpty(openid)) {
+    							result.setCode(Const.WARN_NO_WECHAT);
+    							result.setSuccess(false);
+    							result.setMsg("请为用户绑定合适的微信号或设置一个接收红包的微信openid!");
+    							
+    							return result;
+    						}
+    						
+    						Integer amount1 = new Double(award.getAmount() * 100).intValue();
+    						
+    						/**
+    						 * 1、微信企业付款
+    						 */
+    						/*WeixinVenderPayRequest request = new WeixinVenderPayRequest();
+    				    	request.setOpenid(Tool.isNotNullOrEmpty(recNo) ? recNo : openid);  // 如果recNo没有设置，则使用openid
+    				    	request.setAmount(amount1);
+    				    	request.setRe_user_name(user.getWeixin() + "_0001");
+    				    	request.setDesc("企业兑奖给" + user.getWeixin());
+    				    	request.setSpbill_create_ip(WeixinUtils.getHostIp());
+    				    	
+    				    	WeixinVenderPayResponse response = new WeixinVenderPayResponse();
+    				    	try {
+    							response = iWeixinVenderPayService.venderPay(request);
+    						} catch (Exception e) {
+    							e.printStackTrace();
+    						}*/
+    				    	
+    						/**
+    						 * 2、微信红包
+    						 */
+    						WeixinNormalRedPackRequest request = new WeixinNormalRedPackRequest();
+    				    	request.setRe_openid(Tool.isNotNullOrEmpty(recNo) ? recNo : openid);  // 如果recNo没有设置，则使用openid
+    				    	request.setTotal_amount(amount1);
+    				    	request.setTotal_num(1);
+    				    	request.setSend_name(aty != null ? aty.getTitle() : "快乐兑");
+    				    	request.setAct_name(aty != null ? aty.getTitle() : "快乐兑");
+    				    	request.setWishing("恭喜您在活动【" + (aty != null ? aty.getTitle() : "快乐兑") + "】中扫码抽中了这个微信红包！");
+    				    	request.setRemark(user.getWeixin());
+    				    	request.setClient_ip(WeixinUtils.getHostIp());
+    				    	
+    				    	WeixinRedPackResponse response = new WeixinRedPackResponse();
+    				    	try {
+    							response = iWeixinSendRedPackService.sendRedPack(1, request);
+    						} catch (Exception e) {
+    							e.printStackTrace();
+    						}
+    				    	
+    				    	/**
+    				    	 * 兑奖成功
+    				    	 */
+    				    	if (null != response && Tool.isNotNullOrEmpty(response.getReturn_code()) && response.getReturn_code().equals("SUCCESS") 
+    				    			&& Tool.isNotNullOrEmpty(response.getResult_code()) && response.getResult_code().equals("SUCCESS")) {
+    				    		result.setMsg("您中了" + award.getTitle() + ", 系统正在为您开奖！");
+    				    		result.setData(response.getMch_billno());
+    				    	}
+    				    	result.setMsg("您中了" + award.getTitle() + ", 系统正在为您开奖！");
+    						
+    						break;
+    					case Const.EX_PHONE:
+    						String phone = user.getTelephone();
+    						
+    						/**
+    						 * 设置正确的手机号码
+    						 */
+    						if (Tool.isNullOrEmpty(recNo) && Tool.isNullOrEmpty(phone) && ValidUtil.isValidMobile(phone)) {
+    							result.setCode(Const.WARN_PHONE_ERROR);
+    							result.setSuccess(false);
+    							result.setMsg("手机号码不正确，请为用户绑定合适的手机号或者直接指定一个待充值的手机号码!");
+    							
+    							return result;
+    						}
+    						
+    						String result2 = "";
+    						Integer amount2 = 0;
+    						try {
+    							amount2 = new Double(award.getAmount()).intValue();
+    							result2 = PhoneRecharge.onlineOrder(Tool.isNotNullOrEmpty(recNo) ? recNo : phone, 
+    									amount2);
+    						} catch (Exception e) {
+    							e.printStackTrace();
+    						}
+    						
+    						if (Tool.isNotNullOrEmpty(result2)) {
+    							String orderId = JSONObject.fromObject(result2).getString("uorderid");
+    							result.setSuccess(true);
+    							result.setData(orderId);
+    						} else {
+    							result.setSuccess(false);
+    						}
+    						result.setMsg("手机充值" + amount2 + "元，请稍后查询充值结果");
+    						
+    						break;
+    					case Const.EX_Q_BILL:
+    						String qq = user.getQq();
+    						
+    						// TODO 设置正确的手机号
+    						if (Tool.isNullOrEmpty(recNo) && Tool.isNullOrEmpty(qq)) {
+    							result.setCode(Const.WARN_NO_QQ);
+    							result.setSuccess(false);
+    							result.setMsg("请为用户绑定合适的QQ号或者指定一个待充值的qq号码!");
+    							
+    							return result;
+    						}
+    						
+    						String res = "";
+    						Integer amount3 = 0;
+    						try {
+    							amount3 = new Double(award.getAmount()).intValue();
+    							res = QbRecharge.qbRecharge(Tool.isNotNullOrEmpty(recNo) ? recNo : qq, amount3);
+    						} catch (Exception e) {
+    							e.printStackTrace();
+    						}
+    						
+    						if (Tool.isNotNullOrEmpty(res)) {
+    							String orderId = JSONObject.fromObject(res).getString("uorderid");
+    							result.setSuccess(true);
+    							result.setData(orderId);
+    						} else {
+    							result.setSuccess(false);
+    						}
+    						result.setMsg("手机充值" + amount3 + "元，请稍后查询充值结果");
+    						
+    						break;
+    					default:
+    						result.setCode(Const.ERROR_PARAM_MISS);
+							result.setSuccess(false);
+							result.setMsg("请选择合适的兑奖类型!");
+							
+							return result;
+    					}
+    					
+						/**
+						 * II 添加兑奖记录
+						 */
+						Exchange ex = new Exchange();
+						ex.setUserId(user.getId());
+						ex.setExchangeTime(new Date());
+						ex.setWaresId(wares.getId());
+						ex.setLongitude(Double.parseDouble(longitude));
+						ex.setLatitude(Double.parseDouble(latitude));
+						ex.setFlagCode(flagCode);
+						ex.setPublicCode(publicCode);
+						ex.setPrivateCode(privateCode);
+						ex.setInsideCode(insideCode);
+						ex.setAward(award);
+						ex.setAwardId(awardId);
+						ex.setExchangeType(exType);
+						ex.setBeneficiary(recNo);
+						
+    					//result.setData(ex);
+    					
+						try {
+							exchangeSercie.saveExchange(ex);
+						} catch (Exception e) {
+							e.printStackTrace();
+							
+							result.setCode(Const.ERROR_SERVER);
+							result.setSuccess(false);
+							result.setMsg("新增兑奖记录失败!");
+							
+							return result;
+						}
+						
+						/**
+    					 * 修改商品的兑奖状态
+    					 */
+    					wares.setStatus(Const.EX_STATUS_EXCHANGED);
+    					waresService.updateWares(wares);
+    						
     				}
     				
     			}
@@ -1062,18 +1226,28 @@ public class NoAuthController {
 	public ApiResult exchangeType() {
 		ApiResult result = new ApiResult();
 		result.setOperate(Const.OPERATE_EXCHANGE_TYPE);
-		List<SysDictionary> dicList = sysDictionaryService.getDicList(" and parentid = 'DJLX'");
+		List<SysDictionary> dicList = sysDictionaryService.getDicList(" and parentid = 1");
+		
+		List<ExchargeType> typeList = new ArrayList<ExchargeType>();
+		for (SysDictionary dic : dicList) {
+			ExchargeType type = new ExchargeType();
+			type.setCode(dic.getEntrycode());
+			type.setName(dic.getEntryvalue());
+			
+			typeList.add(type);
+		}
 		
 		result.setCode(Const.INFO_NORMAL);
 		result.setSuccess(true);
 		result.setMsg("获取到" + dicList.size() + "条兑奖类别信息");
-		result.setData(dicList);
+		result.setData(typeList);
 		
 		return result;
 	}
 	
 	private ScanRecord pushAddress2SR(Address address) {
 		ScanRecord sr = new ScanRecord();
+		if (address == null)	return sr;
 		Result result = address.getResult();
 		AddressComponent ac = null;
 		
@@ -1093,5 +1267,322 @@ public class NoAuthController {
 		
 		return sr;
 	}
+	
+	/**
+	 * 兑奖操作
+	 * @Title:			exchange
+	 * @Description:	兑奖操作
+	 * @param type		兑奖类型
+	 * @param receiver	接收方
+	 * @param amount	金额（单位：分） > 100  --> 微信/手机
+	 * 					个数（单位：个）               --> Q币
+	 * @return
+	 */
+	private boolean exchange(String type, String receiver, Integer amount) {
+		boolean flag = false;
+		switch (type) {
+		case Const.EX_WECHAT:  // 微信兑奖
+			WeixinVenderPayRequest request = new WeixinVenderPayRequest();
+	    	request.setOpenid(receiver);
+	    	request.setAmount(amount);
+	    	request.setRe_user_name(receiver + "_0001");
+	    	request.setDesc("企业兑奖给" + receiver);
+	    	request.setSpbill_create_ip(WeixinUtils.getHostIp());
+	    	
+	    	WeixinVenderPayResponse response = new WeixinVenderPayResponse();
+	    	try {
+				response = iWeixinVenderPayService.venderPay(request);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+	    	
+	    	if (response.getReturn_code().equals("SUCCESS") 
+	    			&& response.getResult_code().equals("SUCCESS")) {
+	    		flag = true;
+	    	}
+			
+			break;
+		case Const.EX_PHONE:  // 手机充值
+			String result = "";
+			
+			try {
+				result = PhoneRecharge.onlineOrder(receiver, amount);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			
+			// TODO 解析result，返回结果
+			
+			break;
+		case Const.EX_Q_BILL:  // Q币充值
+			String res = "";
+			try {
+				res = QbRecharge.qbRecharge(receiver, amount);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			
+			// TODO 解析res，返回结果
+			
+			break;
+		default:
+			break;
+		}
+		
+		return flag;
+	}
+	
+	/**
+	 * 充值结果查询
+	 * @Title:			orderQuery
+	 * @Description:	充值结果查询
+	 * @param type
+	 * @param orderId
+	 * @return
+	 */
+	@RequestMapping(value = "/orderQuery", method = RequestMethod.POST)
+	@ResponseBody
+	@ApiOperation(value = "充值结果查询", httpMethod = "POST", response = ApiResult.class, notes = "充值接口查询")
+	public ApiResult orderQuery(@ApiParam(required = true, name = "type", value = "充值类型") @RequestParam("type") String type,
+			@ApiParam(required = true, name = "orderId", value = "订单号") @RequestParam("orderId") String orderId) {
+		ApiResult result = new ApiResult();
+		result.setOperate(Const.OPERATE_EXCHANGE_QUERY);
+		
+		String res = "";
+		
+		switch (type) {
+			case Const.EX_PHONE:
+				try {
+					res = PhoneRecharge.orderSta(orderId);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+				break;
+				
+			case Const.EX_Q_BILL:
+				try {
+					res = QbRecharge.orderSta(orderId);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+				break;
+			default:
+					
+				break;
+		}
+		
+		int error_code = JSONObject.fromObject(res).getInt("error_code");
+		switch (error_code) {
+		case 0:
+			result.setMsg("充值中");
+			break;
+		case 1:
+			result.setMsg("充值成功");
+			break;
+		case 9:
+			result.setMsg("充值失败");
+			break;
+		}
+		
+		return result;
+	}
+	
+	/**
+	 * @Title:			forgetPass
+	 * @Description:	忘记密码（每个手机号每天只能获取十次）
+	 * @param phone
+	 * @return
+	 */
+	@RequestMapping(value = "/forgetPass", method = RequestMethod.POST)
+	@ResponseBody
+	@ApiOperation(value = "忘记密码", httpMethod = "POST", response = ApiResult.class, notes = "忘记密码")
+	public ApiResult forgetPass(@ApiParam(required = true, name = "phone", value = "手机号码") @RequestParam("phone") String phone) {
+		ApiResult result = new ApiResult();
+		result.setOperate(Const.OPERATE_FORGET_PASS);
+		
+		/**
+		 * 0、查询是否存在该用户
+		 */
+		List<User> userList = userService.findByConditionSql(phone, "3");
+		if (userList == null || userList.size() <= 0) {
+			result.setCode(Const.ERROR_NULL_POINTER);
+			result.setMsg("该手机号没有对应的注册用户");
+			result.setSuccess(false);
+			
+			return result;
+		}
+		
+		/**
+		 * 1、先校验手机号码是否合法
+		 */
+		if (!ValidUtil.isValidMobile(phone)) {
+			result.setCode(Const.ERROR_PARAM_MISS);
+			result.setMsg("手机号码有误，请仔细核对");
+			result.setSuccess(false);
+			return result;
+		}
+		
+		/**
+		 * 2、发送短信
+		 */
+		String url = Const.SMS_URL;// 应用地址
+		String account = Const.SMS_ACCOUNT;// 账号
+		String pswd = Const.SMS_PASS;// 密码
+		String mobile = phone;// 手机号码，多个号码使用","分割
+		
+		String validCode = RandomUtil.getRandomNumber(4);
+		
+		// 发送短信
+		String msg = Const.SMS_MSG_HEAD + validCode + Const.SMS_MSG_TAIL;// 短信内容
+		boolean needstatus = true; // 是否需要状态报告，需要true，不需要false
+		String extno = null;// 扩展码
+	
+		try {
+			String returnString = HttpSender.batchSend(url, account, pswd, mobile, msg, needstatus, extno);
+			System.out.println("返回： " + returnString);
+			
+			/*
+			 * 返回值类似：   	201608252209002,0
+			 * 				1316546486
+			 */
+			String status = "0";
+			String[] strArr = returnString.split("\n");
+			if (strArr.length > 0 || strArr[0] != null) {
+				status = strArr[0].split(",")[1];
+			}
+			
+			switch (status) {
+				case Const.INFO_SMS_SUCCESS:
+					result.setCode(Const.INFO_NORMAL);
+					result.setMsg("成功向"+phone+"发送验证码： " + validCode);
+					result.setSuccess(true);
+					result.setData(validCode);
+					
+					validService.putValidCode(phone, validCode);
+					
+					break;
+				case Const.INFO_SMS_TOO_FAST:
+					result.setCode(Const.ERROR_REQUEST_TO_FAST);
+					result.setMsg("请求太过频繁");
+					result.setSuccess(false);
+					break;
+				case Const.INFO_SMS_PHONE_ERR:  // 107
+					result.setCode(Const.ERROR_PARAM_MISS);
+					result.setMsg("手机号码格式不对");
+					result.setSuccess(false);
+					break;
+				case Const.INFO_SMS_PHONE_NUMBER_ERR:  // 108
+					result.setCode(Const.ERROR_PARAM_MISS);
+					result.setMsg("手机号码错误");
+					result.setSuccess(false);
+					break;
+				case Const.INFO_SMS_OUT_TIME:
+					result.setCode(Const.ERROR_PARAM_MISS);
+					result.setSuccess(false);
+					result.setMsg("短信猫发送账号出现问题");
+					break;
+				default:
+					result.setCode(Const.ERROR_SERVER);
+					result.setSuccess(false);
+					result.setMsg("状态： " + status);
+					break;
+			}
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			result.setCode(Const.ERROR_SERVER);
+			result.setMsg("验证码发送出错");
+			result.setSuccess(false);
+		}
+		
+		return result;
+	}
+	
+	/**
+	 * 重置密码
+	 * @Title:			resetPass
+	 * @Description:	重置密码
+	 * @param phone
+	 * @param validCode
+	 * @param pass
+	 * @return
+	 */
+	@RequestMapping(value = "/resetPass", method = RequestMethod.POST)
+	@ResponseBody
+	@ApiOperation(value = "重置密码", httpMethod = "POST", response = ApiResult.class, notes = "重置密码")
+	public ApiResult resetPass(@ApiParam(required = true, name = "phone", value = "手机号码") @RequestParam("phone") String phone,
+			@ApiParam(required = true, name = "validCode", value = "验证码") @RequestParam("validCode") String validCode,
+			@ApiParam(required = true, name = "pass", value = "密码") @RequestParam("pass") String pass) {
+		ApiResult result = new ApiResult();
+		result.setOperate(Const.OPERATE_FORGET_PASS);
+		
+		/**
+		 * 1、校验验证码
+		 */
+		String vCode = validService.getValidCode(phone);
+		if (!vCode.equals(validCode)) {
+			result.setMsg("验证码不正确");
+			result.setSuccess(false);
+			result.setCode(Const.ERROR_PARAM_MISS);
+			
+			return result;
+		}
+		
+		/**
+		 * 2、
+		 */
+		User user = new User();
+		List<User> userList = userService.findByConditionSql(phone, "3");
+		if (userList == null || userList.size() <= 0) {
+			result.setCode(Const.ERROR_NULL_POINTER);
+			result.setMsg("该手机号没有对应的注册用户");
+			result.setSuccess(false);
+			
+			return result;
+		} else {
+			user = userList.get(0);
+			user.setPassword(pass);
+		}
+		
+		/**
+		 * 3、更新用户密码
+		 */
+		boolean success = userService.edit(user) > 0;
+		if (success) {
+			result.setCode(Const.INFO_NORMAL);
+			result.setMsg("重置密码成功");
+			result.setSuccess(true);
+			
+			user.setPassword(null);
+			result.setData(user);
+			
+			return result;
+		} else {
+			result.setCode(Const.ERROR_SERVER);
+			result.setMsg("重置密码失败");
+			result.setSuccess(false);
+		}
+	
+		return result;
+	}
+}
+
+class ExchargeType {
+	private String code;
+	private String name;
+	
+	public String getCode() {
+		return code;
+	}
+	public String getName() {
+		return name;
+	}
+	public void setCode(String code) {
+		this.code = code;
+	}
+	public void setName(String name) {
+		this.name = name;
+	}
+	
 }
  

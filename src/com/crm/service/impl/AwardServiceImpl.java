@@ -62,13 +62,13 @@ public class AwardServiceImpl implements AwardService {
 	
 	public List<Award> datagridAward(PageHelper page, String activityId, String conditionSql) {
 		page.setStart((page.getPage()-1)*page.getRows());
-		page.setEnd(page.getPage()*page.getRows());
+		page.setEnd(page.getRows());
 		return awardMapper.datagridAward(page, activityId, conditionSql);
 	}
 	
 	public Page<Award> awdPages(@Param("page") Page<Award> page, @Param("conditionSql") String conditionSql) {
 		page.setStart((page.getPage() - 1)*page.getRows());
-		page.setEnd((page.getPage())*page.getRows());
+		page.setEnd(page.getRows());
 		
 		page.setTotal(awardMapper.awdPagesTotal(conditionSql));
 		page.setContent(awardMapper.awdPages(page, conditionSql));

@@ -2,6 +2,9 @@ package com.crm.wechat.pay.domain.response;
 
 import java.io.Serializable;
 
+import com.wordnik.swagger.annotations.ApiModel;
+import com.wordnik.swagger.annotations.ApiModelProperty;
+
 
 /**
  * 
@@ -10,23 +13,35 @@ import java.io.Serializable;
  * @date 2016年6月25日下午5:42:59
  *
  */
+@ApiModel(value = "企业付款返回实体")
 public class WeixinVenderPayResponse implements Serializable {
 
     private static final long serialVersionUID = 1L;
+    @ApiModelProperty(value = "返回状态吗")
     private String return_code; //返回状态码
+    @ApiModelProperty(value = "返回信息")
     private String return_msg; //返回信息
+    @ApiModelProperty(value = "签名")
     private String sign; //签名
-
+    @ApiModelProperty(value = "商户appid")
     private String mch_appid; //商户appid
+    @ApiModelProperty(value = "商户号")
     private String mchid; // 商户号
+    @ApiModelProperty(value = "设备号")
     private String device_info;  // 设备号
+    @ApiModelProperty(value = "随机字符串")
     private String nonce_str; // 随机字符串
+    @ApiModelProperty(value = "业务结构")
     private String result_code; //业务结果
+    @ApiModelProperty(value = "错误代码")
     public String err_code; //错误代号
+    @ApiModelProperty(value = "错误描述")
     public String err_code_des; //错误文案
-    
+    @ApiModelProperty(value = "商户订单号")
     private String partner_trade_no; //商户订单号
-    private String payment_no; //商户号
+    @ApiModelProperty(value = "微信订单号")
+    private String payment_no; //微信订单号
+    @ApiModelProperty(value = "微信支付成功时间")
     private String payment_time; //微信支付成功时间，格式为yyyyMMddHHmmss，如2015年02月27日9点10分10秒表示为20150227091010。
 	
     public String getReturn_code() {

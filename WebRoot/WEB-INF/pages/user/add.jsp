@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <div class="modal-header">
 				<button type="button" class="close" data-dismiss="modal"
 					aria-label="Close">
@@ -19,6 +20,7 @@
 			</div>
 			<form id="addForm" action="user/add" method="post">
 			<div class="modal-body">
+				<%-- <c:if test="${userType eq '1'}"> --%>
 					<div class="form-group">
 						<label for="username" class="control-label"><font color="red">*</font>用户名:</label> 
 						<input type="text" class="form-control " id="username" name="username">
@@ -32,7 +34,19 @@
 						<label for="userAlias" class="control-label"><font color="red">*</font>别名:</label> 
 						<input type="text" class="form-control" id="userAlias" name="userAlias">
 					</div>
-				
+					<div class="form-group">
+						<label for="merchant" class="control-label">商户名:</label> 
+						<input type="text" class="form-control" id="merchant" name="merchant">
+					</div>
+					<div class="form-group">
+						<label for="telephone" class="control-label">电话号码:</label> 
+						<input type="text" class="form-control" id="telephone" name="telephone">
+					</div>
+					<div class="form-group">
+						<label for="address" class="control-label">地址:</label> 
+						<input type="text" class="form-control" id="address" name="address">
+					</div>
+				<%-- </c:if> --%>
 			</div>
 			<div class="modal-footer">
 				<button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
@@ -83,7 +97,7 @@ $('#modal').on('shown.bs.modal', function(event) {
 								alert('失败');
 							},
 							success : function(data) { //请求成功后处理函数。    
-								alert("success");
+								//alert("success");
 								$('#modal').on('hidden.bs.modal',function(event){//当modal框完全隐藏后再刷新页面content，要不然有bug
 									$("#content-wrapper").html(data);//刷新content页面
 								});

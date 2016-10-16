@@ -9,9 +9,9 @@
 				<h4 class="modal-title" id="exampleModalLabel">编辑用户</h4>
 			</div>
 				<form id="updateForm" action="user/update" method="post">
-			<div class="modal-body">
-
+				<div class="modal-body">
 					<input name="id" value="${user.id}" hidden="true"/>
+					<input name="userType" value="${userType}" hidden="true" />
 					<div class="form-group">
 						<label for="username" class="control-label">用户名:</label> <%-- ${user.username} --%>
 						<input type="text" class="form-control " id="username" name="username" disabled="disabled" value="${user.username}" >
@@ -20,23 +20,37 @@
 						<label for="userAlias" class="control-label">别名:</label> <input
 							type="text" class="form-control" id="userAlias" name="userAlias" value="${user.userAlias}">
 					</div>
+					<c:if test="${userType eq '1'}">
+						<div class="form-group">
+							<label for="merchant" class="control-label">商户名:</label> 
+							<input type="text" class="form-control" id="merchant" name="merchant" value="${user.merchant}">
+						</div>
+						<div class="form-group">
+							<label for="telephone" class="control-label">电话号码:</label> 
+							<input type="text" class="form-control" id="telephone" name="telephone" value="${user.telephone}">
+						</div>
+						<div class="form-group">
+							<label for="address" class="control-label">地址:</label> 
+							<input type="text" class="form-control" id="address" name="address" value="${user.address}">
+						</div>
+					</c:if>
 					<div class="form-group">
 						<label for="locked" class="control-label">状态:</label> 
 						<c:choose>
 							<c:when test="${user.locked eq 1}">
 								<label>
-									<input name="locked"  type="radio" checked="checked" class="minimal-red" value="true">锁定
+									<input name="locked"  type="radio" checked="checked" class="minimal-red" value="1">锁定
 								</label>
 								<label>
-									<input name="locked"  type="radio" class="minimal-red" value="false">未锁定
+									<input name="locked"  type="radio" class="minimal-red" value="0">未锁定
 								</label>
 							</c:when>
 							<c:otherwise>
 								<label>
-									<input name="locked"  type="radio" class="minimal-red" value="true">锁定
+									<input name="locked"  type="radio" class="minimal-red" value="1">锁定
 								</label>
 								<label>
-									<input name="locked"  type="radio" checked="checked" class="minimal-red" value="false">未锁定
+									<input name="locked"  type="radio" checked="checked" class="minimal-red" value="0">未锁定
 								</label>
 							</c:otherwise>
 						</c:choose>
@@ -53,11 +67,11 @@
 $('#modal').on('shown.bs.modal', function(event) {
 	$("#updateForm").validate({
 		rules:{			 
-			 userAlias:{ //格式：domId: 规则
+			 /* userAlias:{ //格式：domId: 规则
 				 minlength:2,//无效
 				 maxlength:30,
 				 required:true,							 	
-				 }
+				 } */
 		 },
 		 messages:{
 			
@@ -73,7 +87,7 @@ $('#modal').on('shown.bs.modal', function(event) {
 						alert('失败');
 					},
 					success : function(data) { //请求成功后处理函数。    
-						alert("success");						
+						alert("修改用户信息成功");						
 						$('#modal').on('hidden.bs.modal',function(event){//当modal框完全隐藏后再刷新页面content，要不然有bug
 							$("#content-wrapper").html(data);//刷新content页面
 						});

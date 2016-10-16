@@ -46,10 +46,10 @@ public class SwaggerConfig {
 	private ApiInfo apiInfo()
     {
         ApiInfo apiInfo = new ApiInfo(
-                "欢乐兑API列表",
+                "快乐兑API列表",
                 "提供给Android和IOS测试使用",
                 "My Apps API terms of service",
-                "davidsky11@126.com",
+                "email@mail.com",
                 "My Apps API Licence Type",
                 "My Apps API License URL");
         return apiInfo;

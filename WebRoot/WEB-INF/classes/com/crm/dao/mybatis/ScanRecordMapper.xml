@@ -25,6 +25,7 @@
 		
 		<association property="user" resultMap="userMap" />
 		<association property="wares" resultMap="waresMap" />
+		<association property="activity" resultMap="activityMap" />
 	</resultMap>
 	
 	<resultMap type="com.crm.domain.User" id="userMap">
@@ -48,6 +49,13 @@
 		<result property="awardId" column="w_awardId" />
 	</resultMap>
 	
+	<resultMap type="com.crm.domain.Activity" id="activityMap" >
+		<id property="id" column="a_id" />
+		<result property="title" column="a_title" />
+		<result property="description" column="a_description" />
+		<result property="content" column="a_content" />
+	</resultMap>
+	
 	<insert id="saveScanRecord" parameterType="com.crm.domain.ScanRecord" >
 		<selectKey keyProperty="id" resultType="String" order="BEFORE">
 			select replace(UUID(), "-", "")
@@ -58,7 +66,6 @@
             <if test="userName !=null and userName !=''">userName,</if>
             <if test="longitude !=null and longitude !=''">longitude,</if>
             <if test="latitude !=null and latitude !=''">latitude,</if>
-            <if test="scanTime !=null and scanTime !=''">scanTime,</if>
             <if test="country !=null and country !=''">country,</if>
             <if test="province !=null and province !=''">province,</if>
             <if test="city !=null and city !=''">city,</if>
@@ -70,26 +77,27 @@
             <if test="waresId !=null and waresId !=''">waresId,</if>
             <if test="publicCode !=null and publicCode !=''">publicCode,</if>
             <if test="privateCode !=null and privateCode !=''">privateCode,</if>
-            <if test="insideCode !=null and insideCode !=''">insideCode</if>
+            <if test="insideCode !=null and insideCode !=''">insideCode,</if>
+            <if test="scanTime !=null and scanTime !=''">scanTime</if>
             </trim>)values(<trim suffixOverrides=",">
             <if test="id !=null and id !=''">#{id},</if>
             <if test="userId !=null and userId !=''">#{userId},</if>
             <if test="userName !=null and userName !=''">#{userName},</if>
             <if test="longitude !=null and longitude !=''">#{longitude},</if>
             <if test="latitude !=null and latitude !=''">#{latitude},</if>
-            <if test="scanTime !=null and scanTime !=''">#{scanTime},</if>
-            <if test="country !=null and country !=''">country=#{country},</if>
-            <if test="province !=null and province !=''">province=#{province},</if>
-            <if test="city !=null and city !=''">city=#{city},</if>
-            <if test="distance !=null and distance !=''">distance=#{distance},</if>
-            <if test="street !=null and street !=''">street=#{street},</if>
-            <if test="sematicDescription !=null and sematicDescription !=''">sematicDescription=#{sematicDescription},</if>
-            <if test="formattedAddress !=null and formattedAddress !=''">formattedAddress=#{formattedAddress},</if>
-            <if test="userType !=null and userType !=''">userType=#{userType},</if>
-            <if test="waresId !=null and waresId !=''">waresId=#{waresId},</if>
-            <if test="publicCode !=null and publicCode !=''">publicCode=#{publicCode},</if>
-            <if test="privateCode !=null and privateCode !=''">privateCode=#{privateCode},</if>
-            <if test="insideCode !=null and insideCode !=''">insideCode=#{insideCode}</if>
+            <if test="country !=null and country !=''">#{country},</if>
+            <if test="province !=null and province !=''">#{province},</if>
+            <if test="city !=null and city !=''">#{city},</if>
+            <if test="distance !=null and distance !=''">#{distance},</if>
+            <if test="street !=null and street !=''">#{street},</if>
+            <if test="sematicDescription !=null and sematicDescription !=''">#{sematicDescription},</if>
+            <if test="formattedAddress !=null and formattedAddress !=''">#{formattedAddress},</if>
+            <if test="userType !=null and userType !=''">#{userType},</if>
+            <if test="waresId !=null and waresId !=''">#{waresId},</if>
+            <if test="publicCode !=null and publicCode !=''">#{publicCode},</if>
+            <if test="privateCode !=null and privateCode !=''">#{privateCode},</if>
+            <if test="insideCode !=null and insideCode !=''">#{insideCode},</if>
+            <if test="scanTime !=null and scanTime !=''">#{scanTime}</if>
             </trim>)
 	</insert> 
 	
@@ -229,9 +237,12 @@
 		<if test="conditionSql != null and conditionSql != ''">
 			${conditionSql}
         </if>
-		<if test="page.sort != null and page.sort != ''">
+		<!-- <if test="page.sort != null and page.sort != ''">
             order by #{page.sort} #{page.order}
         </if>
+        <if test="page.sort == null or page.sort == ''"> -->
+            order by t.scanTime desc
+        <!-- </if> -->
         <if test="page.page > 0">
             limit #{page.start},#{page.end}
         </if>
@@ -244,6 +255,37 @@
 		w.id w_id, w.name w_name, w.creater w_creater, w.awardId w_awardId
 		from scan_record t, sysuser u, wares w 
 		where t.waresId = w.id and t.userId = u.id and t.id = #{id}
+	</select>
+	
+	<select id="selectByPublisherTotal" resultType="int">
+		select count(1) from scan_record t where t.publicCode in 
+		(select a.publicCode from activity a where a.publisherId = #{publisherId})
+		<if test="conditionSql != null and conditionSql != ''">
+			${conditionSql}
+        </if>
+	</select>
+	
+	<select id="selectByPublisher" resultMap="scanRecordMap">
+		select t.id,t.userId,t.userName,t.longitude,t.latitude,t.scanTime,t.country,t.province,t.city,t.distance,
+		u.id u_id, u.username u_username, u.email u_email, u.regtime u_regtime,
+		a.id a_id, a.title a_title, a.description a_description, a.content a_content
+		from scan_record t
+		left join sysuser u on t.userId = u.id
+		left join activity a on t.publicCode = a.publicCode
+		where t.publicCode in 
+		(select a.publicCode from activity a where a.publisherId = #{publisherId})
+		<if test="conditionSql != null and conditionSql != ''">
+			${conditionSql}
+        </if>
+		<!-- <if test="page.sort != null and page.sort != ''">
+            order by #{page.sort} #{page.order}
+        </if>
+        <if test="page.sort == null or page.sort == ''"> -->
+            order by t.scanTime desc
+        <!-- </if> -->
+        <if test="page.page > 0">
+            limit #{page.start},#{page.end}
+        </if>
 	</select>
 	
 </mapper>

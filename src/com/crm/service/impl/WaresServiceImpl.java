@@ -55,7 +55,7 @@ public class WaresServiceImpl implements WaresService {
 	
 	public List<Wares> datagridWares(PageHelper page, Wares wares) {
 		page.setStart((page.getPage()-1)*page.getRows());
-		page.setEnd(page.getPage()*page.getRows());
+		page.setEnd(page.getRows());
 		return waresMapper.datagridWares(page, wares);
 	}
 	

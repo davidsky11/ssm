@@ -10,7 +10,7 @@
 		扫码管理 <small></small>
 	</h1>
 	<ol class="breadcrumb">
-		<li><a href="#"><i class="fa fa-dashboard"></i>系统管理</a></li>
+		<li><a href=""><i class="fa fa-dashboard"></i>主页</a></li>
 		<li class="active">扫码管理</li>
 	</ol>
 </section>
@@ -20,9 +20,9 @@
 		<div class="box">
 			<div class="box-body">
 				<div class="box box-primary">
-					<div class="box-header with-border">
+					<!-- <div class="box-header with-border">
 						<h3 class="box-title">扫码列表</h3>
-					</div>
+					</div> -->
 					<div class="form-group">
 						<div class="box-body">
 							<div class="row">

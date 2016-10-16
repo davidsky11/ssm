@@ -65,13 +65,13 @@ public class ScanRecordServiceImpl implements ScanRecordService {
 	
 	public List<ScanRecord> datagridScanRecord(PageHelper page, ScanRecord scanRecord) {
 		page.setStart((page.getPage()-1)*page.getRows());
-		page.setEnd(page.getPage()*page.getRows());
+		page.setEnd(page.getRows());
 		return scanRecordMapper.datagridScanRecord(page, scanRecord);
 	}
 	
 	public Page<ScanRecord> srPages(Page<ScanRecord> page, String conditionSql) {
 		page.setStart((page.getPage() - 1)*page.getRows());
-		page.setEnd((page.getPage())*page.getRows());
+		page.setEnd(page.getRows());
 		
 		page.setTotal(scanRecordMapper.srPagesTotal(conditionSql));
 		page.setContent(scanRecordMapper.srPages(page, conditionSql));
@@ -81,6 +81,16 @@ public class ScanRecordServiceImpl implements ScanRecordService {
 	
 	public ScanRecord findById(String id) {
 		return scanRecordMapper.findById(id);
+	}
+
+	@Override
+	public Page<ScanRecord> selectByPublisher(Page<ScanRecord> page, String conditionSql, String publisherId) {
+		page.setStart((page.getPage() - 1)*page.getRows());
+		page.setEnd(page.getRows());
+		
+		page.setTotal(scanRecordMapper.selectByPublisherTotal(conditionSql, publisherId));
+		page.setContent(scanRecordMapper.selectByPublisher(page, conditionSql, publisherId));
+		return page;
 	}
 	
 }

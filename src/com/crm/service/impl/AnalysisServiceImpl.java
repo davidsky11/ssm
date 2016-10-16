@@ -29,7 +29,7 @@ public class AnalysisServiceImpl implements AnalysisService {
 	
 	public List<PlaceAnalysis> findPlaceAnalysisPage(String publicCode, String userId, PageHelper page) {
 		page.setStart((page.getPage()-1)*page.getRows());
-		page.setEnd(page.getPage()*page.getRows());
+		page.setEnd(page.getRows());
 		return analysisMapper.findPlaceAnalysisPage(publicCode, userId, page);
 	}
 	

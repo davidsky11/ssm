@@ -17,8 +17,6 @@ import com.crm.util.RandomUtil;
 import com.crm.util.common.Const;
 import com.crm.wechat.utils.MD5Util;
 
-import net.sf.json.JSONObject;
-
 /** 
  * @ClassName	PhoneRecharge.java
  * @Description 
@@ -50,11 +48,12 @@ public class PhoneRecharge {
 	值的手机号码及金额，其他为不可以或其他错误
 	* @throws Exception
 	*/
-	public static int telCheck(String phone,int cardnum) throws Exception{
-		int error_code=0;
+	public static String telCheck(String phone,int cardnum) throws Exception{
+		//int error_code=0;
 		String result = get(telCheckUrl.replace("*", cardnum+"").replace("!", phone),0);
-		error_code = JSONObject.fromObject(result).getInt("error_code");
-		return error_code;
+		//error_code = JSONObject.fromObject(result).getInt("error_code");
+		//return error_code;
+		return result;
 	}
 
 	/**
@@ -77,11 +76,12 @@ public class PhoneRecharge {
 	* @return 返回String结果 
 	* @throws Exception
 	*/
-	public static String onlineOrder(String phone,int cardnum, String orderid) throws Exception {
+	public static String onlineOrder(String phone,int cardnum) throws Exception {
 		String result = null;
+		String orderId = RandomUtil.getRandomNumber(8);
 		//Md5Util工具类
-		String sign = MD5Util.MD5(openId+key+phone+cardnum+orderid);
-		result = get(onlineUrl.replace("*", cardnum+"").replace("!", phone).replace("@", orderid).replace("$", sign),0);
+		String sign = MD5Util.MD5(openId+key+phone+cardnum+orderId);
+		result = get(onlineUrl.replace("*", cardnum+"").replace("!", phone).replace("@", orderId).replace("$", sign),0);
 		return result;
 	}
 	
@@ -104,7 +104,7 @@ public class PhoneRecharge {
 	* @throws Exception
 	*/
 	public static String orderSta(String orderid) throws Exception{
-		return get(orderstaUrl.replace("1", orderid), 0);
+		return get(orderstaUrl.replace("!", orderid), 0);
 	}
 	
 	/**
@@ -169,10 +169,13 @@ public class PhoneRecharge {
 	}
 	
 	public static void main(String[] args) {
-		String orderId = RandomUtil.getRandomNumber(8);
 		String result = "";
 		try {
-			result = onlineOrder("18771137567", 2, orderId);
+			//result = onlineOrder("18694050229", 10);
+			//result = telCheck("15071493575", 2);
+			//result = telQuery("18694050229", 2);
+			//result = onlineOrder("15600720319", 2);
+			result = orderSta("45316621");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

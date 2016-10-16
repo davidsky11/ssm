@@ -70,6 +70,9 @@ public class Tool {
 		if (null == s) {
 			return false;
 		}
+		if (s.equals("")) {
+			return false;
+		}
 		if (s.trim().equals("")) {
 			return false;
 		}
