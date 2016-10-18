@@ -16,6 +16,7 @@ public class Sale implements Comparable<Sale> {
 	private String activityId;
 	private Activity activity;
 	private String publicCode;
+	private String userId;
 	
 	public Integer getId() {
 		return id;
@@ -60,6 +61,12 @@ public class Sale implements Comparable<Sale> {
 	}
 	public void setPublicCode(String publicCode) {
 		this.publicCode = publicCode;
+	}
+	public String getUserId() {
+		return userId;
+	}
+	public void setUserId(String userId) {
+		this.userId = userId;
 	}
 	
 	@Override

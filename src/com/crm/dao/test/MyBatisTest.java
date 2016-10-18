@@ -37,6 +37,7 @@ import com.crm.domain.ScanRecord;
 import com.crm.domain.User;
 import com.crm.domain.Wares;
 import com.crm.domain.dto.PlaceAnalysis;
+import com.crm.domain.dto.SrDto;
 import com.crm.domain.easyui.PageHelper;
 import com.crm.domain.po.Address;
 import com.crm.domain.po.AddressComponent;
@@ -545,4 +546,89 @@ public class MyBatisTest extends AbstractJUnit4SpringContextTests {
     	System.out.println(atyList);
 	}
 	
+	@Test
+	public void srList() {
+		String firstDay;
+		String lastDay;
+		
+		Integer year = 2016;
+    	Integer month = 01;
+		
+		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd"); 
+		
+		// 获取前月的第一天
+    	Calendar cal_1=Calendar.getInstance();//获取当前日期 
+    	
+    	year = cal_1.get(Calendar.YEAR);  // 当年
+    	month = cal_1.get(Calendar.MONTH);  // 上个月
+    	
+    	cal_1.add(Calendar.MONTH, -1);
+    	cal_1.set(Calendar.DAY_OF_MONTH,1);//设置为1号,当前日期既为本月第一天 
+    	firstDay = format.format(cal_1.getTime());
+    	System.out.println("-----1------firstDay:"+firstDay);
+    	
+    	//获取前月的最后一天
+    	Calendar cale = Calendar.getInstance();   
+    	cale.set(Calendar.DAY_OF_MONTH,0);//设置为1号,当前日期既为本月第一天 
+    	lastDay = format.format(cale.getTime());
+    	System.out.println("-----2------lastDay:"+lastDay);
+    	
+    	StringBuffer conditionSql = new StringBuffer();
+    	conditionSql.append(" and t.userType = '3'");
+    	
+    	conditionSql.append(" and t.scanTime >= '").append(firstDay).append("'");
+    	conditionSql.append(" and t.scanTime <= date_sub('").append(lastDay).append("', interval -1 day)");
+		
+    	List<SrDto> srList = scanRecordMapper.findOnlyByUserAndWares(conditionSql.toString());
+    	
+    	/**
+    	 * 获取所有的用户id
+    	 */
+    	Set<String> userIdSet = new HashSet<String>();
+    	for (SrDto sd : srList) {
+    		userIdSet.add(sd.getUserId());
+    	}
+    	
+    	/**
+    	 * 获取所有的活动列表
+    	 */
+    	List<Activity> atyList = activityMapper.getActivityList("");
+    	
+    	/**
+    	 * 生成Sale列表
+    	 */
+    	List<Sale> saleList = new ArrayList<Sale>();
+    	
+    	for (String userId : userIdSet) {
+    		for (Activity aty : atyList) {
+    			Sale sale = new Sale();
+	    		
+	    		sale.setUserId(userId);
+	    		sale.setYear(year);
+	    		sale.setMonth(month);
+	    		
+	    		Integer amount = 0;
+    		
+	    		for (SrDto dto : srList) {
+	    			if (dto.getPublicCode().equals(aty.getPublicCode()) && dto.getUserId().equals(userId)) {
+	    				sale.setActivityId(aty.getId());
+	    				amount += dto.getCount();
+		    		}
+	    		}
+	    		
+	    		sale.setAmount(amount + 0.0d);
+	    		
+	    		if (Tool.isNotNullOrEmpty(sale.getActivityId()))	saleList.add(sale);
+    		}
+    	}
+    	
+    	for (Sale s : saleList) {
+    		System.out.println(s);
+    	}
+    	
+    	/**
+    	 * 将saleList数据保存到sale数据表中
+    	 */
+    	saleMapper.addSaleBatch(saleList);
+	}
 }

@@ -21,15 +21,17 @@ public class RemoveLogJob implements Job {
      * 这里实现定时任务的方法
      */
     public void execute(final JobExecutionContext context) throws JobExecutionException {
+    	System.out.println("开始执行日志清理工作...");
         ApplicationContext appCtx = null;
         try {
-            appCtx = (ApplicationContext) context.getScheduler().getContext().get("applicationContextKey");
+            appCtx = (ApplicationContext) context.getScheduler().getContext().get("applicationContext");
         } catch (SchedulerException e1) {
             e1.printStackTrace();
         }
         if (appCtx != null) {
             logInfoDao = appCtx.getBean(LogInfoDao.class);
-            logInfoDao.deleteByDate();
+            System.out.println("日志清理...");
+            //logInfoDao.deleteByDate();
         }
     }
 }

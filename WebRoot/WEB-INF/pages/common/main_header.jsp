@@ -3,16 +3,18 @@
     <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
   <header class="main-header">
 
+	<!-- style=" background-size:cover;background: url(img/head_left.jpg); width:100%; height:50px;" -->
         <!-- Logo -->
-        <a href="" class="logo">
-          <!-- mini logo for sidebar mini 50x50 pixels -->
-          <span class="logo-mini"><b>KLD</b></span>
-          <!-- logo for regular state and mobile devices -->
-          <span class="logo-lg"> <b>快 乐 兑</b> </span>
+        <img src="img/head_left.jpg" width="230px" height="50px" style="position:absolute">
+        <a href="" class="logo" >
+       		<!-- mini logo for sidebar mini 50x50 pixels -->
+          	<!-- <span class="logo-mini"><b>KLD</b></span> -->
+          	<!-- logo for regular state and mobile devices -->
+          	<span class="logo-lg"> <b>快 乐 兑</b> </span>
         </a>
 
         <!-- Header Navbar -->
-        <nav class="navbar navbar-static-top" role="navigation">
+        <nav class="navbar navbar-static-top" role="navigation" style="background: url(img/head_right.jpg); background-repeat:no-repeat;">
           <!-- Sidebar toggle button-->
           <!-- <a href="#" class="sidebar-toggle" data-toggle="offcanvas" role="button">
             <span class="sr-only">Toggle navigation</span>
@@ -21,7 +23,7 @@
           <!-- Navbar Right Menu -->
           <div class="navbar-custom-menu">
             <ul class="nav navbar-nav">
-           
+           	
               <!-- User Account Menu -->
               <li class="dropdown user user-menu">
                 <!-- Menu Toggle Button -->

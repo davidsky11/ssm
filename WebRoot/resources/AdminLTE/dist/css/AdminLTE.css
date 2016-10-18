@@ -299,6 +299,7 @@ a:focus {
   padding: 0 15px;
   font-weight: 300;
   overflow: hidden;
+  background: url(img/head_left.jpg);
 }
 .main-header .logo .logo-lg {
   display: block;

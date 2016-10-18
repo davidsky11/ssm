@@ -288,4 +288,13 @@
         </if>
 	</select>
 	
+	<select id="findOnlyByUserAndWares" resultType="com.crm.domain.dto.SrDto" parameterType="String">
+		select t.userId, count(DISTINCT t.waresId) count, t.waresId, t.publicCode, t.privateCode, t.insideCode
+		from scan_record t where 1 = 1
+		<if test="conditionSql != null and conditionSql != ''">
+			${conditionSql}
+        </if>
+		group by t.userId, t.waresId
+	</select>
+	
 </mapper>

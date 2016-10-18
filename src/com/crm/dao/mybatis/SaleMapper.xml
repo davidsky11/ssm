@@ -116,5 +116,13 @@
             ${conditionSql}
         </if>
 	</select>
+	
+	<insert id="addSaleBatch" parameterType="java.util.List" >
+		insert into sale(year, month, amount, activityId, userId)
+		values
+		<foreach collection="saleList" item="sale" index="index" separator=",">
+			(#{sale.year}, #{sale.month}, #{sale.amount}, #{sale.activityId}, #{sale.userId})
+		</foreach>
+	</insert>
     
 </mapper>

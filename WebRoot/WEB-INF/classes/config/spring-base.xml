@@ -54,6 +54,8 @@
     <import resource="classpath:config/spring-mybatis.xml" />
     <import resource="classpath:config/spring-rest.xml" />
     <import resource="classpath:config/spring-cache.xml" />
+    <import resource="classpath:config/spring-quartz.xml" />
+    
     <!-- <import resource="classpath:config/spring-redis.xml" /> -->
     <!-- <import resource="classpath:config/spring-wechat.xml" />
     <import resource="classpath:config/spring-i18n.xml" />

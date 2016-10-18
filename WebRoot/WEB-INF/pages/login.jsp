@@ -290,14 +290,14 @@
 					<input type="hidden" id="userType" name="userType" value="3" />
 					<div id="username">
 						<label>用户账户：</label> 
-						<input type="text"
+						<input type="text" 
 							id="stu_username_hide" name="username" value=""
 							nullmsg="用户名不能为空!" datatype="s3-18" errormsg="用户名范围在3~18个字符之间!"  />
 						<!--ajaxurl="demo/valid.jsp"-->
 					</div>
 					<div id="password">
-						<label>密&nbsp;&nbsp;&nbsp;码：</label> 
-						<input type="password"
+						<label>用户密码：</label> 
+						<input type="password" 
 							id="stu_password_hide" name="password" 
 							nullmsg="密码不能为空!" datatype="*3-16" errormsg="密码范围在3~16之间!"  />
 					</div>
@@ -328,7 +328,7 @@
 							datatype="s3-18" errormsg="商户账号范围在3~18个字符之间1" />
 					</div>
 					<div id="password">
-						<label>密&nbsp;&nbsp;&nbsp;码：</label> <input type="password"
+						<label>用户密码：</label> <input type="password"
 							id="tea_password_hide" name="password" value=""
 							nullmsg="密码不能为空!" datatype="*3-16" errormsg="密码范围在3~16之间!"
 							/>
@@ -360,7 +360,7 @@
 							nullmsg="账号不能为空!" datatype="s3-18" errormsg="账号范围在3~18个字符之间!" />
 					</div>
 					<div id="password">
-						<label>密&nbsp;&nbsp;&nbsp;码：</label> <input type="password"
+						<label>用户密码：</label> <input type="password"
 							id="sec_password_hide" name="password" value=""
 							nullmsg="密码不能为空!" datatype="*3-16" errormsg="密码在3~16位之间!" />
 					</div>

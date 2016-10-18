@@ -16,6 +16,13 @@
         <property name="jobClass" value="com.crm.task.RemoveLogJob" />
         <property name="durability" value="true"></property>
     </bean>
+    
+    <!-- 计算销售记录汇总 -->
+    <bean id="saleCountJob" class="org.springframework.scheduling.quartz.JobDetailFactoryBean">
+    	<property name="jobClass" value="com.crm.task.SaleRecordJob" />
+    	<property name="durability" value="true"></property>
+    </bean>
+    
     <!--******************触发器************************** -->
     <!-- 删除日志 -->
     <bean id="removeLogTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
@@ -23,11 +30,19 @@
         <!-- 每周一3点30触发一次 0 30 3 ? * MON-->
         <property name="cronExpression" value="0 30 3 ? * MON" />
     </bean>
+    
+    <!-- 计算销售记录汇总 -->
+    <bean id="saleCountTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+        <property name="jobDetail" ref="saleCountJob" />
+        <!-- 每月第一天触发一次 0 0 1 1 * ? -->
+        <property name="cronExpression" value="0 0 1 1 * ?" />
+    </bean>
+    
     <!-- ************SchedulerFactoryBean************ -->
     <bean id="quartzScheduler" lazy-init="false" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
         <!-- quartz属性文件 -->
         <property name="configLocation" ref="configLocationResource"></property>
-        <property name="applicationContextSchedulerContextKey" value="applicationContextKey" />
+        <property name="applicationContextSchedulerContextKey" value="applicationContext" />
         <!--QuartzScheduler 启动时更新己存在的Job QuartzScheduler 启动时更新己存在的Job，这样就不用每次修改targetObject后删除qrtz_job_details表对应记录了 -->
         <property name="overwriteExistingJobs" value="true" />
         <!-- 这个是必须的，QuartzScheduler 延时启动，应用启动完后 QuartzScheduler 再启动 <property name="startupDelay" value="30" /> -->
@@ -36,6 +51,7 @@
         <property name="triggers">
             <list>
                 <ref bean="removeLogTrigger" />
+                <ref bean="saleCountTrigger" />
             </list>
         </property>
     </bean>

@@ -7,6 +7,7 @@ import org.apache.ibatis.annotations.Param;
 import com.crm.domain.Page;
 import com.crm.domain.ScanRecord;
 import com.crm.domain.User;
+import com.crm.domain.dto.SrDto;
 import com.crm.domain.easyui.PageHelper;
 
 /** 
@@ -53,6 +54,8 @@ public interface ScanRecordMapper {
 	
 	public List<ScanRecord> selectByPublisher(@Param("page") Page<ScanRecord> page, @Param("conditionSql") String conditionSql,
 			@Param("publisherId") String publisherId);
+	
+	public List<SrDto> findOnlyByUserAndWares(@Param("conditionSql") String conditionSql);
 	
 }
  

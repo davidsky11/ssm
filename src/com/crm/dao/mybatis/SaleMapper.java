@@ -40,5 +40,7 @@ public interface SaleMapper {
 
 	public List<Sale> findSaleList(@Param("conditionSql") String conditionSql);
 
+	public int addSaleBatch(@Param("saleList") List<Sale> saleList);
+	
 }
  
