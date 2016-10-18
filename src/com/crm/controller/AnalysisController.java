@@ -3,11 +3,16 @@ package com.crm.controller;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -243,11 +248,40 @@ public class AnalysisController {
 		switch (user.getUserType()) {
 			case Const.USERTYPE_VENDER:  // 厂商
 				conditionSql
-					.append(" and (t.year = '").append(prevYear).append("' and t.month > '").append(month-1).append("') ")
-					.append(" or (t.year = '").append(year).append("' and t.month < '").append(month).append("') ");
+					.append(" and ((t.year = '").append(prevYear).append("' and t.month > '").append(month-1).append("') ")
+					.append(" or (t.year = '").append(year).append("' and t.month < '").append(month).append("')) ");
 				
 				if (Tool.isNotNullOrEmpty(activityId)) {
 					conditionSql.append(" and t.activityId = '").append(activityId).append("'");
+				}
+
+				/**
+				 * 1、直接从销售统计表里获取数据
+				 */
+				saleList = saleService.findSaleList(conditionSql.toString());
+				
+				Collections.sort(saleList);  // 对销售记录进行排序
+				
+				Set<YearMonth> yearMonthSet = new TreeSet<YearMonth>();
+				
+				for (Sale sale : saleList) {
+					yearMonthSet.add(new YearMonth(sale.getYear(), sale.getMonth()));
+				}
+				
+				// 年月从小到大排列
+				for (YearMonth yearMonth : yearMonthSet) {
+					AbstractChartDto dto = new AbstractChartDto();
+					dto.setBar(yearMonth.getYear() + "-" + yearMonth.getMonth());
+					Double tmp = 0.0;
+					for (Sale s : saleList) {
+						if (yearMonth.getYear().equals(s.getYear()) 
+								&& yearMonth.getMonth().equals(s.getMonth())) {
+							tmp += s.getAmount();
+						}
+					}
+					dto.setCategory(tmp + "");
+					
+					list.add(dto);
 				}
 				
 				break;
@@ -261,25 +295,25 @@ public class AnalysisController {
 					conditionSql.append(" and t.activityId = '").append(activityId).append("'");
 				}
 				
+				/**
+				 * 1、直接从销售统计表里获取数据
+				 */
+				saleList = saleService.findSaleList(conditionSql.toString());
+				
+				Collections.sort(saleList);  // 对销售记录进行排序
+				
+				for (Sale sale : saleList) {
+					AbstractChartDto dto = new AbstractChartDto();
+					dto.setCategory(sale.getAmount() + "");
+					dto.setBar(sale.getYear() + "-" + sale.getMonth());
+					
+					list.add(dto);
+				}
+				
 				break;
 			default:
 				
 				break;
-		}
-		
-		/**
-		 * 1、直接从销售统计表里获取数据
-		 */
-		saleList = saleService.findSaleList(conditionSql.toString());
-		
-		Collections.sort(saleList);  // 对销售记录进行排序
-		
-		for (Sale sale : saleList) {
-			AbstractChartDto dto = new AbstractChartDto();
-			dto.setCategory(sale.getAmount() + "");
-			dto.setBar(sale.getYear() + "-" + sale.getMonth());
-			
-			list.add(dto);
 		}
 		
 		//将json数据返回给客户端
@@ -291,6 +325,7 @@ public class AnalysisController {
 			Gson gson = new Gson();
 			String json = gson.toJson(list);
 			System.out.println(json);
+			log.info(json);
 			out.write(json);
 			out.flush();
 		} catch (IOException e) {
@@ -371,6 +406,96 @@ public class AnalysisController {
 				out.close();
 			}
 		}
+	}
+	
+}
+
+class YearMonth implements Comparable<YearMonth> {
+	private Integer year;
+	private Integer month;
+	
+	public YearMonth() {
+		super();
+	}
+	public YearMonth(Integer year, Integer month) {
+		super();
+		this.year = year;
+		this.month = month;
+	}
+	public Integer getYear() {
+		return year;
+	}
+	public Integer getMonth() {
+		return month;
+	}
+	public void setYear(Integer year) {
+		this.year = year;
+	}
+	public void setMonth(Integer month) {
+		this.month = month;
+	}
+	
+	@Override
+	public int compareTo(YearMonth o) {
+		YearMonth ym = (YearMonth) o;
+		if (this.getYear() == null || this.getYear() <= 0) {
+			return 1;
+		}
+		if (ym.getYear() == null || ym.getYear() <= 0) {
+			return -1;
+		}
+		
+		if (this.getYear() < ym.getYear()) {
+			return 1;
+		} else if (this.getYear() > ym.getYear()) {
+			return -1;
+		} else if (this.getYear() == ym.getYear()) {
+			if (this.getMonth() == null || this.getMonth() <= 0) {
+				return 1;
+			}
+			if (ym.getMonth() == null || ym.getMonth() <= 0) {
+				return -1;
+			}
+			if (this.getMonth() < ym.getMonth()) {
+				return 1;
+			} else if (this.getMonth() > ym.getMonth()) {
+				return -1;
+			} else {
+				return 0;
+			}
+		}
+		
+		return 1;
+	}
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((month == null) ? 0 : month.hashCode());
+		result = prime * result + ((year == null) ? 0 : year.hashCode());
+		return result;
+	}
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		YearMonth other = (YearMonth) obj;
+		if (year == null) {
+			if (other.year != null)
+				return false;
+		} else if (!year.equals(other.year))
+			return false;
+		if (month == null) {
+			if (other.month != null)
+				return false;
+		} else if (!month.equals(other.month))
+			return false;
+		
+		return true;
 	}
 	
 }

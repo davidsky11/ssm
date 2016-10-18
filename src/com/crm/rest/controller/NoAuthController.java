@@ -11,7 +11,6 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.annotation.Resource;
-import javax.jws.soap.SOAPBinding.Use;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -47,6 +46,7 @@ import com.crm.service.SysDictionaryService;
 import com.crm.service.UserService;
 import com.crm.service.ValidService;
 import com.crm.service.WaresService;
+import com.crm.util.GsonUtils;
 import com.crm.util.MapUtil;
 import com.crm.util.RandomUtil;
 import com.crm.util.Tool;
@@ -54,6 +54,7 @@ import com.crm.util.ValidUtil;
 import com.crm.util.common.Const;
 import com.crm.util.recharge.PhoneRecharge;
 import com.crm.util.recharge.QbRecharge;
+import com.crm.util.recharge.ResultBean;
 import com.crm.util.sms.HttpSender;
 import com.crm.wechat.pay.domain.request.WeixinNormalRedPackRequest;
 import com.crm.wechat.pay.domain.request.WeixinVenderPayRequest;
@@ -754,14 +755,26 @@ public class NoAuthController {
     							e.printStackTrace();
     						}
     						
+    						System.out.println(result2);
     						if (Tool.isNotNullOrEmpty(result2)) {
-    							String orderId = JSONObject.fromObject(result2).getString("uorderid");
-    							result.setSuccess(true);
-    							result.setData(orderId);
+    							ResultBean rb1 = GsonUtils.fromJson(result2, ResultBean.class);
+    							if (rb1.getError_code() != null && rb1.getError_code().equals("0")) {
+	    							result.setSuccess(true);
+	    							result.setMsg("手机充值" + amount2 + "元，请稍后查询充值结果");
+	    							result.setData(rb1 == null ? null : (rb1.getResult() == null ? null : rb1.getResult().getUorderid()));
+    							} else {
+    								result.setSuccess(false);
+    								result.setMsg(rb1.getReason() == null ? "充值失败" : rb1.getReason());
+    								
+    								return result;
+    							}
     						} else {
     							result.setSuccess(false);
+    							result.setMsg("充值失败");
+    							
+    							return result;
     						}
-    						result.setMsg("手机充值" + amount2 + "元，请稍后查询充值结果");
+    						
     						
     						break;
     					case Const.EX_Q_BILL:
@@ -785,14 +798,25 @@ public class NoAuthController {
     							e.printStackTrace();
     						}
     						
+    						System.out.println(res);
     						if (Tool.isNotNullOrEmpty(res)) {
-    							String orderId = JSONObject.fromObject(res).getString("uorderid");
-    							result.setSuccess(true);
-    							result.setData(orderId);
+    							ResultBean rb2 = GsonUtils.fromJson(res, ResultBean.class);
+    							if (rb2.getError_code() != null && rb2.getError_code().equals("0")) {
+	    							result.setSuccess(true);
+	    							result.setMsg("手机充值" + amount3 + "元，请稍后查询充值结果");
+	    							result.setData(rb2 == null ? null : (rb2.getResult() == null ? null : rb2.getResult().getUorderid()));
+    							} else {
+    								result.setSuccess(false);
+    								result.setMsg(rb2.getReason() == null ? "充值失败" : rb2.getReason());
+    							
+    								return result;
+    							}
     						} else {
     							result.setSuccess(false);
+    							result.setMsg("充值失败");
+    							
+    							return result;
     						}
-    						result.setMsg("手机充值" + amount3 + "元，请稍后查询充值结果");
     						
     						break;
     					default:

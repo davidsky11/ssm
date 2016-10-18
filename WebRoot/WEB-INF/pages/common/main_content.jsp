@@ -12,7 +12,7 @@
 			送话费、送Q币、微信红包</span>等多种促销营销活动。通过快乐兑扫码系统，可帮助企业打通线上线下，实现营销闭环，实现O2O。
 			</p>
 			<div>
-				<img src="${path}/crmnew/img/jieshao.jpg" width="450" height="400" />
+				<img src="${path}/crmnew/img/jieshao.jpg" width="450" height="450" />
 			</div>
 		</section>
 	</c:if>
