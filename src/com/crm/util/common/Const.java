@@ -6,7 +6,7 @@ public class Const {
 	/**
 	 * 访问的项目地址
 	 */
-	public static final String ROOT_HTML_URL = "http://www.hclinks.cn/crmnew/static/info/";
+	public static final String ROOT_HTML_URL = "";
 	/**
 	 * HTML模板的路径
 	 */
@@ -32,14 +32,14 @@ public class Const {
 	/**
 	 * 地图相关信息
 	 */
-	public static final String MAP_AK = "47TS2lczgTxANcKZepTmQVrQuhMWHPVK";
+	public static final String MAP_AK = "";
 	
 	/**
 	 * 聚合数据相关信息
 	 */
-	public static final String JUHE_OPENID = "JH0945ce1f6b88b65f445fb44a2a9a8e5b";
-	public static final String JUHE_PHONE_APPKEY = "2117e0a5d1440cb5ef17da4ad691a255";
-	public static final String JUHE_QB_APPKEY = "ceb6f0f43aeee7e025e3595dd2c88233";
+	public static final String JUHE_OPENID = "";
+	public static final String JUHE_PHONE_APPKEY = "";
+	public static final String JUHE_QB_APPKEY = "";
 	
 	/**
 	 * 根据经纬度坐标获取地址
@@ -52,9 +52,9 @@ public class Const {
 	/**
 	 * 短信验证 信息
 	 */
-	public static final String SMS_URL = "http://222.73.117.169/msg/";
-	public static final String SMS_ACCOUNT = "N5765669";
-	public static final String SMS_PASS = "Ps0959a2";
+	public static final String SMS_URL = "";
+	public static final String SMS_ACCOUNT = "";
+	public static final String SMS_PASS = "";
 	public static final String SMS_MSG_HEAD = "【快乐兑】验证码";
 	public static final String SMS_MSG_TAIL = "，您正在进行手机注册，切勿将验证码泄露于他人。";
 	
