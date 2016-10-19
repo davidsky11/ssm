@@ -35,7 +35,9 @@ public interface UserService {
 	 */
 	public List<User> login(String username, String userType, String password);
 	
-	public List<User> findByConditionSql(String username, String userType);
+	public List<User> findByNameAndType(String username, String userType);
+	
+	public List<User> loginByThird(String thirdType, String thirdOpenid);
 	
 	//将查询到的数据缓存到myCache中,并使用方法名称加上参数中的userNo作为缓存的key  
     //通常更新操作只需刷新缓存中的某个值,所以为了准确的清除特定的缓存,故定义了这个唯一的key,从而不会影响其它缓存值  

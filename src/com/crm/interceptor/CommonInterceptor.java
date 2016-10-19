@@ -124,7 +124,7 @@ public class CommonInterceptor extends HandlerInterceptorAdapter {
 	  				  String userName = cookieValues[0];
 	  				  String userType = cookieValues[2];
 	  				  
-	  				  List<User> userList = userService.findByConditionSql(userName, userType);
+	  				  List<User> userList = userService.findByNameAndType(userName, userType);
 	  				  // 如果user返回不为空,就取出密码,使用用户名(userName)+密码+有效时间+ webSiteKey进行MD5加密。与前面设置的进行比较，看是否是同一个用户
 	  				  if(userList != null && userList.size() > 0){
 	  					  User temp = userList.get(0);

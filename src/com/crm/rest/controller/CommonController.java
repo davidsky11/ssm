@@ -1,5 +1,6 @@
 package com.crm.rest.controller;
 
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -109,7 +110,7 @@ public class CommonController {
 		/**
 		 * 1、查询是否已经注册过
 		 */
-		List<User> userList = this.userService.findByConditionSql(phone, userType);
+		List<User> userList = this.userService.findByNameAndType(phone, userType);
 		
 		if (userList != null && userList.size() > 0) {  // 已经存在
 			result.setCode(Const.ERROR_DUPLICATE);
@@ -170,7 +171,7 @@ public class CommonController {
 		ApiResult result = new ApiResult();
 		result.setOperate(Const.OPERATE_USER_LOGIN);
 		
-		List<User> userList = this.userService.findByConditionSql(username, userType);
+		List<User> userList = this.userService.findByNameAndType(username, userType);
 		
 		if (userList != null && userList.size() > 0) {  // 存在该用户
 			User user = userList.get(0);
@@ -191,7 +192,9 @@ public class CommonController {
 					} else {
 						TokenModel tm = tokenService.createToken(user);
 						user.setToken(tm.getToken());
-						user.setPassword(null);
+						
+						user.setLoginFrequency(user.getLoginFrequency() == null ? 1 : user.getLoginFrequency() + 1);
+						userService.edit(user);
 						
 						result.setCode(Const.INFO_NORMAL);
 						result.setMsg("登录成功");
@@ -247,6 +250,92 @@ public class CommonController {
 		} else {
 			result.setCode(Const.WARN_OPERATE_FAIL);
 			result.setData("注销失败");
+		}
+		
+		return result;
+	}
+	
+	/**
+	 * 第三方登录
+	 * @Title:			thirdLogin
+	 * @Description:	第三方登录
+	 * @param username
+	 * @param thirdType
+	 * @param thirdOpenid
+	 * @return
+	 */
+	@ResponseBody 
+	@RequestMapping(value = "/thirdLogin", method = RequestMethod.POST)
+	@ApiOperation(value = "第三方用户登录", httpMethod = "POST", produces =  MediaType.APPLICATION_JSON_VALUE, nickname="thirdLogin", response = ApiResult.class, notes = "根据openid和type登录", position = 5)
+	public ApiResult thirdLogin(@ApiParam(required = false, name = "username", value = "第三方用户名") @RequestParam(value = "username", required = false) String username, 
+			@ApiParam(required = true, name = "thirdType", value = "第三方登录类型") @RequestParam(value = "thirdType") String thirdType,
+			@ApiParam(required = true, name = "thirdOpenid", value = "第三方登录Openid") @RequestParam(value = "thirdOpenid") String thirdOpenid) {
+		log.debug("记录【" + counter.getAndIncrement() + "】 用户名: " + username + " 第三方类型: " + thirdType + " 第三openid： " + thirdOpenid);
+		
+		ApiResult result = new ApiResult();
+		result.setOperate(Const.OPERATE_THIRD_LOGIN);
+		
+		List<User> userList = this.userService.loginByThird(thirdType, thirdOpenid);
+		
+		if (userList != null && userList.size() > 0) {  // 存在该用户
+			User user = userList.get(0);
+			
+			if (user != null) {
+				if (user.getLocked() == Const.USER_LOCKED) {
+					result.setCode(Const.WARN_ACCOUNT_LOCKED);
+					result.setMsg("账号涉嫌违规，已被锁定");
+					result.setSuccess(false);
+					user.setPassword(null);
+					result.setData(user);
+				} else {
+					TokenModel tm = tokenService.createToken(user);
+					user.setToken(tm.getToken());
+					
+					user.setLoginFrequency(user.getLoginFrequency() == null ? 1 : user.getLoginFrequency() + 1);
+					userService.edit(user);
+					
+					result.setCode(Const.INFO_NORMAL);
+					result.setMsg("登录成功");
+					result.setSuccess(true);
+					user.setPassword(null);
+					result.setData(user);
+				}
+			} 
+		} else {
+			// 没有该用户，注册一个用户
+			User user = new User();
+			user.setCreatorName("admin");  // 创建者
+			user.setLastLoginTime(new Date());
+			user.setLoginTime(new Date());
+			user.setLocked(Const.USER_UNLOCK);  // 默认未锁定
+			user.setLoginFrequency(1);
+			user.setPassword(Const.DEFAULT_PASS);  // 设置一个默认密码，“888888”
+			user.setRegTime(new Date());
+			user.setThirdOpenid(thirdOpenid);
+			user.setThirdType(thirdType);
+			user.setUsername(username);
+			user.setUserAlias(username);  // 昵称
+			user.setUserType(Const.USERTYPE_APPUSER);
+			
+			boolean success = userService.add(user) > 0;
+			
+			if (success) {
+				TokenModel tm = tokenService.createToken(user);  // 登录成功
+				user.setToken(tm.getToken());
+				
+				result.setCode(Const.INFO_NORMAL);
+				result.setMsg("登录成功");
+				result.setSuccess(true);
+				user.setPassword(null);
+				result.setData(user);
+			} else {
+				result.setCode(Const.ERROR_SERVER);
+				result.setMsg("登录失败");
+				result.setSuccess(false);
+				user.setPassword(null);
+				result.setData(user);
+			}
+			
 		}
 		
 		return result;

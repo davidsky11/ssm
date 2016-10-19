@@ -524,7 +524,7 @@ public class NoAuthController {
     	/**
 		 * 0、添加扫码记录
 		 */
-		List<User> userList = userService.findByConditionSql(username, userType);  // 1.找用户
+		List<User> userList = userService.findByNameAndType(username, userType);  // 1.找用户
 		User user = null;
 		if (userList != null && userList.size() > 0) {
 			user = userList.get(0);
@@ -764,7 +764,7 @@ public class NoAuthController {
 	    							result.setData(rb1 == null ? null : (rb1.getResult() == null ? null : rb1.getResult().getUorderid()));
     							} else {
     								result.setSuccess(false);
-    								result.setMsg(rb1.getReason() == null ? "充值失败" : rb1.getReason());
+    								result.setMsg(rb1.getReason() == null ? "手机充值失败" : rb1.getReason());
     								
     								return result;
     							}
@@ -803,11 +803,11 @@ public class NoAuthController {
     							ResultBean rb2 = GsonUtils.fromJson(res, ResultBean.class);
     							if (rb2.getError_code() != null && rb2.getError_code().equals("0")) {
 	    							result.setSuccess(true);
-	    							result.setMsg("手机充值" + amount3 + "元，请稍后查询充值结果");
+	    							result.setMsg("Q币充值" + amount3 + "元，请稍后查询充值结果");
 	    							result.setData(rb2 == null ? null : (rb2.getResult() == null ? null : rb2.getResult().getUorderid()));
     							} else {
     								result.setSuccess(false);
-    								result.setMsg(rb2.getReason() == null ? "充值失败" : rb2.getReason());
+    								result.setMsg(rb2.getReason() == null ? "Q币充值失败" : rb2.getReason());
     							
     								return result;
     							}
@@ -1427,7 +1427,7 @@ public class NoAuthController {
 		/**
 		 * 0、查询是否存在该用户
 		 */
-		List<User> userList = userService.findByConditionSql(phone, "3");
+		List<User> userList = userService.findByNameAndType(phone, "3");
 		if (userList == null || userList.size() <= 0) {
 			result.setCode(Const.ERROR_NULL_POINTER);
 			result.setMsg("该手机号没有对应的注册用户");
@@ -1556,7 +1556,7 @@ public class NoAuthController {
 		 * 2、
 		 */
 		User user = new User();
-		List<User> userList = userService.findByConditionSql(phone, "3");
+		List<User> userList = userService.findByNameAndType(phone, "3");
 		if (userList == null || userList.size() <= 0) {
 			result.setCode(Const.ERROR_NULL_POINTER);
 			result.setMsg("该手机号没有对应的注册用户");

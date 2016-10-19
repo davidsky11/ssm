@@ -55,8 +55,12 @@ public class UserServiceImpl implements UserService {
 		return userMapper.login(username, userType, password);
 	}
 	
-	public List<User> findByConditionSql(String username, String userType) {
+	public List<User> findByNameAndType(String username, String userType) {
 		return userMapper.findByConditionSql(" and username = '" + username + "' and userType = '" + userType + "'");
+	}
+	
+	public List<User> loginByThird(String thirdType, String thirdOpenid) {
+		return userMapper.findByConditionSql(" and thirdType = '" + thirdType + "' and thirdOpenid = '" + thirdOpenid + "'");
 	}
 	
 	//将查询到的数据缓存到myCache中,并使用方法名称加上参数中的userNo作为缓存的key  
@@ -202,5 +206,5 @@ public class UserServiceImpl implements UserService {
 		
 		return page;
 	}
-    
+
 }

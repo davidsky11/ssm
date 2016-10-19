@@ -60,6 +60,12 @@ public class User {
 	private Integer loginFrequency;  // 用户登录的频次
 	private String telephone;  // 手机号码
 	
+	/**
+	 * 第三方登录需要
+	 */
+	private String thirdType;  // 第三方登陆类型
+	private String thirdOpenid;  // 第三方登录openid
+	
 	List<SysMenu> menuList = new ArrayList<SysMenu>();
 	
 	public User() {}
@@ -260,6 +266,22 @@ public class User {
 
 	public void setTelephone(String telephone) {
 		this.telephone = telephone;
+	}
+
+	public String getThirdType() {
+		return thirdType;
+	}
+
+	public String getThirdOpenid() {
+		return thirdOpenid;
+	}
+
+	public void setThirdType(String thirdType) {
+		this.thirdType = thirdType;
+	}
+
+	public void setThirdOpenid(String thirdOpenid) {
+		this.thirdOpenid = thirdOpenid;
 	}
 
 	@Override
