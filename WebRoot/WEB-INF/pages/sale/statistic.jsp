@@ -28,6 +28,19 @@
 										</c:forEach>
 									</select>
 								</div>
+								
+								<div class="col-xs-1">
+									<label>年份： </label>
+								</div>
+								<div class="col-xs-3">
+									<select class="form-control" id="year" name="year">
+										<option value="">请选择年份</option>
+										<c:forEach items="${yearArr}" var="arr">
+											<option value="${arr}"
+												<c:if test="${year eq arr }">selected=selected</c:if>>${arr}</option>
+										</c:forEach>
+									</select>
+								</div>
 
 								<div class="col-xs-1">
 									<button id="searchBtn" type="button"
@@ -113,7 +126,8 @@
 			async : true, //同步执行  
 			url : "ajax_sale_charts.do",
 			data : {
-				activityId : $('#activityId').val()
+				activityId : $('#activityId').val(),
+				year: $('#year').val()
 			},
 			dataType : "json", //返回数据形式为json  
 			success : function(result) {

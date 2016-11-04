@@ -2,7 +2,9 @@ package com.crm.service;
 
 import java.util.List;
 
+import com.crm.domain.Page;
 import com.crm.domain.Wares;
+import com.crm.domain.dto.WaresDto;
 import com.crm.domain.easyui.PageHelper;
 
 /** 
@@ -39,5 +41,10 @@ public interface WaresService {
 	public int addWaresBatch(List<Wares> waresList);
 	
 	public int deleteByCondition(String conditionSql);
+	
+	public List<Wares> getListByAtyId(String activityId);
+	
+	public Page<WaresDto> searchListByCondition(Page<WaresDto> page, String conditionSql);
+	
 }
  

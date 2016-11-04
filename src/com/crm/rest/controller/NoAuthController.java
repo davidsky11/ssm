@@ -12,6 +12,8 @@ import java.util.Set;
 
 import javax.annotation.Resource;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -57,9 +59,7 @@ import com.crm.util.recharge.QbRecharge;
 import com.crm.util.recharge.ResultBean;
 import com.crm.util.sms.HttpSender;
 import com.crm.wechat.pay.domain.request.WeixinNormalRedPackRequest;
-import com.crm.wechat.pay.domain.request.WeixinVenderPayRequest;
 import com.crm.wechat.pay.domain.response.WeixinRedPackResponse;
-import com.crm.wechat.pay.domain.response.WeixinVenderPayResponse;
 import com.crm.wechat.pay.service.IWeixinSendRedPackService;
 import com.crm.wechat.pay.service.IWeixinVenderPayService;
 import com.crm.wechat.pay.util.WeixinUtils;
@@ -80,6 +80,8 @@ import net.sf.json.JSONObject;
 @RequestMapping("/v1/nobuss")
 @Api(value = "/v1/nobuss", description = "不需要用户权限的API")
 public class NoAuthController {
+	
+	private final Logger log = LoggerFactory.getLogger(NoAuthController.class);
 	
 	private static PageHelper page = new PageHelper();
 
@@ -1302,7 +1304,7 @@ public class NoAuthController {
 	 * 					个数（单位：个）               --> Q币
 	 * @return
 	 */
-	private boolean exchange(String type, String receiver, Integer amount) {
+	/*private boolean exchange(String type, String receiver, Integer amount) {
 		boolean flag = false;
 		switch (type) {
 		case Const.EX_WECHAT:  // 微信兑奖
@@ -1355,7 +1357,7 @@ public class NoAuthController {
 		
 		return flag;
 	}
-	
+	*/
 	/**
 	 * 充值结果查询
 	 * @Title:			orderQuery
@@ -1534,9 +1536,13 @@ public class NoAuthController {
 	@RequestMapping(value = "/resetPass", method = RequestMethod.POST)
 	@ResponseBody
 	@ApiOperation(value = "重置密码", httpMethod = "POST", response = ApiResult.class, notes = "重置密码")
-	public ApiResult resetPass(@ApiParam(required = true, name = "phone", value = "手机号码") @RequestParam("phone") String phone,
-			@ApiParam(required = true, name = "validCode", value = "验证码") @RequestParam("validCode") String validCode,
-			@ApiParam(required = true, name = "pass", value = "密码") @RequestParam("pass") String pass) {
+	public ApiResult resetPass(@ApiParam(required = false, name = "phone", value = "手机号码") @RequestParam(required = false, value = "phone") String phone,
+			@ApiParam(required = false, name = "validCode", value = "验证码") @RequestParam(required = false, value = "validCode") String validCode,
+			@ApiParam(required = false, name = "pass", value = "密码") @RequestParam(required = false, value = "pass") String pass,
+			@ApiParam(required = false, name = "userId", value = "用户编码") @RequestParam(required = false, value = "userId") String userId,
+			@ApiParam(required = false, name = "flagCode", value = "设备码") @RequestParam(required = false, value = "flagCode") String flagCode) {
+		log.info("手机号为 " + phone + " 的用户正在修改密码...");
+		
 		ApiResult result = new ApiResult();
 		result.setOperate(Const.OPERATE_FORGET_PASS);
 		
@@ -1555,17 +1561,31 @@ public class NoAuthController {
 		/**
 		 * 2、
 		 */
-		User user = new User();
-		List<User> userList = userService.findByNameAndType(phone, "3");
-		if (userList == null || userList.size() <= 0) {
-			result.setCode(Const.ERROR_NULL_POINTER);
-			result.setMsg("该手机号没有对应的注册用户");
-			result.setSuccess(false);
-			
-			return result;
+		User user = null;
+		List<User> userList = null;
+		
+		user = this.userService.getUserById(userId);
+		if (user == null) {
+			userList = userService.findByNameAndType(phone, "3");
+		
+			if (userList == null || userList.size() <= 0) {
+				result.setCode(Const.ERROR_NULL_POINTER);
+				result.setMsg("该手机号没有对应的注册用户");
+				result.setSuccess(false);
+				
+				return result;
+			} else {
+				user = userList.get(0);
+				// 重置密码
+				user.setPassword(pass);
+				user.setFlagCode(flagCode);
+				user.setLoginFrequency(user.getLoginFrequency() == null ? 1 : user.getLoginFrequency() + 1);
+			}
 		} else {
-			user = userList.get(0);
+			// 重置密码
 			user.setPassword(pass);
+			user.setFlagCode(flagCode);
+			user.setLoginFrequency(user.getLoginFrequency() == null ? 1 : user.getLoginFrequency() + 1);
 		}
 		
 		/**

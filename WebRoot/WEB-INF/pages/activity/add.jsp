@@ -11,6 +11,7 @@
 	<h4 class="modal-title" id="exampleModalLabel">新增活动</h4>
 </div>
 <form id="addForm" action="aty/add" method="post" enctype="multipart/form-data">
+<div class="modal-body">
 	<div class="modal-body">
 		<div class="form-group">
 			<label for="title" class="control-label"><font color="red">*</font>活动名称:</label> 
@@ -20,24 +21,6 @@
 			<label for="publicCode" class="control-label"><font color="red">*</font>公共编码:</label> 
 			<input type="text" class="form-control" id="publicCode" name="publicCode">
 		</div>
-		<!-- <div class="form-group">
-			<label for="startTimeAdd" class="control-label"><font color="red">*</font>开始时间</label>
-			<div class="input-group">
-				<div class="input-group-addon">
-					<i class="fa fa-calendar"></i>
-				</div>
-				<input type="text" class="form-control pull-right" id="startTimeAdd" name="startTime">
-			</div>
-		</div>
-		<div class="form-group">
-			<label for="endTimeAdd" class="control-label"><font color="red">*</font>结束时间</label>
-			<div class="input-group">
-				<div class="input-group-addon">
-					<i class="fa fa-calendar"></i>
-				</div>
-				<input type="text" class="form-control pull-right" id="endTimeAdd" name="endTime">
-			</div>
-		</div> -->
 		<div class="form-group">
 			<label for="content" class="control-label"><font color="red">*</font>活动内容:</label> 
 			<textarea type="text" class="form-control" id="content" name="content" />
@@ -52,6 +35,10 @@
 			<p class="help-block">图片尺寸尽量保持在640x950.</p>
 		</div>
 	</div>
+	<div class="modal-body">
+	
+	</div>
+</div>
 	<div class="modal-footer">
 		<button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
 		<button type="submit" class="btn btn-primary" id="addSubmitBtn">提交</button>

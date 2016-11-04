@@ -308,7 +308,8 @@ public class ActivityController {
 		try {
 			out = response.getWriter();
 			System.out.println(outPath);
-			out.write("<a href='" + Const.ROOT_HTML_URL + aty.getPublicCode() + ".html'>");
+			//out.write(Const.ROOT_HTML_URL + aty.getPublicCode() + ".html");
+			out.write("static/info/" + aty.getPublicCode() + ".html");
 			out.flush();
 		} catch (IOException e) {
 			e.printStackTrace();

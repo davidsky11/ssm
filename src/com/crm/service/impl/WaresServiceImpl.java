@@ -6,7 +6,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.crm.dao.mybatis.WaresMapper;
+import com.crm.domain.Page;
 import com.crm.domain.Wares;
+import com.crm.domain.dto.WaresDto;
 import com.crm.domain.easyui.PageHelper;
 import com.crm.service.WaresService;
 
@@ -70,5 +72,21 @@ public class WaresServiceImpl implements WaresService {
 	public int deleteByCondition(String conditionSql) {
 		return waresMapper.deleteByCondition(conditionSql);
 	}
+	
+	public List<Wares> getListByAtyId(String activityId) {
+		return waresMapper.getListByAtyId(activityId);
+	}
+
+	@Override
+	public Page<WaresDto> searchListByCondition(Page<WaresDto> page, String conditionSql) {
+		page.setStart((page.getPage() - 1)*page.getRows());
+		page.setEnd(page.getRows());
+		
+		page.setTotal(waresMapper.searchListByConditionTotal(conditionSql));
+		page.setContent(waresMapper.searchListByCondition(page, conditionSql));
+		
+		return page;
+	}
+	
 }
  

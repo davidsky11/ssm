@@ -57,7 +57,6 @@
 							<th>预算金额</th>
 							<th>操作</th>
 						</tr>
-						<form id="downloadForm" action="wes/downloadCfg" method="get" >
 						<c:forEach items="${atyList}" var="aty" varStatus="status">
 							<tr>
 								<%-- <td><label><input type="checkbox"
@@ -79,14 +78,14 @@
 										class="btn  btn-xs btn-primary btn-flat" onclick="generateItem('${aty.id}');">生成编码</button> --%>
 									
 									<button id="bindRoleBtn" type="button"
-										class="btn btn-xs btn-primary btn-flat" onclick="outputItem('${aty.id}')">导出编码</button>
-									
-									
+										class="btn btn-xs btn-primary btn-flat" onclick="outputItem('${aty.id}');">导出编码</button>
+								</td>
 							</tr>
 						</c:forEach>
-						<input id="id" type="hidden" name="id">
-						</form>
 					</table>
+					<form id="downloadForm" action="wes/downloadCfg" method="post" >
+						<input id="atyId" type="hidden" name="id">
+					</form>
 					</div>
 				</div>
 				<!-- /.box-body -->
@@ -203,10 +202,8 @@
 	}
 	function outputItem(id){
 		//modalLoadAndDisplay('wes/downloadCfg/'+id);
-		$('#id').val(id);
-		$('#downloadForm').submit(function(){
-			
-		});
+		$('#atyId').val(id);
+		$('#downloadForm').submit();
 	}
 	
 	

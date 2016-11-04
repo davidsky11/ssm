@@ -55,8 +55,11 @@
 				                  	</div>
 				                </div>
 				                
-				                <div class="col-xs-3">
-				                	<button id="searchBtn" type="button" class="btn btn-info pull-right">查询</button>
+				                <div class="col-xs-2">
+				                	<button id="searchBtn" type="button" class="btn btn-info pull-right">条件查询</button>
+				                </div>
+				                <div class="col-xs-1">
+				                	<button id="searchBtnAll" type="button" class="btn btn-info pull-right">查询全部</button>
 				                </div>
 			              	</div>
 			            </div>
@@ -204,6 +207,23 @@
 				publicCode: $('#publicCode').val(),
 				startDate: $('#startDate').val(),
 				endDate: $('#endDate').val()
+			},		 
+			url : "exchange/exList",//请求的action路径  
+			error : function() {//请求失败处理函数  
+				alert('失败');
+			},
+			success : function(data) { //请求成功后处理函数。    
+				$("#content-wrapper").html(data);//刷新content页面		
+			}
+		});
+	});
+	$("#searchBtnAll").click(function() {
+		$('#pageNumber').val(1);
+		$.ajax({
+			async : false,
+			cache : false,
+			type : 'GET',
+			data : {
 			},		 
 			url : "exchange/exList",//请求的action路径  
 			error : function() {//请求失败处理函数  

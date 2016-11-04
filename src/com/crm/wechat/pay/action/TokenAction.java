@@ -55,6 +55,8 @@ public class TokenAction extends HttpServlet {
             sEchoStr = wxcpt.VerifyURL(sVerifyMsgSig, sVerifyTimeStamp,sVerifyNonce, sVerifyEchoStr);
             // 验证URL成功，将sEchoStr返回
             out.print(sEchoStr);  
+            out.flush();
+            out.close();
         } catch (AesException e1) {
             e1.printStackTrace();
         }

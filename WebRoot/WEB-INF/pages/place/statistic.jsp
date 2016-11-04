@@ -82,8 +82,8 @@
         	{
         		name: '销售量',
         		type: 'pie',
-        		radius: '15%',
-        		center: ['83%','25%'],
+        		radius: '30%',
+        		center: ['83%','23%'],
         		data: seriesPieJson,
         		itemStyle: {
         			emphasis: {

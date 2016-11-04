@@ -4,7 +4,9 @@ import java.util.List;
 
 import org.apache.ibatis.annotations.Param;
 
+import com.crm.domain.Page;
 import com.crm.domain.Wares;
+import com.crm.domain.dto.WaresDto;
 import com.crm.domain.easyui.PageHelper;
 
 /** 
@@ -33,6 +35,8 @@ public interface WaresMapper {
 	//根据指定条件查询
 	public List<Wares> getDatagrid(@Param("conditionSql") String conditionSql);
 	
+	public List<Wares> getListByAtyId(@Param("activityId") String activityId);
+	
 	//获取总数
 	public Integer getDatagridTotal(Wares wares);
 	
@@ -42,8 +46,9 @@ public interface WaresMapper {
 	
 	public int addWaresBatch(@Param("waresList") List<Wares> waresList);
 	
-	//分页
-	//public List<Award> datagridAward(PageHelper page);
+	public int searchListByConditionTotal(@Param("conditionSql") String conditionSql);
+	
+	public List<WaresDto> searchListByCondition(@Param("page") Page<WaresDto> page, @Param("conditionSql") String conditionSql);
 	
 }
  

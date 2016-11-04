@@ -1,6 +1,8 @@
 package com.crm.controller;
 
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -31,16 +33,25 @@ import org.springframework.web.servlet.ModelAndView;
 import com.crm.common.util.math.RandomUtil;
 import com.crm.domain.Activity;
 import com.crm.domain.Award;
+import com.crm.domain.Page;
 import com.crm.domain.User;
 import com.crm.domain.Wares;
+import com.crm.domain.dto.WaresDto;
 import com.crm.domain.easyui.DataGrid;
 import com.crm.domain.easyui.Json;
 import com.crm.domain.easyui.PageHelper;
 import com.crm.service.ActivityService;
 import com.crm.service.AwardService;
 import com.crm.service.WaresService;
+import com.crm.util.ExportExcel;
 import com.crm.util.Tool;
 import com.crm.util.common.Const;
+
+import jxl.Workbook;
+import jxl.write.Label;
+import jxl.write.WritableSheet;
+import jxl.write.WritableWorkbook;
+import jxl.write.WriteException;
 
 /**
  * @ClassName WaresController.java
@@ -502,8 +513,8 @@ public class WaresController {
 		return mv;
 	}
 	
-	@RequestMapping(value = "/wes/downloadCfg", method = RequestMethod.GET)
-	public ResponseEntity<String> editConfig(HttpSession session, @RequestParam("id") String id) throws Exception {
+	@RequestMapping(value = "/wes/downloadCfg1", method = RequestMethod.GET)
+	public ResponseEntity<String> editConfig1(HttpSession session, @RequestParam("id") String id) throws Exception {
 		String realPath = session.getServletContext().getRealPath("/WEB-INF/upload");
 		String fileName="waresExport"+System.currentTimeMillis()+".xls";
 		
@@ -518,4 +529,117 @@ public class WaresController {
 	    // FileUtils.readFileToByteArray(new File(realPath+"\\"+fileName)
 	}
 	
+	@RequestMapping(value = "/wes/downloadCfg", method = RequestMethod.POST)
+	public void editConfig(HttpServletRequest resquest, HttpServletResponse response, HttpSession session, @RequestParam("id") String id) throws Exception {
+		ExportExcel ex = new ExportExcel();
+		
+		// 查找导出字段
+		List<String> mustList = new ArrayList<String>();
+		int i=0;
+		List<String> headList = new ArrayList<String>();
+		
+		List<Wares> waresList = waresService.getListByAtyId(id);
+					
+		String path = Const.TEMPFOLDER + "//emp.xls";
+		OutputStream out = new FileOutputStream(path);
+		createExcel(out, waresList);
+		
+		out.close();
+		ex.download(path, response);
+		System.out.println("excel导出成功！");
+	}
+	
+	private void createExcel(OutputStream os, List<Wares> list){
+		String[] heads={"publicCode","privateCode","insideCode"};
+		WritableWorkbook workbook=null;
+		try {
+			workbook = Workbook.createWorkbook(os);
+		WritableSheet sheet = workbook.createSheet("wares sheet1", 0);
+		for(int i=0;i<heads.length;i++){
+			sheet.addCell(new Label(i,0,heads[i]));
+		}
+		for(int i=0;i<list.size();i++){
+			sheet.addCell(new Label(0, i+1, list.get(i).getPublicCode()));
+			sheet.addCell(new Label(1, i+1, list.get(i).getPrivateCode()));
+			sheet.addCell(new Label(2, i+1, list.get(i).getInsideCode()));
+		}
+		workbook.write();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}finally{
+			try {
+				if(workbook!=null)
+				workbook.close();
+			} catch (WriteException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			try {
+				if(os!=null)
+				os.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+	
+	/**
+	 * 商品追踪
+	 * @Title:			wesConfig
+	 * @Description:	商品追踪
+	 * @param model
+	 * @param request
+	 * @return
+	 */
+	@RequestMapping(value = "/wares/trace", method = RequestMethod.GET)
+	public ModelAndView wesTrace(HttpServletRequest request, @RequestParam(value = "pageNumber", defaultValue = "1") int pageNumber) {
+		ModelAndView mv = new ModelAndView("wares/trace");
+		
+		Page<WaresDto> page = new Page<WaresDto>();
+		page.setPage(pageNumber);
+		
+		String publicCode = Tool.nvl(request.getParameter("publicCode"));
+		String startDate = Tool.nvl(request.getParameter("startDate"));
+		String endDate = Tool.nvl(request.getParameter("endDate"));
+		String code = Tool.nvl(request.getParameter("code")); // 编码查询
+		
+		StringBuffer conditionSql = new StringBuffer();
+		if (Tool.isNotNullOrEmpty(publicCode)) {
+			conditionSql.append(" and w.publicCode = '").append(publicCode).append("' ");
+		}
+		
+		if (Tool.isNotNullOrEmpty(startDate)) {
+			conditionSql.append(" and w.createTime >= '").append(startDate).append("' ");
+		}
+		
+		if (Tool.isNotNullOrEmpty(endDate)) {
+			conditionSql.append(" and w.createTime <= '").append(endDate).append("' ");
+		}
+		
+		if (Tool.isNotNullOrEmpty(code)) {
+			conditionSql.append(" and (w.publicCode = '").append(code)
+				.append("' or w.privateCode = '").append(code).append("') ");
+		}
+		
+		page = waresService.searchListByCondition(page, conditionSql.toString());
+		
+		mv.addObject("page", page);
+		mv.addObject("list", page.getContent());
+		
+		/**
+		 * 获取活动列表
+		 */
+		List<Activity> atyList = new ArrayList<Activity>();
+		
+		atyList = activityService.getActivityList("");
+		mv.addObject("atyList", atyList);
+		
+		mv.addObject("publicCode", publicCode);
+		mv.addObject("startDate", startDate);
+		mv.addObject("endDate", endDate);
+		mv.addObject("code", code);
+		
+		return mv;
+	}
 }

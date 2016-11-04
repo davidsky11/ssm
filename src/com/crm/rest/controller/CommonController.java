@@ -163,18 +163,70 @@ public class CommonController {
 	@RequestMapping(value = "/login/{username}", method = RequestMethod.POST)
 	@ResponseBody
 	@ApiOperation(value = "用户登录", httpMethod = "POST", nickname="login", response = ApiResult.class, notes = "根据用户名密码登录", position = 3)
-	public ApiResult appLogin(@ApiParam(required = true, name = "username", value = "用户名") @PathVariable("username") String username, 
-			@ApiParam(required = true, name = "password", value = "密码") @RequestParam(value = "password") String password,
-			@ApiParam(required = true, name = "userType", value = "密码") @RequestParam(value = "userType") String userType) {
+	public ApiResult appLogin(@ApiParam(required = false, name = "username", value = "用户名") @PathVariable("username") String username, 
+			@ApiParam(required = false, name = "password", value = "密码") @RequestParam(required = false, value = "password") String password,
+			@ApiParam(required = false, name = "userType", value = "密码") @RequestParam(required = false, value = "userType") String userType,
+			@ApiParam(required = false, name = "userId", value = "用户编码") @RequestParam(required = false, value = "userId") String userId,
+			@ApiParam(required = false, name = "flagCode", value = "设备码") @RequestParam(required = false, value = "flagCode") String flagCode) {
 		log.debug("记录【" + counter.getAndIncrement() + "】 用户名: " + username + " 密码: " + password);
 		
 		ApiResult result = new ApiResult();
 		result.setOperate(Const.OPERATE_USER_LOGIN);
+		User user = null;
 		
+		/**
+		 * 1、首先判断用户id是否对应用户，如果对应，则直接修改用户登录次数，并返回token（针对APP自动登陆情况）
+		 */
+		user = this.userService.getUserById(userId);
+		
+		if (user != null) {
+			String fc = user.getFlagCode();
+			String[] fcArr = (fc == null ? new String[0] : fc.split(","));
+			int size = fcArr.length;
+			if (size > 0) {
+				boolean flag = true;
+				for (int i=0; i<size; i++) {
+					if (fcArr[i] != null && fcArr[i].equals(flagCode)) {
+						flag = false;
+						continue;
+					}
+				}
+				if (flag) {
+					// 提示用户需要使用用户名+密码登录
+					result.setCode(Const.WARN_AUTHORIZATION_FAIL);
+					result.setMsg("登录失败，请使用用户名+密码登录");
+					result.setSuccess(false);
+					user.setPassword(null);
+					result.setData(null);
+					
+					return result;
+				}
+			} else {
+				user.setFlagCode(flagCode);
+			}
+			
+			user.setLoginFrequency(user.getLoginFrequency() == null ? 1 : user.getLoginFrequency() + 1);
+			userService.edit(user);
+			
+			TokenModel tm = tokenService.createToken(user);
+			user.setToken(tm.getToken());
+			
+			result.setCode(Const.INFO_NORMAL);
+			result.setMsg("登录成功");
+			result.setSuccess(true);
+			user.setPassword(null);
+			result.setData(user);
+			
+			return result;
+		} 
+		
+		/**
+		 * 2、针对用户使用用户名、密码登陆情况
+		 */
 		List<User> userList = this.userService.findByNameAndType(username, userType);
 		
 		if (userList != null && userList.size() > 0) {  // 存在该用户
-			User user = userList.get(0);
+			user = userList.get(0);
 			
 			if (user != null) {
 				if (!password.equals(user.getPassword())) {
@@ -192,6 +244,24 @@ public class CommonController {
 					} else {
 						TokenModel tm = tokenService.createToken(user);
 						user.setToken(tm.getToken());
+						
+						String fc = user.getFlagCode();
+						String[] fcArr = (fc == null ? new String[0] : fc.split(","));
+						int size = fcArr.length;
+						if (size > 0) {
+							boolean flag = true;
+							for (int i=0; i<size; i++) {
+								if (fcArr[i] != null && fcArr[i].equals(flagCode)) {
+									flag = false;
+									continue;
+								}
+							}
+							if (flag) {
+								user.setFlagCode(fc + "," + flagCode);
+							}
+						} else {
+							user.setFlagCode(flagCode);
+						}
 						
 						user.setLoginFrequency(user.getLoginFrequency() == null ? 1 : user.getLoginFrequency() + 1);
 						userService.edit(user);

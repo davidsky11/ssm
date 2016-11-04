@@ -3,16 +3,11 @@ package com.crm.controller;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
-import java.util.TreeSet;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -151,8 +146,6 @@ public class AnalysisController {
 		User user =  (User)request.getSession().getAttribute(Const.SESSION_USER);
 		
 		DataGrid dg = new DataGrid();
-		//page.setSort("scanTime");
-		//page.setOrder("desc");
 		
 		String publicCode = request.getParameter("publicCode");
 		
@@ -168,22 +161,12 @@ public class AnalysisController {
 			publicCode = Tool.stringArrayToString(publicCodeArr, true, ",");
 		}
 		
-		/*if (publicCode == null || publicCode.equals("")) {
-			List<Activity> atyList = this.activityService.getActivityList("");
-			Activity aty = (atyList != null && atyList.size() > 0) ? atyList.get(0) : new Activity();
-			publicCode = aty.getPublicCode();
-		}*/
-		
 		if (user != null) {
 			Calendar cal = Calendar.getInstance();
 			int year = cal.get(Calendar.YEAR);  // 年
 			int month = cal.get(Calendar.MONTH);  // 月
 			
 			int prevYear = year - 1;  // 上年
-			int nextMonth = month + 1;
-			
-			String begin = prevYear + "-" + (month < 10 ? ("0" + month) : month);
-			String end = year + "-" + (nextMonth < 10 ? "0" + nextMonth : nextMonth);
 			
 			StringBuffer conditionSql = new StringBuffer();
 			conditionSql
@@ -218,6 +201,13 @@ public class AnalysisController {
 		}
 		
 		model.addAttribute("atyList", atyList);
+		
+		String[] yearArr = new String[]{"2015", "2016", "2017", "2018", "2019", "2020", "2021"};
+		model.addAttribute("yearArr", yearArr);
+		
+		String yearS = Tool.nvl(request.getParameter("year"));
+		model.addAttribute("year", yearS);
+		
 		return "sale/statistic";
 	}
 	
@@ -228,18 +218,27 @@ public class AnalysisController {
 		
 		List<AbstractChartDto> list = new ArrayList<AbstractChartDto>();
 		String activityId = Tool.nvl(request.getParameter("activityId"));
-		
-		List<Activity> atyList = new ArrayList<Activity>();
+		String yearS = Tool.nvl(request.getParameter("year"));
 		
 		Calendar cal = Calendar.getInstance();
 		int year = cal.get(Calendar.YEAR);  // 年
 		int month = cal.get(Calendar.MONTH);  // 月
 		
 		int prevYear = year - 1;  // 上年
-		int nextMonth = month + 1;
 		
-		String begin = prevYear + "-" + (month < 10 ? ("0" + month) : month);
-		String end = year + "-" + (nextMonth < 10 ? "0" + nextMonth : nextMonth);
+		List<String> yearMList = new ArrayList<String>();
+		if (Tool.isNotNullOrEmpty(yearS)) {
+			for (int i=1; i<=12; i++) yearMList.add(yearS + "-" + i);
+		} else {
+			int begin = month;
+			while (begin <= 12) {
+				yearMList.add(prevYear + "-" + begin++);
+			}
+			int end = 1;
+			while (end <= month) {
+				yearMList.add(year + "-" + end++);
+			}
+		}
 		
 		StringBuffer conditionSql = new StringBuffer();
 		
@@ -247,9 +246,14 @@ public class AnalysisController {
 		
 		switch (user.getUserType()) {
 			case Const.USERTYPE_VENDER:  // 厂商
-				conditionSql
-					.append(" and ((t.year = '").append(prevYear).append("' and t.month > '").append(month-1).append("') ")
-					.append(" or (t.year = '").append(year).append("' and t.month < '").append(month).append("')) ");
+				if (Tool.isNotNullOrEmpty(yearS)) { // 选中了年份
+					conditionSql
+						.append(" and t.year = '").append(yearS).append("' ");
+				} else {
+					conditionSql
+						.append(" and ((t.year = '").append(prevYear).append("' and t.month > '").append(month-1).append("') ")
+						.append(" or (t.year = '").append(year).append("' and t.month < '").append(month).append("')) ");
+				}
 				
 				if (Tool.isNotNullOrEmpty(activityId)) {
 					conditionSql.append(" and t.activityId = '").append(activityId).append("'");
@@ -260,7 +264,7 @@ public class AnalysisController {
 				 */
 				saleList = saleService.findSaleList(conditionSql.toString());
 				
-				Collections.sort(saleList);  // 对销售记录进行排序
+				/*Collections.sort(saleList);  // 对销售记录进行排序
 				
 				Set<YearMonth> yearMonthSet = new TreeSet<YearMonth>();
 				
@@ -282,14 +286,36 @@ public class AnalysisController {
 					dto.setCategory(tmp + "");
 					
 					list.add(dto);
+				}*/
+				
+				int size = yearMList.size();
+				for (int i=0; i<size; i++) {
+					AbstractChartDto dto = new AbstractChartDto();
+					
+					String yearM = yearMList.get(i);
+					dto.setBar(yearM);
+					
+					for (Sale sale : saleList) {
+						if (yearM.equals(sale.getYear() + "-" + sale.getMonth())) {
+							dto.setCategory(sale.getAmount() + "");
+							continue;
+						}
+					}
+					list.add(dto);
 				}
 				
 				break;
 			case Const.USERTYPE_DEALER:  // 经销商
-				conditionSql
-					.append(" and ((t.year = '").append(prevYear).append("' and t.month > '").append(month).append("') ")
-					.append(" or (t.year = '").append(year).append("' and t.month <= '").append(month+1).append("')) ")
-					.append(" and t.userId = '").append(user.getId()).append("'");
+				if (Tool.isNotNullOrEmpty(yearS)) { // 选中了年份
+					conditionSql
+						.append(" and (t.year = '").append(yearS).append("') ")
+						.append(" and t.userId = '").append(user.getId()).append("'");
+				} else {
+					conditionSql
+						.append(" and ((t.year = '").append(prevYear).append("' and t.month > '").append(month).append("') ")
+						.append(" or (t.year = '").append(year).append("' and t.month <= '").append(month+1).append("')) ")
+						.append(" and t.userId = '").append(user.getId()).append("'");
+				}
 				
 				if (Tool.isNotNullOrEmpty(activityId)) {
 					conditionSql.append(" and t.activityId = '").append(activityId).append("'");
@@ -302,11 +328,20 @@ public class AnalysisController {
 				
 				Collections.sort(saleList);  // 对销售记录进行排序
 				
-				for (Sale sale : saleList) {
+				int size_ = yearMList.size();
+				for (int i=0; i<size_; i++) {
 					AbstractChartDto dto = new AbstractChartDto();
-					dto.setCategory(sale.getAmount() + "");
-					dto.setBar(sale.getYear() + "-" + sale.getMonth());
 					
+					String yearM = yearMList.get(i);
+					dto.setBar(yearM);
+
+					for (Sale sale : saleList) {
+						if (yearM.equals(sale.getYear() + "-" + sale.getMonth())) {
+							dto.setCategory(sale.getAmount() + "");
+							
+							continue;
+						}
+					}
 					list.add(dto);
 				}
 				

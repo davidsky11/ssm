@@ -50,7 +50,7 @@
         <property name="autoStartup" value="true" />
         <property name="triggers">
             <list>
-                <ref bean="removeLogTrigger" />
+                <!-- <ref bean="removeLogTrigger" /> -->
                 <ref bean="saleCountTrigger" />
             </list>
         </property>

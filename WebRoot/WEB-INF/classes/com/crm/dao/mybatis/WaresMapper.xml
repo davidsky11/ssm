@@ -63,6 +63,36 @@
         </if>
 	</select>
 	
+	<select id="getListByAtyId" parameterType="String" resultType="com.crm.domain.Wares">
+		select t.id,t.name,t.creater,t.publicCode,t.privateCode,t.insideCode,t.createTime,t.status,t.awardId from wares t where 1=1 
+		<if test="activityId != null and activityId != ''">
+            and t.publicCode in (select publicCode from activity where id = #{activityId})
+        </if>
+	</select>
+	
+	<select id="searchListByConditionTotal" resultType="int">
+		select count(1) from wares w where 1=1
+		<if test="conditionSql != null and conditionSql != ''">
+            ${conditionSql}
+        </if>
+	</select>
+	
+	<select id="searchListByCondition" resultType="com.crm.domain.dto.WaresDto">
+		select w.id, w.publicCode, w.privateCode, w.insideCode, w.createTime, w.status, ss.userName, ss.scanTime from wares w 
+		left join 
+		(select waresId, userId, userName, scanTime from scan_record where userType = '2') ss
+		on w.id = ss.waresId where 1=1 
+		<if test="conditionSql != null and conditionSql != ''">
+            ${conditionSql}
+        </if>
+        <if test="page.sort != null and page.sort != ''">
+            order by #{page.sort} #{page.order}
+        </if>
+        <if test="page.page > 0">
+            limit #{page.start},#{page.end}
+        </if>
+	</select>
+	
 	<select id="getDatagridTotal" resultType="int">
 		select count(1) from wares where  1=1
 		<if test="name != null and name != ''">

@@ -83,41 +83,17 @@
 				</div> --%>
 				<!-- /.row -->
 				<div class="box box-primary">
-					<!-- <div class="box-header with-border">
-						<h3 class="box-title">活动列表</h3>
-					</div> -->
 					<div class="btn-group">
 						<!-- 注意，为了设置正确的内补（padding），务必在图标和文本之间添加一个空格。 -->
 						
-						<%-- <shiro:hasPermission name="user:create"> --%>
-							<button id="addBtn" type="button"
-								class="btn btn-primary btn-flat margin" onclick="addItem()">
-								<span class="fa fa-fw fa-plus" aria-hidden="true"></span> 新增
-							</button>
-						<%-- </shiro:hasPermission>
-						<shiro:hasPermission name="user:delete"> --%>
-							<button id="deleteBtn" type="button"
-								class="btn  btn-danger btn-flat margin">
-								<span class="fa fa-fw fa-remove" aria-hidden="true"></span> 删除
-							</button>
-						<%-- </shiro:hasPermission>
-						<shiro:hasPermission name="user:upload"> --%>
-							<!-- <button id="uploadBtn" type="button"
-								class="btn  btn-primary btn-flat margin" onclick="uploadItem()">
-								<span class="fa fa-fw fa-cloud-upload" aria-hidden="true"></span> 上传
-							</button> -->
-							<%-- </shiro:hasPermission> --%>
-							<%-- <shiro:hasPermission name="user:download"> --%>
-							<!-- <form id="downloadForm" action="user/download" method="get" >
-							<button id="downloadBtn" type="submit"
-								class="btn  btn-primary btn-flat margin2" 
-								 onclick="downloadItem()">
-								<span class="fa fa-fw fa-cloud-download" aria-hidden="true"></span> 下载
-							</button>
-							<input id="downloadIds" type="hidden" name="downloadIds[]">
-							</form> -->
-							<%-- </shiro:hasPermission> --%>
-							
+						<button id="addBtn" type="button"
+							class="btn btn-primary btn-flat margin" onclick="addItem()">
+							<span class="fa fa-fw fa-plus" aria-hidden="true"></span> 新增
+						</button>
+						<button id="deleteBtn" type="button"
+							class="btn  btn-danger btn-flat margin">
+							<span class="fa fa-fw fa-remove" aria-hidden="true"></span> 删除
+						</button>
 					</div>
 				<div class="table-responsive">
 					<table class="table table-hover center">
@@ -256,6 +232,12 @@
 			$("#modal").modal();
 		});		
 	}
+	function modalDisplay(url){	
+		console.info(url);
+		$('#modal .modal-content').load(url,function(){
+			$("#modal").modal();
+		});		
+	}
 	function addItem(){
 		modalLoadAndDisplay('aty/prepareAdd');
 	}
@@ -287,8 +269,8 @@
 				alert('失败');
 			},
 			success : function(data) { //请求成功后处理函数。    
-				alert(data);
-				//$("#content-wrapper").html(data);//刷新content页面		
+				//alert(data);
+				modalDisplay(data);
 			}
 		});
 	}

@@ -39,7 +39,7 @@ public class WxHttps {
             urlCon.setUseCaches(false);
             if(null != xmlStr){
             	urlCon.setRequestProperty("Content-Length",String.valueOf(xmlStr.getBytes().length));
-            	urlCon.getOutputStream().write(xmlStr.getBytes("gbk"));
+            	urlCon.getOutputStream().write(xmlStr.getBytes("utf-8"));
             	urlCon.getOutputStream().flush();
             	urlCon.getOutputStream().close();
             }

@@ -59,6 +59,7 @@ public class User {
 	private String merchant;  // 商户名
 	private Integer loginFrequency;  // 用户登录的频次
 	private String telephone;  // 手机号码
+	private String flagCode;  // 设备码
 	
 	/**
 	 * 第三方登录需要
@@ -282,6 +283,14 @@ public class User {
 
 	public void setThirdOpenid(String thirdOpenid) {
 		this.thirdOpenid = thirdOpenid;
+	}
+	
+	public String getFlagCode() {
+		return flagCode;
+	}
+
+	public void setFlagCode(String flagCode) {
+		this.flagCode = flagCode;
 	}
 
 	@Override
