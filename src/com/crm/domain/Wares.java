@@ -16,6 +16,7 @@ public class Wares {
 	private String creater;  // 创建者
 	private String publicCode;   // 公共编码
 	private String privateCode;  // 瓶身码
+	private String insideCodeTmp;  // 瓶身内码（实验用）
 	private String insideCode;  // 瓶盖码
 	private String status;  // 兑奖状态
 	private Date createTime;  // 创建时间
@@ -81,6 +82,12 @@ public class Wares {
 	}
 	public void setAward(Award award) {
 		this.award = award;
+	}
+	public String getInsideCodeTmp() {
+		return insideCodeTmp;
+	}
+	public void setInsideCodeTmp(String insideCodeTmp) {
+		this.insideCodeTmp = insideCodeTmp;
 	}
 	
 	@Override

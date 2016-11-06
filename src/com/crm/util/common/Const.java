@@ -14,7 +14,7 @@ public class Const {
 	/**
 	 * HTML模板的路径
 	 */
-	public static final String HTML_TEMPLATE_FILE = "template/info.jsp";
+	public static final String HTML_TEMPLATE_FILE = "template/info.html";
 	/**
 	 * 导出HTML的路径
 	 */
@@ -265,6 +265,7 @@ public class Const {
     public static final String OPERATE_VENDER_SCAN = "VENDER_SCAN";
     public static final String OPERATE_APP_SCAN = "APP_SCAN";
     public static final String OPERATE_SCAN_RECORD = "SCAN_RECORD";
+    public static final String OPERATE_SET_INSIDECODE = "SET_INSIDECODE";
     public static final String OPERATE_EXCHANGE_RECORD = "EXCHANGE_RECORD";
     public static final String OPERATE_USER_WITH_INFO = "USER_INFO";
     public static final String OPERATE_PRODUCT_INFO = "PRODUCT_INFO";

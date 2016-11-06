@@ -63,8 +63,10 @@
 										class="minimal deleteCheckbox" value="${awd.id}"></label></td> --%>
 								<td>${status.count}</td>
 								<td>${aty.title}</td>
-								<td><fmt:formatDate pattern="yyyy-MM-dd HH:mm:ss" value="${aty.startTime}" /></td>
-								<td><fmt:formatDate pattern="yyyy-MM-dd HH:mm:ss" value="${aty.endTime}" /></td>
+								<%-- <td><fmt:formatDate pattern="yyyy-MM-dd HH:mm:ss" value="${aty.startTime}" /></td>
+								<td><fmt:formatDate pattern="yyyy-MM-dd HH:mm:ss" value="${aty.endTime}" /></td> --%>
+								<td>${aty.startTime}</td>
+								<td>${aty.endTime}</td>
 								<td>${aty.content}</td>
 								<td>${aty.publisherName}</td>
 								<td>${aty.publicCode}</td>

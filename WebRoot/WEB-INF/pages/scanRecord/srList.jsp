@@ -78,7 +78,7 @@
 							</c:if>
 							<c:if test="${userType eq '2'}">
 								<th>公共编码</th>
-								<th>瓶身码</th>
+								<th>瓶身内码</th>
 							</c:if>
 							<th>操作</th>
 

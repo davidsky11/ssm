@@ -1,7 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-
-<script src="<%=request.getContextPath()%>/scripts/uploadify/jquery.uploadify.js"></script>
-<link rel="stylesheet" href="<%=request.getContextPath()%>/scripts/uploadify/uploadify.css" />
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
 	
 <div class="modal-header">
 	<button type="button" class="close" data-dismiss="modal"
@@ -10,7 +9,7 @@
 	</button>
 	<h4 class="modal-title" id="exampleModalLabel">新增活动</h4>
 </div>
-<form id="addForm" action="aty/add" method="post" enctype="multipart/form-data">
+<form id="addForm" action="aty/add" method="post" >
 <div class="modal-body">
 	<div class="modal-body">
 		<div class="form-group">
@@ -22,18 +21,47 @@
 			<input type="text" class="form-control" id="publicCode" name="publicCode">
 		</div>
 		<div class="form-group">
-			<label for="content" class="control-label"><font color="red">*</font>活动内容:</label> 
-			<textarea type="text" class="form-control" id="content" name="content" />
+			<label for="startTime" class="control-label"><font color="red">*</font>开始时间</label>
+			<div class="input-group">
+				<div class="input-group-addon">
+					<i class="fa fa-calendar"></i>
+				</div>
+				<input type="text" class="form-control pull-right" id="startTime" name="startTime">
+			</div>
+		</div>
+		<div class="form-group">
+			<label for="endTime" class="control-label"><font color="red">*</font>结束时间</label>
+			<div class="input-group date">
+				<div class="input-group-addon">
+					<i class="fa fa-calendar"></i>
+				</div>
+				<input type="text" class="form-control pull-right" id="endTime" name="endTime">
+			</div>
 		</div>
 		<div class="form-group">
 			<label for="description" class="control-label">活动描述:</label> 
 			<textarea type="text" class="form-control" id=""description"" name="description" />
 		</div>
+		<div class="form-group">
+			<label for="content" class="control-label"><font color="red">*</font>活动内容:</label> 
+			<textarea type="text" class="form-control" id="content" name="content" />
+		</div>
 		<div>
+			<label for="infoUrl" class="control-label">活动海报:</label>
+			<input type="text" class="form-control" id="infoUrl" name="infoUrl">
+			<p class="help-block">这里可以填入海报URL:</p>
+			<p>1、前往<a href="http://h5.baidu.com/">百度H5</a>
+					、<a href="http://maka.im/">MAKA</a>
+					、<a href="http://www.ih5.cn/">iH5</a>等海报制作平台制作H5海报</p>
+			<p>2、发布海报并获取海报对应的链接</p>
+			<p>3、将海报链接填入活动海报对应的编辑框中</p>
+			<p>4、保存活动信息</p>
+		</div>
+		<!-- <div>
 			<label for="image" class="control-label">上传图片:</label>
 			<input type="file" id="uploadify" name="image">
 			<p class="help-block">图片尺寸尽量保持在640x950.</p>
-		</div>
+		</div> -->
 	</div>
 	<div class="modal-body">
 	
@@ -99,36 +127,16 @@ $('#modal').on('shown.bs.modal', function(event) {
 	});	
 	
 	//Date picker
-	$('#startTimeAdd').datepicker({
+	$('#startTime').datepicker({
 		autoclose: true,
 		language: "zh-CN",
-		format: "yyyy-MM-dd HH:mm:ss"
-	})
+		format: "yyyy-mm-dd"
+	});
 	
-	$('#endTimeAdd').datepicker({
+	$('#endTime').datepicker({
 		autoclose: true,
 		language: "zh-CN",
-		format: "yyyy-MM-dd HH:mm:ss"
-	})
+		format: "yyyy-mm-dd"
+	});
 	
-	$(document).ready(function() {
-		$("#uploadify").uploadify({
-			swf:'scripts/uploadify/uploadify.swf',
-			uploader : 'servlet/Upload',//后台处理的请求   
-			buttonText:'上传',
-			fileSizeLimit:'1024KB',
-			fileTypeDesc:'*.jpg;*.jpeg;*.gif;*.png;',
-			fileTypeExts:'*.jpg;*.jpeg;*.gif;*.png;',
-			auto:true,
-			height:16,
-			width:40,
-			multi:false,
-			onUploadSuccess:function(file, data, response){
-				alert("上传完成");
-				/* $('#li_photo_view').attr('src','uploads/'+data);
-				$('#li_photo_url').val(data); 
-				$('#photo_a').attr('href', 'uploads/'+data); */
-			}
-		})
-	})
 </script>

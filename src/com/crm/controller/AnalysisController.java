@@ -202,7 +202,16 @@ public class AnalysisController {
 		
 		model.addAttribute("atyList", atyList);
 		
-		String[] yearArr = new String[]{"2015", "2016", "2017", "2018", "2019", "2020", "2021"};
+		Calendar cal = Calendar.getInstance();
+		int year = cal.get(Calendar.YEAR);  // 年
+		
+		int start = year - 9;
+		
+		String[] yearArr = new String[10];
+		for (int i=0; i<10; i++) {
+			yearArr[i] = String.valueOf(start ++);
+		}
+		
 		model.addAttribute("yearArr", yearArr);
 		
 		String yearS = Tool.nvl(request.getParameter("year"));

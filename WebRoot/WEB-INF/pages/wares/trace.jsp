@@ -74,7 +74,7 @@
 						<tr>
 							<th style="width: 10px">#</th>
 							<th>公共编码</th>
-							<th>内部编码</th>
+							<th>瓶身内码</th>
 							<th>出厂时间</th>
 							<th>经销商</th>
 							<th>状态</th>

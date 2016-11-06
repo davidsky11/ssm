@@ -42,9 +42,9 @@
 									</select>
 								</div>
 
-								<div class="col-xs-1">
+								<div class="col-xs-4">
 									<button id="searchBtn" type="button"
-										class="btn btn-info pull-right">查询</button>
+										class="btn btn-info pull-right">统计</button>
 								</div>
 							</div>
 						</div>

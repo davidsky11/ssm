@@ -1,15 +1,14 @@
 package com.crm.controller;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.text.SimpleDateFormat;
 import java.util.List;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
@@ -19,7 +18,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.multipart.MultipartFile;
 
 import com.crm.domain.Activity;
 import com.crm.domain.Page;
@@ -165,11 +163,13 @@ public class ActivityController {
 	 * @return
 	 */
 	@RequestMapping(value = "/aty/list", method = RequestMethod.GET)
-	public String atyList(Model model, @RequestParam(value = "pageNumber", defaultValue = "1") int pageNumber) {
+	public String atyList(Model model, HttpServletRequest request, 
+			@RequestParam(value = "pageNumber", defaultValue = "1") int pageNumber) {
+		User user = (User) request.getSession().getAttribute(Const.SESSION_USER);
 		Page<Activity> page = new Page<Activity>();
 		page.setPage(pageNumber);
 
-		page = activityService.atyPages(page, "");
+		page = activityService.atyPages(page, " and a.publisherId = '" + user.getId() + "'");
 
 		model.addAttribute("page", page);
 		model.addAttribute("atys", page.getContent());
@@ -197,25 +197,12 @@ public class ActivityController {
 	 * @return
 	 */
 	@RequestMapping(value = "/aty/add", method = RequestMethod.POST)
-	public String addAty(Model model, Activity activity, HttpServletRequest request,
-			@RequestParam(value = "image", required = false) MultipartFile image) {
-		User curUser = (User) request.getSession().getAttribute(Const.SESSION_USER);
-
-		if (!image.isEmpty()) {
-			String realPath = request.getSession().getServletContext().getRealPath("/upload");
-
-			try {
-				FileUtils.copyInputStreamToFile(image.getInputStream(), new File(realPath, image.getOriginalFilename()));
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-			
-			activity.setImage(image.getName());
-		}
+	public String addAty(Model model, Activity activity, HttpServletRequest request) {
+		User user = (User) request.getSession().getAttribute(Const.SESSION_USER);
 
 		try {
-			activity.setPublisherId(curUser.getId());
-			activity.setPublisherName(curUser.getUsername());
+			activity.setPublisherId(user.getId());
+			activity.setPublisherName(user.getUsername());
 
 			activityService.addActivity(activity);
 
@@ -224,7 +211,7 @@ public class ActivityController {
 		}
 
 		Page<Activity> page = new Page<Activity>();
-		page = activityService.atyPages(page, "");
+		page = activityService.atyPages(page, " and a.publisherId = '" + user.getId() + "'");
 
 		model.addAttribute("page", page);
 		model.addAttribute("atys", page.getContent());
@@ -233,13 +220,13 @@ public class ActivityController {
 	}
 
 	@RequestMapping(value = "/aty/delete", method = RequestMethod.POST)
-	public String deleteAtys(Model model, @RequestParam("deleteIds[]") String[] deleteIds) {
-
+	public String deleteAtys(Model model, HttpServletRequest request, @RequestParam("deleteIds[]") String[] deleteIds) {
+		User user = (User) request.getSession().getAttribute(Const.SESSION_USER);
 		String ids = Tool.stringArrayToString(deleteIds, true, ",");
 		activityService.deleteActivity("(" + ids + ")");
 
 		Page<Activity> page = new Page<Activity>();
-		page = activityService.atyPages(page, "");
+		page = activityService.atyPages(page, " and a.publisherId = '" + user.getId() + "'");
 
 		model.addAttribute("page", page);
 		model.addAttribute("atys", page.getContent());
@@ -262,11 +249,12 @@ public class ActivityController {
 	}
 
 	@RequestMapping(value = "/aty/update", method = RequestMethod.POST)
-	public String updateAty(Model model, Activity activity) {
+	public String updateAty(Model model, HttpServletRequest request, Activity activity) {
+		User user = (User) request.getSession().getAttribute(Const.SESSION_USER);
 		activityService.updateActivity(activity);
 
 		Page<Activity> page = new Page<Activity>();
-		page = activityService.atyPages(page, "");
+		page = activityService.atyPages(page, " and a.publisherId = '" + user.getId() + "'");
 
 		model.addAttribute("page", page);
 		model.addAttribute("atys", page.getContent());
@@ -296,9 +284,12 @@ public class ActivityController {
 
 		String outPath = Const.HTML_OUTPUT_PATH + aty.getPublicCode() + ".html";
 		if (aty != null) {
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy年MM月dd日");
 			HtmlUtil.title = aty.getTitle();
 			HtmlUtil.context = aty.getContent();
 			HtmlUtil.img = Const.HTML_LEVEL + aty.getImage();
+			HtmlUtil.startDate = sdf.format(aty.getStartTime());
+			HtmlUtil.endDate = sdf.format(aty.getEndTime());
 
 			HtmlUtil.JspToHtmlFile(HtmlUtil.getClassesPath() + Const.HTML_TEMPLATE_FILE,
 					HtmlUtil.getWebInfoPath() + outPath);
@@ -308,8 +299,7 @@ public class ActivityController {
 		try {
 			out = response.getWriter();
 			System.out.println(outPath);
-			//out.write(Const.ROOT_HTML_URL + aty.getPublicCode() + ".html");
-			out.write("static/info/" + aty.getPublicCode() + ".html");
+			out.write(Const.ROOT_HTML_URL + aty.getPublicCode() + ".html");
 			out.flush();
 		} catch (IOException e) {
 			e.printStackTrace();

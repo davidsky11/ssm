@@ -366,16 +366,15 @@
 					</div>
 					<div id="code">
 						<label>验证码：</label> 
-						<input type="text" id="sec_code_hide" name="code" value="" nullmsg="验证码不能为空!" datatype="*4-4"
-							 /> 
+						<input type="text" id="sec_code_hide" name="code" value="" nullmsg="验证码不能为空!" datatype="*4-4"/> 
 						<img id="codeImg" name="codeImg" alt="验证码占位图" title="点击更换" src="" />
 					</div>
 					<div id="remember">
-						<!-- <input type="checkbox" id="remember3" name="remember" /> <label>记住密码</label> -->
-						<!-- <input type="hidden" id="autologinch3" name="autologinch"  class="autologinch" value=""/> -->
+						<!-- <input type="checkbox" id="remember2" name="remember"> <label>记住密码</label> -->
+						<!-- <input type="hidden" id="autologinch2" name="autologinch"  class="autologinch" value=""/> -->
 					</div>
 					<div id="login">
-						<button type="submit">登录</button>
+						<button type="submit">登录</button>
 					</div>
 				</form>
 			</div>

@@ -168,24 +168,6 @@ public class WaresController {
 	///////////////////////////////////////////////////////////////////////////
 
 	/**
-	 * 
-	 * @Title: waresConfig
-	 * @Description: 为活动配置编码
-	 * @param model
-	 * @return
-	 * @throws IOException
-	 */
-	@RequestMapping(value = "/wares/config", method = RequestMethod.GET)
-	public ModelAndView waresConfig(Model model) throws IOException {
-		ModelAndView mv = new ModelAndView("wares/config");
-
-		List<Activity> atyList = this.activityService.getActivityList("");
-		mv.addObject("atyList", atyList);
-
-		return mv;
-	}
-
-	/**
 	 * @Title: configList
 	 * @Description: 活动配置列表
 	 * @return
@@ -323,35 +305,6 @@ public class WaresController {
 
 	}
 
-	/**
-	 * @Title: downloadConfig
-	 * @Description: 根据活动下载编码信息
-	 * @param request
-	 * @return
-	 */
-	@ResponseBody
-	@RequestMapping(value = "/wares/downloadConfig", method = RequestMethod.POST)
-	public Json downloadConfig(HttpServletRequest request, HttpServletResponse response) {
-		User user = (User) request.getSession().getAttribute(Const.SESSION_USER);
-		Json j = new Json();
-
-		String activityId = request.getParameter("activityId");
-		Activity activity = activityService.findById(activityId);
-
-		String publicCode = activity.getPublicCode();
-
-		// TODO 根据活动导出对应的编码数据 Excel形式
-
-		Map<String, Object> beans = new HashMap<String, Object>();
-		beans.put("test", "1");
-		beans.put("try", "2");
-		// ExcelUtil.exportAndDownload("c:/temp", "wares", beans, response);
-
-		j.setMsg("导出成功!");
-		return j;
-	}
-
-	////////////////////////////////////////////////////////////////
 	//////////////////////////////////////////////////////////////////////
 
 	/**
@@ -362,7 +315,7 @@ public class WaresController {
 	 * @return
 	 * @throws IOException
 	 */
-	@RequestMapping(value = "/wes/config", method = RequestMethod.GET)
+	@RequestMapping(value = "/wares/config", method = RequestMethod.GET)
 	public ModelAndView wesConfig(Model model, HttpServletRequest request) {
 		User user = (User) request.getSession().getAttribute(Const.SESSION_USER);
 		ModelAndView mv = new ModelAndView("wares/config");
@@ -472,7 +425,7 @@ public class WaresController {
 			w.setPublicCode(aty.getPublicCode());  // publicCode 三位 000-999
 			
 			w.setPrivateCode(maxPrivateTitle + aty.getPublicCode() + ran.nextInt(4) + RandomUtil.generateNumberString(7) + ran.nextInt(9));  // 1 099 5116277 76
-			w.setInsideCode(ran.nextInt(maxInsideTitle) + aty.getPublicCode() + ran.nextInt(8) + RandomUtil.generateNumberString(4) + ran.nextInt(9));   // 4 294 967269
+			w.setInsideCodeTmp(ran.nextInt(maxInsideTitle) + aty.getPublicCode() + ran.nextInt(8) + RandomUtil.generateNumberString(4) + ran.nextInt(9));   // 4 294 967269
 			
 			w.setCreater(user.getUsername());
 			w.setCreateTime(new Date());
@@ -533,11 +486,6 @@ public class WaresController {
 	public void editConfig(HttpServletRequest resquest, HttpServletResponse response, HttpSession session, @RequestParam("id") String id) throws Exception {
 		ExportExcel ex = new ExportExcel();
 		
-		// 查找导出字段
-		List<String> mustList = new ArrayList<String>();
-		int i=0;
-		List<String> headList = new ArrayList<String>();
-		
 		List<Wares> waresList = waresService.getListByAtyId(id);
 					
 		String path = Const.TEMPFOLDER + "//emp.xls";
@@ -550,7 +498,7 @@ public class WaresController {
 	}
 	
 	private void createExcel(OutputStream os, List<Wares> list){
-		String[] heads={"publicCode","privateCode","insideCode"};
+		String[] heads={"publicCode[公共编码]","privateCodeTmp[瓶身内码]","insideCode[实验内码]"};
 		WritableWorkbook workbook=null;
 		try {
 			workbook = Workbook.createWorkbook(os);
@@ -561,7 +509,7 @@ public class WaresController {
 		for(int i=0;i<list.size();i++){
 			sheet.addCell(new Label(0, i+1, list.get(i).getPublicCode()));
 			sheet.addCell(new Label(1, i+1, list.get(i).getPrivateCode()));
-			sheet.addCell(new Label(2, i+1, list.get(i).getInsideCode()));
+			sheet.addCell(new Label(2, i+1, list.get(i).getInsideCodeTmp()));
 		}
 		workbook.write();
 		} catch (Exception e) {

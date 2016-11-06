@@ -15,8 +15,8 @@ public class Activity {
 	private String title;  // 活动标题
 	private String description;  // 活动描述
 	private String content;  // 活动内容
-	private Date startTime;  // 活动开始时间
-	private Date endTime;  // 活动结束时间
+	private String startTime;  // 活动开始时间
+	private String endTime;  // 活动结束时间
 	private String publisherId;  // 活动的发布者，系统管理员
 	private String publisherName;  
 	private int enable;  // 活动是否激活
@@ -24,6 +24,7 @@ public class Activity {
 	private String image;  // 图片
 	private Integer count;  // 对应生成的编码的个数
 	private Double amount;  // 预算奖项金额
+	private String infoUrl;  // 活动对应的内容 H5 url
 	
 	public String getId() {
 		return id;
@@ -61,16 +62,16 @@ public class Activity {
 	public void setPublisherName(String publisherName) {
 		this.publisherName = publisherName;
 	}
-	public Date getStartTime() {
+	public String getStartTime() {
 		return startTime;
 	}
-	public Date getEndTime() {
+	public String getEndTime() {
 		return endTime;
 	}
-	public void setStartTime(Date startTime) {
+	public void setStartTime(String startTime) {
 		this.startTime = startTime;
 	}
-	public void setEndTime(Date endTime) {
+	public void setEndTime(String endTime) {
 		this.endTime = endTime;
 	}
 	public int getEnable() {
@@ -102,6 +103,13 @@ public class Activity {
 	}
 	public Integer getCount() {
 		return count;
+	}
+	
+	public String getInfoUrl() {
+		return infoUrl;
+	}
+	public void setInfoUrl(String infoUrl) {
+		this.infoUrl = infoUrl;
 	}
 	
 	@Override

@@ -23,17 +23,21 @@
 									</select>
 								</div>
 
-								<div class="col-xs-1">
+								<div class="col-xs-8">
 									<button id="searchBtn" type="button"
-										class="btn btn-info pull-right">查询</button>
+										class="btn btn-info pull-right">统计</button>
 								</div>
 							</div>
 						</div>
 
-						<div class="table-responsive">
+						<!-- <div class="table-responsive"> -->
+						<div>
 							<div id="placeChartArea"
 								style="height: 500px; border: 1px solid #ccc; padding: 10px;"></div>
+							<!-- <div id="placeChartAreaPie"
+								style="height: 500px; width:30%; float: left; border: 1px solid #ccc; padding: 10px;"></div> -->
 						</div>
+						<!-- </div> -->
 					</div>
 				</div>
 			</div>
@@ -44,6 +48,8 @@
 <script type="text/javascript">
 	// 基于准备好的dom，初始化echarts实例
 	var myChart = echarts.init(document.getElementById('placeChartArea'));
+	//var myChartPie = echarts.init(document.getElementById('placeChartAreaPie'));
+	
 	var xAxisDataJson = [];
 	var seriesDataJson = [];
 	var seriesPieJson = [];
@@ -64,6 +70,7 @@
 			left : '3%',
 			right : '4%',
 			bootom : '3%',
+			width: '75%',
 			containLabel : true
 		},
 		xAxis : {
@@ -74,7 +81,8 @@
 			type : 'value',
 			boundaryGap: [0, 1]
 		},
-		series : [ {
+		series : [ 
+		    {
 			name : '销售量',
 			type : 'bar',
 			data : seriesDataJson
@@ -82,8 +90,8 @@
         	{
         		name: '销售量',
         		type: 'pie',
-        		radius: '30%',
-        		center: ['83%','23%'],
+        		radius: '28%',
+        		center: ['90%','30%'],
         		data: seriesPieJson,
         		itemStyle: {
         			emphasis: {

@@ -156,8 +156,8 @@ public class MyBatisTest extends AbstractJUnit4SpringContextTests {
 		Activity ac = new Activity();
 		ac.setTitle("新增");
 		ac.setDescription("新增描述");
-		ac.setStartTime(new Date());
-		ac.setEndTime(new Date());
+		//ac.setStartTime(new Date());
+		//ac.setEndTime(new Date());
 		ac.setContent("新增内容");
 		ac.setPublisherId("1");
 		ac.setPublisherName("admin");

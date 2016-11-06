@@ -1,12 +1,11 @@
-<!doctype html>
-<html>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 	<meta name="viewport" content="width=device-width"/>
 	<meta name="viewport" content="initial-scale=1.0,user-scalable=no"/>
 	<meta name="apple-mobile-web-app-capable" content="yes">
 	<meta name="apple-mobile-web-app-status-bar-style" content="black">
-	<!-- <link rel="stylesheet" rev="stylesheet" type="text/css" href="css/css.css" media="all"/> -->
 	<title>###title###</title>
 	
 <style type="text/css">
@@ -323,7 +322,7 @@ tb960x90 {
 </style>
 </head>
 <body style="background:#79c59d;">
-<img src="###img###" width="100%" height="100%" class="index_bj" /> <!-- upload/img/bj.png -->
+<img src="###img###" width="100%" height="100%" class="index_bj" />
 	<div class="index_main">
         <p>活动规则</p>
         <p>简单快速，只需要分享到朋友圈或邀请好友帮忙就能获得助力指数。</p>
@@ -333,15 +332,6 @@ tb960x90 {
         ###content###
         <div style="width:100%; height:100px;"></div>
     </div>
-    <!-- <div class="foot">
-        <table>
-            <tr>
-                <td><a href="index.html"><img src="img/d1.png" width="20"/><br/>活动</a></td>
-                <td><a href="list.html"><img src="img/d2.png" width="20"/><br/>助力</a></td>
-                <td><a href="my.html"><img src="img/d3.png" width="20"/><br/>我的</a></td>
-            </tr>
-        </table>
-    </div> -->
     <div style="clear:both;"></div>
       
 </body>

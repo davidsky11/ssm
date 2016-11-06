@@ -1092,13 +1092,24 @@ public class NoAuthController {
 			 
 			break;
 		case Const.OPERATE_PRODUCT_INFO:                   //商品信息
+
+			Activity aty = null;
+	    	List<Activity> atyList = activityService.getActivityList(" and t.publicCode = '" + publicCode + "'");
+	    	if (atyList != null && atyList.size() > 0) {
+	    		aty = atyList.get(0);
+	    	}
+			
 			result.setOperate(Const.OPERATE_PRODUCT_INFO);
 			
 			result.setCode(Const.INFO_NORMAL);
 			result.setSuccess(true);
-			result.setMsg("获取商品信息页面URL");
+			result.setMsg("获取活动海报页面URL");
 			
-			result.setData(Const.ROOT_HTML_URL + publicCode + ".html");
+			if (aty == null) {
+				result.setData(Const.ROOT_HTML_URL + "template.html");
+			} else {
+				result.setData(aty.getInfoUrl());
+			}
 			// 类似 "http://www.hclinks.cn/crmnew/static/info/123.html"
 		 }
 		 
@@ -1607,6 +1618,42 @@ public class NoAuthController {
 			result.setSuccess(false);
 		}
 	
+		return result;
+	}
+	
+	@RequestMapping(value = "/setInsideCode", method = RequestMethod.POST)
+	@ResponseBody
+	@ApiOperation(value = "设置瓶盖内码", httpMethod = "POST", response = ApiResult.class, notes = "根据publicCode、privateCode设置insideCode")
+	public ApiResult setInsideCode(@ApiParam(required = true, name = "publicCode", value = "公共编码") @RequestParam("publicCode") String publicCode, 
+			@ApiParam(required = true, name = "privateCode", value = "瓶身码") @RequestParam("privateCode") String privateCode,
+			@ApiParam(required = false, name = "insideCode", value = "内码") @RequestParam("insideCode") String insideCode) {
+	
+		ApiResult result = new ApiResult();
+		result.setOperate(Const.OPERATE_SET_INSIDECODE);
+		
+		Wares wares = null;
+		List<Wares> waresList = waresService.getDatagrid(" and t.publicCode = '" + publicCode + "' and t.privateCode = '" + privateCode + "'");
+		if (waresList != null && waresList.size() > 0) {
+			wares = waresList.get(0);
+		}
+		
+		if (wares != null) {
+			wares.setInsideCode(insideCode);
+		}
+		
+		boolean flag = waresService.updateWares(wares) > 0;
+		
+		if (flag) {
+			result.setSuccess(true);
+			result.setCode(Const.INFO_NORMAL);
+			result.setMsg("设置瓶盖内码成功！");
+			result.setData(wares);
+		} else {
+			result.setSuccess(false);
+			result.setCode(Const.ERROR_SERVER);
+			result.setMsg("设置瓶盖内码失败！");
+		}
+		
 		return result;
 	}
 }

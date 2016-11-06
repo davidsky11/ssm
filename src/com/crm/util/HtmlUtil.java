@@ -24,6 +24,8 @@ public class HtmlUtil {
 	public static String title = "标题测试";
 	public static String context = "标题测试";
 	public static String img = "upload/img/bj.png";
+	public static String startDate = "";
+	public static String endDate = "";
 
 	/**
 	 * 根据本地模板生成静态页面
@@ -50,10 +52,12 @@ public class HtmlUtil {
 		}
 		try {
 
-			str = str.replaceAll("###title###", title);
-			str = str.replaceAll("###content###", context);
-			str = str.replaceAll("###img###", img);// 替换掉模块中相应的地方
-
+			str = str.replaceAll("###title###", title == null ? "" : title);
+			str = str.replaceAll("###content###", context == null ? "" : context);
+			str = str.replaceAll("###img###", img == null ? "" : img);// 替换掉模块中相应的地方
+			str = str.replaceAll("###startDate###", startDate == null ? "" : startDate);
+			str = str.replaceAll("###endDate###", endDate == null ? "" : endDate);
+			
 			File f = new File(HtmlFile);
 			BufferedWriter o = new BufferedWriter(new FileWriter(f));
 			o.write(str);

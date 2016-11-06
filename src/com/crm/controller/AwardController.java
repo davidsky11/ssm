@@ -179,14 +179,15 @@ public class AwardController {
 	 * @return
 	 */
 	@RequestMapping(value = "/awd/list", method = RequestMethod.GET)
-	public String awdList(Model model, @RequestParam(value = "pageNumber", defaultValue = "1") int pageNumber) {
+	public String awdList(Model model, HttpServletRequest request, @RequestParam(value = "pageNumber", defaultValue = "1") int pageNumber) {
+		User user = (User) request.getSession().getAttribute(Const.SESSION_USER);
 		List<Activity> atyList = activityService.getActivityList("");
 		model.addAttribute("atyList", atyList);
 		
 		Page<Award> page = new Page<Award>();
 		page.setPage(pageNumber);
 
-		page = awardService.awdPages(page, "");
+		page = awardService.awdPages(page, " and a.publisherId = '" + user.getId() + "'");
 
 		model.addAttribute("page", page);
 		model.addAttribute("awds", page.getContent());
@@ -218,7 +219,7 @@ public class AwardController {
 	 */
 	@RequestMapping(value = "/awd/add", method = RequestMethod.POST)
 	public String addAwd(Model model, Award award, HttpSession session) {
-		User curUser = (User) session.getAttribute(Const.SESSION_USER);
+		User user = (User) session.getAttribute(Const.SESSION_USER);
 
 		try {
 			String activityId = award.getActivityId();
@@ -234,7 +235,7 @@ public class AwardController {
 		}
 
 		Page<Award> page = new Page<Award>();
-		page = awardService.awdPages(page, "");
+		page = awardService.awdPages(page, " and a.publisherId = '" + user.getId() + "'");
 
 		model.addAttribute("page", page);
 		model.addAttribute("awds", page.getContent());
@@ -243,18 +244,14 @@ public class AwardController {
 	}
 
 	@RequestMapping(value = "/awd/delete", method = RequestMethod.POST)
-	public String deleteAwss(Model model, @RequestParam("deleteIds[]") String[] deleteIds) {
-
+	public String deleteAwss(Model model, HttpSession session, @RequestParam("deleteIds[]") String[] deleteIds) {
+		User user = (User) session.getAttribute(Const.SESSION_USER);
 		String ids = Tool.stringArrayToString(deleteIds, true, ",");
-		/*
-		 * StringBuffer sql = new StringBuffer();
-		 * sql.append("and id in (").append(ids).append(")");
-		 */
 
 		awardService.deleteAward("(" + ids + ")");
 
 		Page<Award> page = new Page<Award>();
-		page = awardService.awdPages(page, "");
+		page = awardService.awdPages(page, " and a.publisherId = '" + user.getId() + "'");
 
 		model.addAttribute("page", page);
 		model.addAttribute("awds", page.getContent());
@@ -281,11 +278,12 @@ public class AwardController {
 	}
 
 	@RequestMapping(value = "/awd/update", method = RequestMethod.POST)
-	public String updateAws(Model model, Award award) {
+	public String updateAwd(Model model, HttpSession session, Award award) {
+		User user = (User) session.getAttribute(Const.SESSION_USER);
 		awardService.updateAward(award);
 
 		Page<Award> page = new Page<Award>();
-		page = awardService.awdPages(page, "");
+		page = awardService.awdPages(page, " and a.publisherId = '" + user.getId() + "'");
 
 		model.addAttribute("page", page);
 		model.addAttribute("awds", page.getContent());

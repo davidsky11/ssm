@@ -22,65 +22,7 @@
 		<div class="box">
 			<!-- /.box-header -->
 			<div class="box-body">
-				<%-- <div class="row">
-					<div class="col-md-12">
-						<div class="box box-primary">
-							<div class="box-header with-border">
-								<h3 class="box-title">数据查询</h3>
-							</div>
-							<div class="box-body">
-								<!-- form start -->
-								<form id="searchForm" action="user/search" method="get">
-									<div class="box-body">
-										<div class="row">
-											<input hidden="true" name="pageNumber" id="pageNumber">
-											<div class="form-group col-md-2">
-												<label for="usernameLabel">用户名:</label> <input type="text"
-													class="form-control" id="usernameLabel"
-													name="search_username" value="${searchParamsMap.username }">
-											</div>
-											<div class="form-group col-md-2">
-												<label for="aliasLabel">别名:</label> <input type="text"
-													class="form-control" id="aliasLabel"
-													name="search_userAlias"
-													value="${searchParamsMap.userAlias }">
-											</div>
-											<!-- Date range -->
-											<div class="form-group  col-md-4">
-												<label>创建时间:</label>
-												<div class="input-group">
-													<div class="input-group-addon">
-														<i class="fa fa-calendar"></i>
-													</div>
-													<input type="text" class="form-control pull-right"
-														id="reservation" name="search_createTimeRange"
-														value="${searchParamsMap.createTimeRange}">
-												</div>
-												<!-- /.input group -->
-											</div>
-											<!-- <div class="form-group col-md-2">
-												<label for="isLockedLabel" >是否锁定: </label><br>
-												<input id="isLockedLabel" type="checkbox" name="search_locked">
-											</div> -->
-
-											<!-- /.form group -->
-										</div>
-										<!-- other rows -->
-									</div>
-									<!-- /.box-body -->
-									<div class="box-footer">
-										<button id="searchBtn" type="submit"
-											class="btn btn-info pull-right">查询</button>
-									</div>
-									<!-- /.box-footer -->
-								</form>
-							</div>
-							<!-- /.box-body -->
-						</div>
-						<!-- /.box -->
-					</div>
-					<!-- /.col (right) -->
-				</div> --%>
+			
 				<!-- /.row -->
 				<div class="box box-primary">
 					<div class="btn-group">
@@ -117,23 +59,24 @@
 										class="minimal deleteCheckbox" value="${aty.id}"></label></td>
 								<td>${status.count}</td>
 								<td>${aty.title}</td>
-								<td><fmt:formatDate pattern="yyyy-MM-dd HH:mm:ss" value="${aty.startTime}" /></td>
-								<td><fmt:formatDate pattern="yyyy-MM-dd HH:mm:ss" value="${aty.endTime}" /></td>
+								<%-- <td><fmt:formatDate pattern="yyyy-MM-dd" value="${aty.startTime}" /></td>
+								<td><fmt:formatDate pattern="yyyy-MM-dd" value="${aty.endTime}" /></td> --%>
+								<td>${aty.startTime}</td>
+								<td>${aty.endTime}</td>
 								<td>${aty.content}</td>
 								<td>${aty.publisherName}</td>
 								<td>${aty.publicCode}</td>
 
 								<td>
-									<%-- <shiro:hasPermission name="user:update"> --%>
-										<button id="updateBtn" type="button"
-											class="btn btn-xs btn-primary btn-flat" onclick="updateItem('${aty.id}');">编辑</button>
-									<%-- </shiro:hasPermission> <shiro:hasPermission name="user:view"> --%>
-										<button id="detailBtn" type="button"
-											class="btn btn-xs btn-primary btn-flat" onclick="detailItem('${aty.id}');">详情</button>
-									<%-- </shiro:hasPermission> <shiro:hasPermission name="user:bind"> --%>
-										<button id="buildInfoBtn" type="button"
-											class="btn btn-xs btn-primary btn-flat" onclick="buildItem('${aty.id}');">生成页面</button>
-									<%-- </shiro:hasPermission></td> --%>
+									<button id="updateBtn" type="button"
+										class="btn btn-xs btn-primary btn-flat" onclick="updateItem('${aty.id}');">编辑</button>
+									<button id="detailBtn" type="button"
+										class="btn btn-xs btn-primary btn-flat" onclick="detailItem('${aty.id}');">详情</button>
+									<button id="buildInfoBtn" type="button" 
+										<c:if test="${aty.infoUrl eq null or aty.infoUrl eq '' }">
+											disabled
+										</c:if>
+										class="btn btn-xs btn-primary btn-flat" onclick="previewItem('${aty.infoUrl}');">预览海报</button>
 							</tr>
 						</c:forEach>
 					</table>
@@ -270,11 +213,19 @@
 			},
 			success : function(data) { //请求成功后处理函数。    
 				//alert(data);
-				modalDisplay(data);
+				//modalDisplay(data);
+				window.open(data, 'newwindow', 'height=500, width=400, top=0, left=0, toolbar=no, menubar=no, scrollbars=no, resizable=no, location=no, status=no');
 			}
 		});
 	}
 	
+	function previewItem(url) {
+		var vra=document.createElement('a'); 
+        vra.target='_blank'; 
+        vra.href=url; 
+        document.body.appendChild(vra); 
+        vra.click(); 
+	}
 	
 	/**
 	AJAX不能下载文件，用表单来实现
