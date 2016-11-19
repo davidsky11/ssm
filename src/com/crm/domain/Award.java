@@ -29,6 +29,7 @@ public class Award {
 	private Integer remain;  // 剩余数量
 	private Activity activity;
 	private String activityName;
+	public String publisherId; // 发布者
 	
 	public Award() {
 		
@@ -138,6 +139,14 @@ public class Award {
 
 	public void setActivityName(String activityName) {
 		this.activityName = activityName;
+	}
+
+	public String getPublisherId() {
+		return publisherId;
+	}
+
+	public void setPublisherId(String publisherId) {
+		this.publisherId = publisherId;
 	}
 
 	@Override

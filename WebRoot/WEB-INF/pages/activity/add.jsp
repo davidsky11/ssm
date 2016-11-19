@@ -50,9 +50,9 @@
 			<label for="infoUrl" class="control-label">活动海报:</label>
 			<input type="text" class="form-control" id="infoUrl" name="infoUrl">
 			<p class="help-block">这里可以填入海报URL:</p>
-			<p>1、前往<a href="http://h5.baidu.com/">百度H5</a>
-					、<a href="http://maka.im/">MAKA</a>
-					、<a href="http://www.ih5.cn/">iH5</a>等海报制作平台制作H5海报</p>
+			<p>1、前往<a target="_blank" href="http://h5.baidu.com/">百度H5</a>
+					、<a target="_blank" href="http://maka.im/">MAKA</a>
+					、<a target="_blank" href="http://www.ih5.cn/">iH5</a>等海报制作平台制作H5海报</p>
 			<p>2、发布海报并获取海报对应的链接</p>
 			<p>3、将海报链接填入活动海报对应的编辑框中</p>
 			<p>4、保存活动信息</p>

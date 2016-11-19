@@ -832,7 +832,7 @@ public class NoAuthController {
 						/**
 						 * II 添加兑奖记录
 						 */
-						Exchange ex = new Exchange();
+						Exchange ex = this.pushAddress2Ex(address);
 						ex.setUserId(user.getId());
 						ex.setExchangeTime(new Date());
 						ex.setWaresId(wares.getId());
@@ -1303,6 +1303,29 @@ public class NoAuthController {
 		}
 		
 		return sr;
+	}
+	
+	private Exchange pushAddress2Ex(Address address) {
+		Exchange ex = new Exchange();
+		if (address == null)	return ex;
+		Result result = address.getResult();
+		AddressComponent ac = null;
+		
+		if (result != null) {
+			ac = result.getAddressComponent();
+			ex.setSematicDescription(result.getSematic_description());
+			ex.setFormattedAddress(result.getFormatted_address());
+		}
+		
+		if (ac != null) {
+			ex.setCountry(ac.getCountry());
+			ex.setProvince(ac.getProvince());
+			ex.setCity(ac.getCity());
+			ex.setDistance(ac.getDistance());
+			ex.setStreet(ac.getStreet());
+		}
+		
+		return ex;
 	}
 	
 	/**

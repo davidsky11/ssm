@@ -419,13 +419,16 @@ public class WaresController {
 
 		Random ran = new Random();
 
+		String temp = "";
 		for (int i = 0; i < count; i++) {
 			Wares w = new Wares();
 			w.setId(Tool.generateMajorKey());
 			w.setPublicCode(aty.getPublicCode());  // publicCode 三位 000-999
 			
 			w.setPrivateCode(maxPrivateTitle + aty.getPublicCode() + ran.nextInt(4) + RandomUtil.generateNumberString(7) + ran.nextInt(9));  // 1 099 5116277 76
-			w.setInsideCodeTmp(ran.nextInt(maxInsideTitle) + aty.getPublicCode() + ran.nextInt(8) + RandomUtil.generateNumberString(4) + ran.nextInt(9));   // 4 294 967269
+			temp = ran.nextInt(maxInsideTitle) + aty.getPublicCode() + ran.nextInt(8) + RandomUtil.generateNumberString(4) + ran.nextInt(9);
+			w.setInsideCodeTmp(temp);   // 4 294 967269
+			w.setInsideCode(temp);
 			
 			w.setCreater(user.getUsername());
 			w.setCreateTime(new Date());
@@ -498,20 +501,21 @@ public class WaresController {
 	}
 	
 	private void createExcel(OutputStream os, List<Wares> list){
-		String[] heads={"publicCode[公共编码]","privateCodeTmp[瓶身内码]","insideCode[实验内码]"};
+		String[] heads={"publicCode[公共编码]","privateCodeTmp[瓶身外码]","insideCode[实验内码]"};
 		WritableWorkbook workbook=null;
 		try {
 			workbook = Workbook.createWorkbook(os);
-		WritableSheet sheet = workbook.createSheet("wares sheet1", 0);
-		for(int i=0;i<heads.length;i++){
-			sheet.addCell(new Label(i,0,heads[i]));
-		}
-		for(int i=0;i<list.size();i++){
-			sheet.addCell(new Label(0, i+1, list.get(i).getPublicCode()));
-			sheet.addCell(new Label(1, i+1, list.get(i).getPrivateCode()));
-			sheet.addCell(new Label(2, i+1, list.get(i).getInsideCodeTmp()));
-		}
-		workbook.write();
+			workbook.setProtected(true);
+			WritableSheet sheet = workbook.createSheet("wares sheet1", 0);
+			for(int i=0;i<heads.length;i++){
+				sheet.addCell(new Label(i,0,heads[i]));
+			}
+			for(int i=0;i<list.size();i++){
+				sheet.addCell(new Label(0, i+1, list.get(i).getPublicCode()));
+				sheet.addCell(new Label(1, i+1, list.get(i).getPrivateCode()));
+				sheet.addCell(new Label(2, i+1, list.get(i).getInsideCodeTmp()));
+			}
+			workbook.write();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}finally{

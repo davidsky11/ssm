@@ -71,6 +71,7 @@
 							<th>活动名称</th>
 							<th>兑奖者</th>
 							<th>兑奖时间</th>
+							<th>兑奖地点</th>
 							<th>奖项</th>
 							<th>兑奖方式</th>
 							<th>受益者</th>
@@ -93,6 +94,7 @@
 									</c:if>
 								</td>
 								<td><fmt:formatDate pattern="yyyy-MM-dd HH:mm:ss" value="${ex.exchangeTime}" /></td>
+								<td>${ex.country} ${ex.province} ${ex.city} ${ex.distance} ${ex.street} ${ex.sematicDescription}</td>
 								<td>
 									<c:if test="${ex.award != null}">
 										${ex.award.title}(${ex.award.description})

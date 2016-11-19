@@ -14,6 +14,13 @@
 		<result property="latitude" column="latitude" />
 		<result property="flagCode" column="flagCode" />
 		<result property="awardId" column="awardId" />
+		<result property="country" column="country" />
+		<result property="province" column="province" />
+		<result property="city" column="city" />
+		<result property="distance" column="distance" />
+		<result property="street" column="street" />
+		<result property="sematicDescription" column="sematicDescription" />
+		<result property="formattedAddress" column="formattedAddress" />
 		<result property="exchangeType" column="exchangeType" />
 		<result property="beneficiary" column="beneficiary" />
 		
@@ -75,6 +82,13 @@
             <if test="publicCode !=null and publicCode !=''">publicCode,</if>
             <if test="longitude !=null and longitude !=''">longitude,</if>
             <if test="latitude !=null and latitude !=''">latitude,</if>
+            <if test="country !=null and country !=''">country,</if>
+            <if test="province !=null and province !=''">province,</if>
+            <if test="city !=null and city !=''">city,</if>
+            <if test="distance !=null and distance !=''">distance,</if>
+            <if test="street !=null and street !=''">street,</if>
+            <if test="sematicDescription !=null and sematicDescription !=''">sematicDescription,</if>
+            <if test="formattedAddress !=null and formattedAddress !=''">formattedAddress,</if>
             <if test="flagCode !=null and flagCode !=''">flagCode,</if>
             <if test="waresId !=null and waresId !=''">waresId</if>
             </trim>)values(<trim suffixOverrides=",">
@@ -86,6 +100,13 @@
             <if test="publicCode !=null and publicCode !=''">#{publicCode},</if>
             <if test="longitude !=null and longitude !=''">#{longitude},</if>
             <if test="latitude !=null and latitude !=''">#{latitude},</if>
+            <if test="country !=null and country !=''">#{country},</if>
+            <if test="province !=null and province !=''">#{province},</if>
+            <if test="city !=null and city !=''">#{city},</if>
+            <if test="distance !=null and distance !=''">#{distance},</if>
+            <if test="street !=null and street !=''">#{street},</if>
+            <if test="sematicDescription !=null and sematicDescription !=''">#{sematicDescription},</if>
+            <if test="formattedAddress !=null and formattedAddress !=''">#{formattedAddress},</if>
             <if test="flagCode !=null and flagCode !=''">#{flagCode},</if>
             <if test="waresId !=null and waresId !=''">#{waresId}</if>
             </trim>)
@@ -104,6 +125,13 @@
             <if test="privateCode !=null and privateCode !=''">privateCode=#{privateCode}</if>
             <if test="publicCode !=null and publicCode !=''">publicCode=#{publicCode},</if>
             <if test="longitude !=null and longitude !=''">longitude=#{longitude},</if>
+            <if test="country !=null and country !=''">country=#{country},</if>
+            <if test="province !=null and province !=''">province=#{province},</if>
+            <if test="city !=null and city !=''">city=#{city},</if>
+            <if test="distance !=null and distance !=''">distance=#{distance},</if>
+            <if test="street !=null and street !=''">street=#{street},</if>
+            <if test="sematicDescription !=null and sematicDescription !=''">sematicDescription=#{sematicDescription},</if>
+            <if test="formattedAddress !=null and formattedAddress !=''">formattedAddress=#{formattedAddress},</if>
             <if test="latitude !=null and latitude !=''">latitude=#{latitude},</if>
             <if test="flagCode !=null and flagCode !=''">flagCode=#{flagCode},</if>
             <if test="waresId !=null and waresId !=''">waresId=#{waresId}</if>
@@ -112,7 +140,9 @@
     </update>
 
 	<select id="getExchangeList" resultType="com.crm.domain.Exchange">
-		select t.id,t.userId,t.exchangeTime,t.insideCode,t.privateCode,t.publicCode,t.longitude,t.latitude,t.flagCode,t.waresId from exchange t where 1=1
+		select t.id,t.userId,t.exchangeTime,t.insideCode,t.privateCode,t.publicCode,t.longitude,t.latitude,t.flagCode,t.waresId，
+			t.country, t.province, t.city, t.distance, t.street, t.sematicDescription, t.formattedAddress
+		 from exchange t where 1=1
 		<if test="conditionSql !=null and conditionSql !=''">
 			${conditionSql}
 		</if>
@@ -125,14 +155,18 @@
 	</select>
 	
 	<select id="findByCondition" resultType="com.crm.domain.Exchange">
-		select t.id,t.userId,t.exchangeTime,t.insideCode,t.privateCode,t.publicCode,t.longitude,t.latitude,t.flagCode,t.waresId from exchange t where 1=1
+		select t.id,t.userId,t.exchangeTime,t.insideCode,t.privateCode,t.publicCode,t.longitude,t.latitude,
+		t.country, t.province, t.city, t.distance, t.street, t.sematicDescription, t.formattedAddress, t.flagCode,t.waresId
+		 from exchange t where 1=1
 		<if test="conditionSql !=null and conditionSql !=''">${conditionSql}</if>
 	</select>
 	
 	<select id="findByUser" parameterType="com.crm.domain.User" resultType="com.crm.domain.Exchange">
 		<!-- select t.id,t.userId,t.exchangeTime,t.insideCode,t.privateCode from exchange t where 1=1
 		where t.publisherId = u.id and u.id = #{id} -->
-		select distinct t.id,t.userId,t.exchangeTime,t.insideCode,t.privateCode,t.publicCode,t.longitude,t.latitude,t.flagCode,t.waresId from exchange t, sysuser a 
+		select distinct t.id,t.userId,t.exchangeTime,t.insideCode,t.privateCode,t.publicCode,t.longitude,t.latitude,t.flagCode,t.waresId,
+		t.country, t.province, t.city, t.distance, t.street, t.sematicDescription, t.formattedAddress
+		 from exchange t, sysuser a 
 		where (t.userId = a.id and a.id = #{id}) or (t.userName like concat('%',#{username},'%'))
 	</select> 
 	
@@ -140,6 +174,7 @@
 		select t.id, t.userId, t.exchangeTime, t.insideCode, t.privateCode, 
 		t.publicCode, t.longitude, t.latitude, t.flagCode, t.waresId,
 		t.awardId, t.exchangeType, t.beneficiary,
+		t.country, t.province, t.city, t.distance, t.street, t.sematicDescription, t.formattedAddress,
 		u.id u_id, u.username u_username, u.email u_email, u.regtime u_regtime, u.userAlias u_userAlias,
 		a.id a_id, a.title a_title, a.description a_description, a.amount a_amount
 		from exchange t
@@ -165,6 +200,7 @@
 	<select id="datagridExchange" resultMap="exchangeMap">
 		select t.id, t.userId, t.exchangeTime, t.insideCode, t.privateCode, 
 		t.publicCode, t.longitude, t.latitude, t.flagCode, t.waresId,
+		t.country, t.province, t.city, t.distance, t.street, t.sematicDescription, t.formattedAddress,
 		u.id u_id, u.username u_username, u.email u_email, u.regtime u_regtime,
 		a.id a_id, a.title a_title, a.description a_description, a.amount a_amount
 		from exchange t, sysuser u, award a 
@@ -193,6 +229,7 @@
 	<select id="exPages" resultMap="exchangeMap">
 		select t.id, t.userId, t.exchangeTime, t.insideCode, t.privateCode, 
 		t.publicCode, t.longitude, t.latitude, t.flagCode, t.waresId,
+		t.country, t.province, t.city, t.distance, t.street, t.sematicDescription, t.formattedAddress,
 		t.awardId, t.exchangeType, t.beneficiary,
 		u.id u_id, u.username u_username, u.email u_email, u.regtime u_regtime,
 		a.id a_id, a.title a_title, a.description a_description, a.amount a_amount
@@ -226,6 +263,7 @@
 		select t.id, t.userId, t.exchangeTime, t.insideCode, t.privateCode, 
 		t.publicCode, t.longitude, t.latitude, t.flagCode, t.waresId,
 		t.awardId, t.exchangeType, t.beneficiary,
+		t.country, t.province, t.city, t.distance, t.street, t.sematicDescription, t.formattedAddress,
 		u.id u_id, u.username u_username, u.email u_email, u.regtime u_regtime,
 		a.id a_id, a.title a_title, a.description a_description, a.amount a_amount,
 		ac.id ac_id, ac.title ac_title, ac.description ac_description, ac.content ac_content

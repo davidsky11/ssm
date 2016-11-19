@@ -253,8 +253,10 @@
 		t.street,t.sematicDescription,t.formattedAddress,t.waresId,t.publicCode,t.privateCode,t.insideCode,
 		u.id u_id, u.username u_username, u.email u_email, u.regtime u_regtime, u.userAlias u_userAlias,
 		w.id w_id, w.name w_name, w.creater w_creater, w.awardId w_awardId
-		from scan_record t, sysuser u, wares w 
-		where t.waresId = w.id and t.userId = u.id and t.id = #{id}
+		from scan_record t
+		left join sysuser u on t.userId = u.id
+		left join wares w on t.waresId = w.id
+		where t.id = #{id}
 	</select>
 	
 	<select id="selectByPublisherTotal" resultType="int">
@@ -267,6 +269,7 @@
 	
 	<select id="selectByPublisher" resultMap="scanRecordMap">
 		select t.id,t.userId,t.userName,t.longitude,t.latitude,t.scanTime,t.country,t.province,t.city,t.distance,
+		t.street,t.formattedAddress,t.sematicDescription,
 		u.id u_id, u.username u_username, u.email u_email, u.regtime u_regtime,
 		a.id a_id, a.title a_title, a.description a_description, a.content a_content
 		from scan_record t

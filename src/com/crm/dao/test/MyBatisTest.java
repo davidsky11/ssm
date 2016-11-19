@@ -81,7 +81,7 @@ public class MyBatisTest extends AbstractJUnit4SpringContextTests {
 
 	@Test
 	public void login() {
-		List<User> user = userMapper.login("app", "3", "123456");
+		List<User> user = userMapper.login("app", "3");
 		for (User u : user) {
 			System.out.println(u);
 		}
@@ -137,7 +137,7 @@ public class MyBatisTest extends AbstractJUnit4SpringContextTests {
 	
 	@Test
 	public void testgetAccountByPublisher() {
-		List<User> userList = userMapper.login("kevin", "2", "123456");
+		List<User> userList = userMapper.login("kevin", "2");
 		Activity ac = new Activity();
 		
 		if (userList != null && userList.size() > 0) {
@@ -630,5 +630,11 @@ public class MyBatisTest extends AbstractJUnit4SpringContextTests {
     	 * 将saleList数据保存到sale数据表中
     	 */
     	saleMapper.addSaleBatch(saleList);
+	}
+	
+	@Test
+	public void test12() {
+		ScanRecord sr = scanRecordMapper.findById("150aa75e94e811e689e500ac1e83ba5a");
+		System.out.println(sr);
 	}
 }

@@ -6,6 +6,7 @@
 		<id property="id" column="u_id" />
 		<result property="username" column="u_username" />
 		<result property="userType" column="u_userType" />
+		<result property="password" column="u_password" />
 		<result property="email" column="u_email" />
 		<result property="idcard" column="u_idcard" />
 		<result property="qq" column="u_qq" />
@@ -33,13 +34,13 @@
 	</resultMap>
    
 	<select id="login" resultMap="userMap">
-		select u.id u_id, u.username u_username, u.userType u_userType, u.email u_email, u.idcard u_idcard,
+		select u.id u_id, u.password u_password, u.username u_username, u.userType u_userType, u.email u_email, u.idcard u_idcard,
 		u.qq u_qq, u.weixin u_weixin, u.regTime u_regTime, u.loginTime u_loginTime, u.userAlias u_userAlias,
 		u.telephone u_telephone, u.address u_address, u.merchant u_merchant, u.loginFrequency u_loginFrequency,
 		u.locked u_locked, u.lastLoginTime u_lastLoginTime, u.flagCode u_flagCode, r.id r_id, r.name r_name, 
 		r.roleDesc r_roleDesc
 		from sysuser u left join sysrole r on u.userType = r.id where u.username = #{username} 
-		and u.userType = #{userType} and u.password = #{password}
+		and u.userType = #{userType}
 	</select>
 	
 	<select id="findByConditionSql" resultType="com.crm.domain.User">

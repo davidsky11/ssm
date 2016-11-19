@@ -1,4 +1,5 @@
 /cert/
+/.gitignore
 /com/
 /config/
 /configuration.properties
@@ -6,5 +7,5 @@
 /ehcache1.xml
 /logback.xml
 /quartz.properties
-/template/
 /ssm/
+/template/

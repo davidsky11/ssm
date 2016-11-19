@@ -24,6 +24,13 @@ public class Exchange {
 	private String waresId;  // 商品ID
 	private String exchangeType;  // 兑奖类型
 	private String beneficiary;  // 受益人
+	private String country;  // 国家
+	private String province;  // 省份
+	private String city;  // 城市
+	private String distance;  // 区
+	private String street;  // 街道
+	private String sematicDescription;  // 详细地址
+	private String formattedAddress;  // 地址
 	private Wares wares;
 	private String awardId;
 	private Award award;
@@ -130,6 +137,48 @@ public class Exchange {
 	}
 	public void setBeneficiary(String beneficiary) {
 		this.beneficiary = beneficiary;
+	}
+	public String getCountry() {
+		return country;
+	}
+	public String getProvince() {
+		return province;
+	}
+	public String getCity() {
+		return city;
+	}
+	public String getDistance() {
+		return distance;
+	}
+	public String getStreet() {
+		return street;
+	}
+	public String getSematicDescription() {
+		return sematicDescription;
+	}
+	public String getFormattedAddress() {
+		return formattedAddress;
+	}
+	public void setCountry(String country) {
+		this.country = country;
+	}
+	public void setProvince(String province) {
+		this.province = province;
+	}
+	public void setCity(String city) {
+		this.city = city;
+	}
+	public void setDistance(String distance) {
+		this.distance = distance;
+	}
+	public void setStreet(String street) {
+		this.street = street;
+	}
+	public void setSematicDescription(String sematicDescription) {
+		this.sematicDescription = sematicDescription;
+	}
+	public void setFormattedAddress(String formattedAddress) {
+		this.formattedAddress = formattedAddress;
 	}
 	
 	@Override

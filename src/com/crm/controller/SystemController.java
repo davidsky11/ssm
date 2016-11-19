@@ -59,6 +59,11 @@ public class SystemController extends BaseController {
 		return "index";
 	}
 	
+	@RequestMapping(value = "/login", method = RequestMethod.GET)
+	public String loginIdx() {
+		return "redirect:/";
+	}
+	
     @RequestMapping(value = "/login", method = RequestMethod.POST)
     public String login(HttpServletRequest request, HttpServletResponse response,
     		@RequestParam String username, @RequestParam String password, 
@@ -71,14 +76,20 @@ public class SystemController extends BaseController {
     	}
     	
 		if (code.toLowerCase().equals(request.getSession().getAttribute("RANDOMCODE").toString().toLowerCase())){
-			List<User> userList = userService.login(username, userType, password);
+			List<User> userList = userService.login(username, userType);
 			if (userList != null && userList.size() > 0) {
 				User user = userList.get(0);
 				if (user == null) {
 					log.info("登陆用户名不存在");  
 		    		request.getSession().setAttribute("message", "用户名不存在，请重新登录");
+		    		request.getSession().setAttribute("message", "用户名错误，请重新输入！");
 		    		return returnUrl; 
 				}else {
+					if (!password.equals(user.getPassword())) {
+						request.getSession().setAttribute("message", "密码错误，请重新输入！");
+						return returnUrl;
+					}
+					
 					/**
 					 * 更新登录次数
 					 */
@@ -91,15 +102,11 @@ public class SystemController extends BaseController {
 					List<SysMenu> menuList = userService.getMenu(user.getId());
 					user.setMenuList(menuList);
 						
-					/*if(autologinch !=null && autologinch.equals("Y")){ // 判断是否要添加到cookie中
-						// 保存用户信息到cookie
-						UserCookieUtil.saveCookie(user, response);
-					}*/
-					
 					// 保存用信息到session
 					HttpSession session = request.getSession();
 					session.setAttribute(Const.SESSION_USER, user); 
 					session.setAttribute(Const.SESSION_USER_TYPE, userType);
+					session.setAttribute("message", "");
 					
 					String toUrl = RequestUtil.retrieveSavedRequest();
 					if (toUrl.contains("login") || toUrl.contains("logout")) {
@@ -114,6 +121,7 @@ public class SystemController extends BaseController {
 			}
 		}else {
 			request.getSession().setAttribute("message", "验证码错误，请重新输入");
+			request.getSession().setAttribute("message", "验证码错误，请重新输入！");
     		return returnUrl; 
 		}
     }

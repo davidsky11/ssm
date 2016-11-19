@@ -34,6 +34,7 @@
 				</tr>
 				<tr><td>兑奖类型：</td><td>${ex.exchangeType}</td></tr>
 				<tr><td>受益者:</td><td>${ex.beneficiary}</td></tr>
+				<tr><td>兑奖地点:</td><td>${ex.country} ${ex.province} ${ex.city} ${ex.distance} ${ex.sematicDescription}</td></tr>
 				</table>																										
 			</div>
 			<div class="modal-footer">

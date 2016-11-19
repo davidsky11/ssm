@@ -33,7 +33,7 @@ public interface UserService {
 	 * @param username
 	 * @return
 	 */
-	public List<User> login(String username, String userType, String password);
+	public List<User> login(String username, String userType);
 	
 	public List<User> findByNameAndType(String username, String userType);
 	

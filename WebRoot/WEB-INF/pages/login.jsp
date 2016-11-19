@@ -16,7 +16,15 @@
 <script type="text/javascript">
 	$(document).ready(function() {
 		var $tab_li = $('#tab ul li');
-		$tab_li.hover(function() {
+		/*$tab_li.hover(function() {
+			$(this).addClass('selected').siblings().removeClass('selected');
+			var index = $tab_li.index(this);
+			$('div.tab_box > div').eq(index).show().siblings().hide();
+
+			var type = $(this).val();
+			$("#userType").attr("value", type);
+		});*/
+		$tab_li.click(function() {
 			$(this).addClass('selected').siblings().removeClass('selected');
 			var index = $tab_li.index(this);
 			$('div.tab_box > div').eq(index).show().siblings().hide();
@@ -53,6 +61,7 @@
 		});
 
 		$("#stu_username_hide").focusout(function() {
+			$("errorIfo").text("");
 			var username = $(this).val();
 			if (username == '') {
 				$(this).val('请输入用户名');
@@ -270,6 +279,14 @@
 		});
 		
 	});*/
+	
+	function info() {
+		if ("${message}" !=null && "${message}" != ""){
+			alert("${message}");
+		}
+	}
+	
+	window.onload = info;
 </script>
 </head>
 
@@ -303,11 +320,12 @@
 					</div>
 					<div id="code">
 						<label>验证码：</label> 
-						<input type="text" id="stu_code_hide" name="code" value="" nullmsg="验证码不能为空!" 
+						<input type="text" id="stu_code_hide" name="code" value="" nullmsg="验证码不能为空!" 
 							datatype="*4-4" errormsg="验证码有4位数!"  /> 
 						<img id="codeImg" name="codeImg" alt="验证码占位图" title="点击更换" src="" />
 					</div>
 					<div id="remember">
+						<span name="errorIfo" style="color:red;">${message}</span>
 						<!-- <input type="checkbox" id="remember1" name="remember"> <label>记住密码</label> -->
 						<!-- <input type="hidden" id="autologinch1" name="autologinch"  class="autologinch" value=""/> -->
 					</div>
@@ -323,7 +341,7 @@
 				<form action="login" method="post">
 					<input type="hidden" id="userType" name="userType" value="2" />
 					<div id="username">
-						<label>商户账号： </label> <input type="text" id="tea_username_hide"
+						<label>商户账户： </label> <input type="text" id="tea_username_hide"
 							name="username" value="" nullmsg="商户账号不能为空!"
 							datatype="s3-18" errormsg="商户账号范围在3~18个字符之间1" />
 					</div>
@@ -340,6 +358,7 @@
 						<img id="codeImg" name="codeImg" alt="验证码占位图" title="点击更换" src="" />
 					</div>
 					<div id="remember">
+						<span name="errorIfo" style="color:red;">${message}</span>
 						<!-- <input type="checkbox" id="remember2" name="remember"> <label>记住密码</label> -->
 						<!-- <input type="hidden" id="autologinch2" name="autologinch"  class="autologinch" value=""/> -->
 					</div>
@@ -355,7 +374,7 @@
 				<form action="login" method="post" ><!-- class="sec_login_error" -->
 					<input type="hidden" id="userType" name="userType" value="1" />
 					<div id="username">
-						<label>厂商账户：</label> <input type="text"
+						<label>厂商账号：</label> <input type="text"
 							id="sec_username_hide" name="username" value=""
 							nullmsg="账号不能为空!" datatype="s3-18" errormsg="账号范围在3~18个字符之间!" />
 					</div>
@@ -370,6 +389,7 @@
 						<img id="codeImg" name="codeImg" alt="验证码占位图" title="点击更换" src="" />
 					</div>
 					<div id="remember">
+						<span name="errorIfo" style="color:red;">${message}</span>
 						<!-- <input type="checkbox" id="remember2" name="remember"> <label>记住密码</label> -->
 						<!-- <input type="hidden" id="autologinch2" name="autologinch"  class="autologinch" value=""/> -->
 					</div>

@@ -18,8 +18,7 @@ import com.crm.domain.easyui.PageHelper;
  */
 public interface UserMapper {
 
-	public List<User> login(@Param("username") String username, @Param("userType") String userType,
-			@Param("password") String password);
+	public List<User> login(@Param("username") String username, @Param("userType") String userType);
 	
 	public List<User> findByConditionSql(@Param("conditionSql") String conditionSql);
 	

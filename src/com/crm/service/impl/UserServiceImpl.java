@@ -51,8 +51,8 @@ public class UserServiceImpl implements UserService {
 	 * @param username
 	 * @return
 	 */
-	public List<User> login(String username, String userType, String password) {
-		return userMapper.login(username, userType, password);
+	public List<User> login(String username, String userType) {
+		return userMapper.login(username, userType);
 	}
 	
 	public List<User> findByNameAndType(String username, String userType) {

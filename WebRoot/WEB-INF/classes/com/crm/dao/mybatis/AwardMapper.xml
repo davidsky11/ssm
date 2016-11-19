@@ -13,6 +13,7 @@
 		<result property="activityId" column="a_activityId" />
 		<result property="total" column="a_total" />
 		<result property="remain" column="a_remain" />
+		<result property="publisherId" column="a_publisherId" />
 		
 		<association property="activity" resultMap="activityMap" />
 	</resultMap>
@@ -39,7 +40,8 @@
             <if test="amount !=null and amount !=''">amount,</if>
             <if test="activityId !=null and activityId !=''">activityId,</if>
             <if test="total !=null and total !=''">total,</if>
-            <if test="remain !=null and remain !=''">remain</if>
+            <if test="remain !=null and remain !=''">remain,</if>
+            <if test="publisherId !=null and publisherId !=''">publisherId</if>
             </trim>)values(<trim suffixOverrides=",">
             <if test="id !=null and id !=''">#{id},</if>
             <if test="title !=null and title !=''">#{title},</if>
@@ -50,7 +52,8 @@
             <if test="amount !=null and amount !=''">#{amount},</if>
             <if test="activityId !=null and activityId !=''">#{activityId},</if>
             <if test="total !=null and total !=''">#{total},</if>
-            <if test="remain !=null and remain !=''">#{remain}</if>
+            <if test="remain !=null and remain !=''">#{remain},</if>
+            <if test="publisherId !=null and publisherId !=''">#{publisherId}</if>
             </trim>)
 	</insert>
 	
@@ -69,7 +72,8 @@
             <if test="amount !=null and amount !=''">amount=#{amount},</if>
             <if test="activityId !=null and activityId !=''">activityId=#{activityId},</if>
             <if test="total !=null and total !=''">total=#{total},</if>
-            <if test="remain !=null and remain !=''">remain=#{remain}</if>
+            <if test="remain !=null and remain !=''">remain=#{remain},</if>
+            <if test="publisherId !=null and publisherId != ''">publisherId=#{publisherId}</if>
     	</set>
     	where id = #{id}
     </update>
@@ -81,7 +85,8 @@
 	<select id="findById" resultMap="awardMap">
 		select t.id a_id,t.title a_title,t.serialNo a_serialNo,t.description a_description,
 		t.hierarchy a_hierarchy,t.sort a_sort,t.amount a_amount,t.activityId a_activityId,
-		t.total a_total,t.remain a_remain, a.id t_id, a.title t_title, a.description t_description
+		t.total a_total,t.remain a_remain, t.publisherId a_publisherId,
+		a.id t_id, a.title t_title, a.description t_description
 		 from award t left join activity a on t.activityId = a.id
 		 where t.id=#{id}
 	</select> 
@@ -134,7 +139,7 @@
 	<select id="awdPages" resultMap="awardMap">
 		select a.id a_id, a.title a_title, a.serialNo a_serialNo, a.description a_description,
 		 a.hierarchy a_hierarchy, a.sort a_sort, a.amount a_amount, a.activityId a_activityId,
-		 a.total a_total, a.remain a_remain,
+		 a.total a_total, a.remain a_remain, a.publisherId a_publisherId,
 		 t.id t_id, t.title t_title, t.description t_description, t.publisherName t_publisherName, t.publicCode t_publicCode
 		from award a left join activity t on a.activityId = t.id where 1=1 
 		<if test="conditionSql != null and conditionSql != ''">

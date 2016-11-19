@@ -25,7 +25,7 @@
 					</td>
 				</tr>
 				<tr><td>时间：</td><td><fmt:formatDate pattern="yyyy-MM-dd HH:mm:ss" value="${sr.scanTime}"/></td></tr>
-				<tr><td>地址:</td><td>${sr.province} ${sr.city} ${distance } ${street }</td></tr>
+				<tr><td>地址:</td><td>${sr.formattedAddress} ${sr.sematicDescription}</td></tr>
 				</table>																										
 			</div>
 			<div class="modal-footer">

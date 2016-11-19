@@ -77,6 +77,9 @@
 								<th>公共编码</th>
 								<th>瓶身码</th>
 							</c:if>
+							<c:if test="${userType eq '1'}">
+								<th>扫码地址</th>
+							</c:if>
 							<th>操作</th>
 
 						</tr>
@@ -107,18 +110,12 @@
 									<td>${sr.publicCode}</td>
 									<td>${sr.privateCode}</td>
 								</c:if>
-
+								<c:if test="${userType eq '1'}">
+									<td>${sr.province} ${sr.city} ${sr.distance } ${sr.street }</td>
+								</c:if>
 								<td>
-									<%-- <shiro:hasPermission name="user:update"> --%>
-										<%-- <button id="updateBtn" type="button"
-											class="btn btn-xs btn-primary btn-flat" onclick="updateItem('${aty.id}');">编辑</button> --%>
-									<%-- </shiro:hasPermission> <shiro:hasPermission name="user:view"> --%>
-										<button id="detailBtn" type="button"
-											class="btn  btn-xs btn-primary btn-flat" onclick="detailItem('${sr.id}');">详情</button>
-									<%-- </shiro:hasPermission> <shiro:hasPermission name="user:bind"> --%>
-										<%-- <button id="bindRoleBtn" type="button"
-											class="btn  btn-xs btn-primary btn-flat"  onclick='bindItem(${user.id})'>角色绑定</button> --%>
-									<%-- </shiro:hasPermission></td> --%>
+									<button id="detailBtn" type="button"
+										class="btn  btn-xs btn-primary btn-flat" onclick="detailItem('${sr.id}');">详情</button>
 							</tr>
 						</c:forEach>
 					</table>
