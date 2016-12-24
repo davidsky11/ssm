@@ -74,7 +74,9 @@
 							<th>扫码时间</th>
 							<th>活动名称</th>
 							<c:if test="${userType eq '3'}">
-								<th>奖项名称</th>
+								<th>奖品</th>
+								<th>登陆方式</th>
+								<th>登陆账号</th>
 							</c:if>
 							<c:if test="${userType eq '2'}">
 								<th>公共编码</th>
@@ -91,6 +93,9 @@
 								<td>
 									<c:if test="${sr.user != null}">
 										${sr.user.username}
+										<c:if test="${sr.user.userAlias != null }">
+										(${sr.user.userAlias})
+										</c:if>
 									</c:if>
 								</td>
 								<td><fmt:formatDate pattern="yyyy-MM-dd HH:mm:ss" value="${sr.scanTime}" /></td>
@@ -104,6 +109,22 @@
 										<c:if test="${sr.award != null}">
 											${sr.award.title}(${sr.award.description})
 										</c:if>
+									</td>
+									<td>
+										<c:choose>
+											<c:when test="${sr.user.thirdType eq 'WECHAT' }">
+												微信
+											</c:when>
+											<c:when test="${sr.user.thirdType eq 'WEIBO' }">
+												微博
+											</c:when>
+											<c:when test="${sr.user.thirdType eq 'QQ' }">
+												QQ
+											</c:when>
+										</c:choose>
+									</td>
+									<td>
+										${sr.user.userAlias }
 									</td>
 								</c:if>
 								<c:if test="${userType eq '2'}">

@@ -50,6 +50,7 @@
 							<th>活动内容</th>
 							<th>创建人</th>
 							<th>公共编码</th>
+							<!-- <th style="width:15%;max-width:50px">活动编码</th> -->
 							<th>操作</th>
 
 						</tr>
@@ -66,6 +67,7 @@
 								<td>${aty.content}</td>
 								<td>${aty.publisherName}</td>
 								<td>${aty.publicCode}</td>
+								<%-- <td style="width:15%;max-width:50px">${aty.atyCode}</td> --%>
 
 								<td>
 									<button id="updateBtn" type="button"

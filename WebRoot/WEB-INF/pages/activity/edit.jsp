@@ -18,6 +18,10 @@
 				<input type="text" class="form-control" id="title" name="title" value="${aty.title}" >
 			</div>	
 			<div class="form-group">
+				<label for="atyCode" class="control-label">公共编码:</label> 
+				<input type="text" class="form-control" id="atyCode" name="atyCode" value="${aty.atyCode}" >
+			</div>	
+			<div class="form-group">
 				<label for="publicCode" class="control-label">公共编码:</label> 
 				<input type="text" class="form-control" id="publicCode" name="publicCode" value="${aty.publicCode}" >
 			</div>			

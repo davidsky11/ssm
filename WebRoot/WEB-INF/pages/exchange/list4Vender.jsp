@@ -69,12 +69,12 @@
 							</label></th> -->
 							<th style="width: 10px">#</th>
 							<th>活动名称</th>
+							<th>奖品</th>
 							<th>兑奖者</th>
 							<th>兑奖时间</th>
-							<th>兑奖地点</th>
-							<th>奖项</th>
 							<th>兑奖方式</th>
 							<th>受益者</th>
+							<th>兑奖地点</th>
 							<th>操作</th>
 
 						</tr>
@@ -89,17 +89,16 @@
 									</c:if>
 								</td>
 								<td>
+									<c:if test="${ex.award != null}">
+										${ex.award.title}(${ex.award.description})
+									</c:if>
+								</td>
+								<td>
 									<c:if test="${ex.user != null}">
 										${ex.user.username}
 									</c:if>
 								</td>
 								<td><fmt:formatDate pattern="yyyy-MM-dd HH:mm:ss" value="${ex.exchangeTime}" /></td>
-								<td>${ex.country} ${ex.province} ${ex.city} ${ex.distance} ${ex.street} ${ex.sematicDescription}</td>
-								<td>
-									<c:if test="${ex.award != null}">
-										${ex.award.title}(${ex.award.description})
-									</c:if>
-								</td>
 								<td>
 									<c:forEach items="${dicList}" var="dic" varStatus="status">
 										<c:if test="${dic.entrycode eq ex.exchangeType}" >
@@ -108,6 +107,7 @@
 									</c:forEach>
 								</td>
 								<td>${ex.beneficiary}</td>
+								<td>${ex.country} ${ex.province} ${ex.city}</td>
 
 								<td>
 									<button id="detailBtn" type="button"

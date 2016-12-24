@@ -237,6 +237,12 @@ public class ExchangeController {
 		Exchange exchange = exchangeService.findById(id);
 		model.addAttribute("ex", exchange);
 		
+		/**
+		 * 获取兑奖方式字典
+		 */
+		List<SysDictionary> dicList = sysDictionaryService.getDicList(" and classcode = 'DJLX' and parentid <> 0");
+		model.addAttribute("dicList", dicList);
+		
 		return "exchange/detail";
 	}
 	

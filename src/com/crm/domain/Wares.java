@@ -18,6 +18,7 @@ public class Wares {
 	private String privateCode;  // 瓶身码
 	private String insideCodeTmp;  // 瓶身内码（实验用）
 	private String insideCode;  // 瓶盖码
+	private String wechatCode;  // 微信编码
 	private String status;  // 兑奖状态
 	private Date createTime;  // 创建时间
 	private String awardId; // 对应的奖项ID，默认为无奖（空值）
@@ -89,12 +90,19 @@ public class Wares {
 	public void setInsideCodeTmp(String insideCodeTmp) {
 		this.insideCodeTmp = insideCodeTmp;
 	}
+	public String getWechatCode() {
+		return wechatCode;
+	}
+	public void setWechatCode(String wechatCode) {
+		this.wechatCode = wechatCode;
+	}
 	
 	@Override
 	public String toString() {
 		return "Wares [id=" + id + ", name=" + name + ", creater=" + creater + ", publicCode=" + publicCode
-				+ ", privateCode=" + privateCode + ", insideCode=" + insideCode + ", status=" + status + ", createTime="
-				+ createTime + ", awardId=" + awardId + ", award=" + award + "]";
+				+ ", privateCode=" + privateCode + ", insideCodeTmp=" + insideCodeTmp + ", insideCode=" + insideCode
+				+ ", wechatCode=" + wechatCode + ", status=" + status + ", createTime=" + createTime + ", awardId="
+				+ awardId + ", award=" + award + "]";
 	}
 	
 }

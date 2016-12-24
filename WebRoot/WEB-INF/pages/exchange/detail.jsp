@@ -12,19 +12,7 @@
 			</div>
 			<div class="modal-body">
 				<table class="table table-striped">
-				<tr><td>兑奖者:</td>
-					<td>
-						<c:choose>
-							<c:when test="${ex.user ne null}">
-								${ex.user.userAlias }
-							</c:when>
-							<c:otherwise>
-								${currentUser.userAlias}
-							</c:otherwise>
-						</c:choose>
-					</td>
-				</tr>
-				<tr><td>时间：</td><td><fmt:formatDate pattern="yyyy-MM-dd HH:mm:ss" value="${ex.exchangeTime}"/></td></tr>
+				<tr><td>活动：</td><td>${ex.activity.title}</td></tr>
 				<tr><td>奖品:</td>
 					<td>
 						<c:if test="${ex.award ne null}">
@@ -32,7 +20,31 @@
 						</c:if>
 					</td>
 				</tr>
-				<tr><td>兑奖类型：</td><td>${ex.exchangeType}</td></tr>
+				<tr><td>兑奖者:</td>
+					<td>
+						<c:choose>
+							<c:when test="${ex.user ne null}">
+								${ex.user.username}
+								<c:if test="${ex.user.userAlias != null }">
+								(${ex.user.userAlias})
+								</c:if>
+							</c:when>
+							<c:otherwise>
+								${currentUser.userAlias}
+							</c:otherwise>
+						</c:choose>
+					</td>
+				</tr>
+				<tr><td>兑奖时间：</td><td><fmt:formatDate pattern="yyyy-MM-dd HH:mm:ss" value="${ex.exchangeTime}"/></td></tr>
+				<tr><td>兑奖类型：</td>
+					<td>
+						<c:forEach items="${dicList}" var="dic" varStatus="status">
+							<c:if test="${dic.entrycode eq ex.exchangeType}" >
+								${dic.entryvalue}
+							</c:if>
+						</c:forEach>
+					</td>
+				</tr>
 				<tr><td>受益者:</td><td>${ex.beneficiary}</td></tr>
 				<tr><td>兑奖地点:</td><td>${ex.country} ${ex.province} ${ex.city} ${ex.distance} ${ex.sematicDescription}</td></tr>
 				</table>																										

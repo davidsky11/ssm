@@ -637,4 +637,24 @@ public class MyBatisTest extends AbstractJUnit4SpringContextTests {
 		ScanRecord sr = scanRecordMapper.findById("150aa75e94e811e689e500ac1e83ba5a");
 		System.out.println(sr);
 	}
+	
+	@Test
+	public void test11() {
+		List<ScanRecord> srList = scanRecordMapper.findByCondition(" and t.waresId = '035ad46a004b4f0ca240b032b67b7235' order by scanTime desc");
+		System.out.println(srList.size());
+		
+		for (ScanRecord sr : srList) {
+			System.out.println(sr);
+		}
+	}
+	
+	@Test
+	public void test13() {
+		List<Exchange> list = exchangeMapper.findByCondition("");
+		
+		for (Exchange ex : list) {
+			
+			System.out.println(ex);
+		}
+	}
 }

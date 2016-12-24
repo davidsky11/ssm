@@ -14,6 +14,7 @@
 				<table class="table table-striped">
 				<tr><td>活动名称:</td><td>${aty.title}</td></tr>
 				<tr><td>公共编码:</td><td>${aty.publicCode}</td></tr>
+				<tr><td>活动描述:</td><td>${aty.atyCode}</td></tr>
 				<%-- <tr><td>开始时间：</td><td><fmt:formatDate pattern="yyyy-MM-dd HH:mm:ss" value="${aty.startTime}"/></td></tr>
 				<tr><td>结束时间：</td><td><fmt:formatDate pattern="yyyy-MM-dd HH:mm:ss" value="${aty.endTime}"/></td></tr> --%>
 				<tr><td>开始时间：</td><td>${aty.startTime}</td></tr>

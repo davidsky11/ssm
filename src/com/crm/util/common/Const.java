@@ -11,6 +11,8 @@ public class Const {
 	 * 访问的项目地址
 	 */
 	public static final String ROOT_HTML_URL = "http://www.hclinks.cn/crmnew/static/info/";
+	//public static final String ROOT_HTML_URL = "http://6a476c38.ittun.com/crmnew/static/info/";
+	
 	/**
 	 * HTML模板的路径
 	 */
@@ -266,6 +268,7 @@ public class Const {
     public static final String OPERATE_APP_SCAN = "APP_SCAN";
     public static final String OPERATE_SCAN_RECORD = "SCAN_RECORD";
     public static final String OPERATE_SET_INSIDECODE = "SET_INSIDECODE";
+    public static final String OPERATE_SET_WECHATCODE = "SET_WECHATCODE";
     public static final String OPERATE_EXCHANGE_RECORD = "EXCHANGE_RECORD";
     public static final String OPERATE_USER_WITH_INFO = "USER_INFO";
     public static final String OPERATE_PRODUCT_INFO = "PRODUCT_INFO";

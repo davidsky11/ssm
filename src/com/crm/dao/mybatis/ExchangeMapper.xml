@@ -27,6 +27,7 @@
 		<association property="user" resultMap="userMap" />
 		<association property="award" resultMap="awardMap" />
 		<association property="activity" resultMap="activityMap" />
+		<association property="wares" resultMap="waresMap" />
 		
 		<!-- <association property="user" column="userId" select="queryUser" />
 		<association property="award" column="awardId" select="queryAward" /> -->
@@ -42,6 +43,7 @@
 		<result property="weixin" column="u_weixin" />
 		<result property="userType" column="u_userType" />
 		<result property="userAlias" column="u_userAlias" />
+		<result property="thirdType" column="u_thirdType" />
 		<result property="generateName" column="u_generateName" />
 	</resultMap>
 	
@@ -59,6 +61,13 @@
 		<result property="title" column="ac_title" />
 		<result property="description" column="ac_description" />
 		<result property="content" column="ac_content" />
+	</resultMap>
+	
+	<resultMap type="com.crm.domain.Wares" id="waresMap" >
+		<id property="id" column="w_id" />
+		<result property="publicCode" column="w_publicCode" />
+		<result property="privateCode" column="w_privateCode" />
+		<result property="createTime" column="w_createTime" />
 	</resultMap>
 	
 	<select id="queryUser" resultMap="userMap">
@@ -156,8 +165,17 @@
 	
 	<select id="findByCondition" resultType="com.crm.domain.Exchange">
 		select t.id,t.userId,t.exchangeTime,t.insideCode,t.privateCode,t.publicCode,t.longitude,t.latitude,
-		t.country, t.province, t.city, t.distance, t.street, t.sematicDescription, t.formattedAddress, t.flagCode,t.waresId
-		 from exchange t where 1=1
+		t.country, t.province, t.city, t.distance, t.street, t.sematicDescription, t.formattedAddress, t.flagCode,t.waresId,
+		u.id u_id, u.username u_username, u.email u_email, u.regtime u_regtime, u.userAlias u_userAlias, u.thirdType u_thirdType,
+		a.id a_id, a.title a_title, a.description a_description, a.amount a_amount,
+		ac.id ac_id, ac.title ac_title, ac.description ac_description, ac.content ac_content,
+		w.id w_id, w.publicCode w_publicCode, w.privateCode w_privateCode, w.createTime w_createTime
+		 from exchange t 
+		 left join award a on t.awardId = a.id
+		 left join sysuser u on t.userId = u.id
+		 left join activity ac on ac.publicCode = t.publicCode
+		 left join wares w on t.waresId = w.id
+		 where 1=1
 		<if test="conditionSql !=null and conditionSql !=''">${conditionSql}</if>
 	</select>
 	
@@ -175,11 +193,13 @@
 		t.publicCode, t.longitude, t.latitude, t.flagCode, t.waresId,
 		t.awardId, t.exchangeType, t.beneficiary,
 		t.country, t.province, t.city, t.distance, t.street, t.sematicDescription, t.formattedAddress,
-		u.id u_id, u.username u_username, u.email u_email, u.regtime u_regtime, u.userAlias u_userAlias,
-		a.id a_id, a.title a_title, a.description a_description, a.amount a_amount
+		u.id u_id, u.username u_username, u.email u_email, u.regtime u_regtime, u.userAlias u_userAlias, u.thirdType u_thirdType,
+		a.id a_id, a.title a_title, a.description a_description, a.amount a_amount,
+		ac.id ac_id, ac.title ac_title, ac.description ac_description, ac.content ac_content
 		from exchange t
 		left join award a on t.awardId = a.id
 		left join sysuser u on t.userId = u.id
+		left join activity ac on ac.publicCode = t.publicCode
 		where t.id = #{id}
 	</select>
 	
@@ -201,7 +221,7 @@
 		select t.id, t.userId, t.exchangeTime, t.insideCode, t.privateCode, 
 		t.publicCode, t.longitude, t.latitude, t.flagCode, t.waresId,
 		t.country, t.province, t.city, t.distance, t.street, t.sematicDescription, t.formattedAddress,
-		u.id u_id, u.username u_username, u.email u_email, u.regtime u_regtime,
+		u.id u_id, u.username u_username, u.email u_email, u.regtime u_regtime, u.thirdType u_thirdType, u.userAlias u_userAlias,
 		a.id a_id, a.title a_title, a.description a_description, a.amount a_amount
 		from exchange t, sysuser u, award a 
 		where t.awardId = a.id and t.userId = u.id
@@ -231,7 +251,7 @@
 		t.publicCode, t.longitude, t.latitude, t.flagCode, t.waresId,
 		t.country, t.province, t.city, t.distance, t.street, t.sematicDescription, t.formattedAddress,
 		t.awardId, t.exchangeType, t.beneficiary,
-		u.id u_id, u.username u_username, u.email u_email, u.regtime u_regtime,
+		u.id u_id, u.username u_username, u.email u_email, u.regtime u_regtime, u.userAlias u_userAlias, u.thirdType u_thirdType,
 		a.id a_id, a.title a_title, a.description a_description, a.amount a_amount
 		from exchange t
 		left join sysuser u on t.userId = u.id
@@ -264,7 +284,7 @@
 		t.publicCode, t.longitude, t.latitude, t.flagCode, t.waresId,
 		t.awardId, t.exchangeType, t.beneficiary,
 		t.country, t.province, t.city, t.distance, t.street, t.sematicDescription, t.formattedAddress,
-		u.id u_id, u.username u_username, u.email u_email, u.regtime u_regtime,
+		u.id u_id, u.username u_username, u.email u_email, u.regtime u_regtime, u.userAlias u_userAlias, u.thirdType u_thirdType,
 		a.id a_id, a.title a_title, a.description a_description, a.amount a_amount,
 		ac.id ac_id, ac.title ac_title, ac.description ac_description, ac.content ac_content
 		from exchange t

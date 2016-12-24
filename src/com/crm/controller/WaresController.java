@@ -34,6 +34,7 @@ import com.crm.common.util.math.RandomUtil;
 import com.crm.domain.Activity;
 import com.crm.domain.Award;
 import com.crm.domain.Page;
+import com.crm.domain.ScanRecord;
 import com.crm.domain.User;
 import com.crm.domain.Wares;
 import com.crm.domain.dto.WaresDto;
@@ -42,6 +43,7 @@ import com.crm.domain.easyui.Json;
 import com.crm.domain.easyui.PageHelper;
 import com.crm.service.ActivityService;
 import com.crm.service.AwardService;
+import com.crm.service.ScanRecordService;
 import com.crm.service.WaresService;
 import com.crm.util.ExportExcel;
 import com.crm.util.Tool;
@@ -73,6 +75,8 @@ public class WaresController {
 	private AwardService awardService;
 	@Resource
 	private WaresExcelService waresExcelService;
+	@Resource
+	private ScanRecordService scanRecordService;
 
 	/**
 	 * @Title: accountList
@@ -489,31 +493,33 @@ public class WaresController {
 	public void editConfig(HttpServletRequest resquest, HttpServletResponse response, HttpSession session, @RequestParam("id") String id) throws Exception {
 		ExportExcel ex = new ExportExcel();
 		
+		Activity aty = activityService.findById(id);
 		List<Wares> waresList = waresService.getListByAtyId(id);
 					
 		String path = Const.TEMPFOLDER + "//emp.xls";
 		OutputStream out = new FileOutputStream(path);
-		createExcel(out, waresList);
+		createExcel(aty, out, waresList);
 		
 		out.close();
 		ex.download(path, response);
 		System.out.println("excel导出成功！");
 	}
 	
-	private void createExcel(OutputStream os, List<Wares> list){
-		String[] heads={"publicCode[公共编码]","privateCodeTmp[瓶身外码]","insideCode[实验内码]"};
+	private void createExcel(Activity aty, OutputStream os, List<Wares> list){
+		String[] heads={"atyCode[活动编码]","publicCode[公共编码]","privateCodeTmp[瓶身外码]","insideCode[实验内码]"};
 		WritableWorkbook workbook=null;
 		try {
 			workbook = Workbook.createWorkbook(os);
 			workbook.setProtected(true);
-			WritableSheet sheet = workbook.createSheet("wares sheet1", 0);
+			WritableSheet sheet = workbook.createSheet(aty.getTitle() + "_相关编码", 0);
 			for(int i=0;i<heads.length;i++){
 				sheet.addCell(new Label(i,0,heads[i]));
 			}
 			for(int i=0;i<list.size();i++){
-				sheet.addCell(new Label(0, i+1, list.get(i).getPublicCode()));
-				sheet.addCell(new Label(1, i+1, list.get(i).getPrivateCode()));
-				sheet.addCell(new Label(2, i+1, list.get(i).getInsideCodeTmp()));
+				sheet.addCell(new Label(0, i+1, aty.getAtyCode()));
+				sheet.addCell(new Label(1, i+1, list.get(i).getPublicCode()));
+				sheet.addCell(new Label(2, i+1, list.get(i).getPrivateCode()));
+				sheet.addCell(new Label(3, i+1, list.get(i).getInsideCodeTmp()));
 			}
 			workbook.write();
 		} catch (Exception e) {
@@ -593,5 +599,22 @@ public class WaresController {
 		mv.addObject("code", code);
 		
 		return mv;
+	}
+	
+	/**
+	 * 商品追踪【详情】
+	 * @Title:			wesConfig
+	 * @Description:	商品追踪【详情】
+	 * @param model
+	 * @param request
+	 * @return
+	 */
+	@RequestMapping(value = "/wes/traceDetail/{id}", method = RequestMethod.GET)
+	public String wesTraceDetail(Model model, @PathVariable("id") String id) {
+	
+		List<ScanRecord> srList = scanRecordService.findByCondition(" and t.waresId = '" + id + "' order by scanTime desc");
+		model.addAttribute("srs", srList);
+		
+		return "wares/traceDetail";
 	}
 }

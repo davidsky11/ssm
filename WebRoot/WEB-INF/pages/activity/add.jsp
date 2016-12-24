@@ -17,6 +17,10 @@
 			<input type="text" class="form-control" id="title" name="title">
 		</div>
 		<div class="form-group">
+			<label for="atyCode" class="control-label"><font color="red">*</font>活动编码:</label> 
+			<input type="text" class="form-control" id="atyCode" name="atyCode">
+		</div>
+		<div class="form-group">
 			<label for="publicCode" class="control-label"><font color="red">*</font>公共编码:</label> 
 			<input type="text" class="form-control" id="publicCode" name="publicCode">
 		</div>

@@ -75,7 +75,7 @@
 							<th>兑奖者</th>
 							<th>兑奖时间</th>
 							<th>兑奖地点</th>
-							<th>奖项</th>
+							<th>奖品</th>
 							<th>兑奖方式</th>
 							<th>受益者</th>
 							<th>操作</th>
@@ -94,10 +94,13 @@
 								<td>
 									<c:if test="${ex.user != null}">
 										${ex.user.username}
+										<c:if test="${ex.user.userAlias != null }">
+										(${ex.user.userAlias})
+										</c:if>
 									</c:if>
 								</td>
 								<td><fmt:formatDate pattern="yyyy-MM-dd HH:mm:ss" value="${ex.exchangeTime}" /></td>
-								<td>${ex.country} ${ex.province} ${ex.city} ${ex.street}</td>
+								<td>${ex.country} ${ex.province} ${ex.city}</td>
 								<td>
 									<c:if test="${ex.award != null}">
 										${ex.award.title}(${ex.award.description})

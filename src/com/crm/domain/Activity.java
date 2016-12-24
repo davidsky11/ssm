@@ -1,7 +1,5 @@
 package com.crm.domain;
 
-import java.util.Date;
-
 /** 
  * @ClassName	Activity.java
  * @Description 活动实体/抽象商品
@@ -25,6 +23,7 @@ public class Activity {
 	private Integer count;  // 对应生成的编码的个数
 	private Double amount;  // 预算奖项金额
 	private String infoUrl;  // 活动对应的内容 H5 url
+	private String atyCode;  // 活动编码
 	
 	public String getId() {
 		return id;
@@ -112,6 +111,12 @@ public class Activity {
 		this.infoUrl = infoUrl;
 	}
 	
+	public String getAtyCode() {
+		return atyCode;
+	}
+	public void setAtyCode(String atyCode) {
+		this.atyCode = atyCode;
+	}
 	@Override
 	public String toString() {
 		return "Activity [id=" + id + ", title=" + title + ", description=" + description + ", content=" + content

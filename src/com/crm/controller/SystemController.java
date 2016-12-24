@@ -75,6 +75,10 @@ public class SystemController extends BaseController {
     		returnUrl = "syslogin";
     	}
     	
+    	if (request.getSession().getAttribute("RANDOMCODE") == null || code == null) {
+    		return returnUrl;
+    	}
+    	
 		if (code.toLowerCase().equals(request.getSession().getAttribute("RANDOMCODE").toString().toLowerCase())){
 			List<User> userList = userService.login(username, userType);
 			if (userList != null && userList.size() > 0) {

@@ -13,6 +13,7 @@
             <if test="publicCode !=null and publicCode !=''">publicCode,</if>
             <if test="privateCode !=null and privateCode !=''">privateCode,</if>
             <if test="insideCode !=null and insideCode !=''">insideCode,</if>
+            <if test="wechatCode !=null and wechatCode !=''">wechatCode,</if>
             <if test="insideCodeTmp !=null and insideCodeTmp !=''">insideCodeTmp,</if>
             <if test="createTime !=null and createTime !=''">createTime,</if>
             <if test="status !=null and status !=''">status,</if>
@@ -24,6 +25,7 @@
             <if test="publicCode !=null and publicCode !=''">#{publicCode},</if>
             <if test="privateCode !=null and privateCode !=''">#{privateCode},</if>
             <if test="insideCode !=null and insideCode !=''">#{insideCode},</if>
+            <if test="wechatCode !=null and wechatCode !=''">#{wechatCode},</if>
             <if test="insideCodeTmp !=null and insideCodeTmp !=''">#{insideCodeTmp},</if>
             <if test="createTime !=null and createTime !=''">#{createTime},</if>
             <if test="status !=null and status !=''">#{status},</if>
@@ -47,6 +49,7 @@
             <if test="publicCode !=null and publicCode !=''">publicCode=#{publicCode},</if>
             <if test="privateCode !=null and privateCode !=''">privateCode=#{privateCode},</if>
             <if test="insideCode !=null and insideCode !=''">insideCode=#{insideCode},</if>
+            <if test="wechatCode !=null and wechatCode !=''">wechatCode=#{wechatCode},</if>
             <if test="insideCodeTmp !=null and insideCodeTmp !=''">insideCodeTmp=#{insideCodeTmp},</if>
             <if test="createTime !=null and createTime !=''">createTime=#{createTime},</if>
             <if test="status !=null and status !=''">status=#{status},</if>
@@ -56,18 +59,18 @@
     </update>
 	
 	<select id="findById" resultType="com.crm.domain.Wares">
-		select t.id,t.name,t.creater,t.publicCode,t.privateCode,t.insideCode,t.insideCodeTmp,t.createTime,t.status,t.awardId from wares t where t.id=#{id}
+		select t.id,t.name,t.creater,t.publicCode,t.privateCode,t.insideCode,t.wechatCode,t.insideCodeTmp,t.createTime,t.status,t.awardId from wares t where t.id=#{id}
 	</select> 
 	
 	<select id="getDatagrid" parameterType="String" resultType="com.crm.domain.Wares">
-		select t.id,t.name,t.creater,t.publicCode,t.privateCode,t.insideCode,t.insideCodeTmp,t.createTime,t.status,t.awardId from wares t where 1=1 
+		select t.id,t.name,t.creater,t.publicCode,t.privateCode,t.insideCode,t.wechatCode,t.insideCodeTmp,t.createTime,t.status,t.awardId from wares t where 1=1 
 		<if test="conditionSql != null and conditionSql != ''">
             ${conditionSql}
         </if>
 	</select>
 	
 	<select id="getListByAtyId" parameterType="String" resultType="com.crm.domain.Wares">
-		select t.id,t.name,t.creater,t.publicCode,t.privateCode,t.insideCode,t.insideCodeTmp,t.createTime,t.status,t.awardId from wares t where 1=1 
+		select t.id,t.name,t.creater,t.publicCode,t.privateCode,t.insideCode,t.wechatCode,t.insideCodeTmp,t.createTime,t.status,t.awardId from wares t where 1=1 
 		<if test="activityId != null and activityId != ''">
             and t.publicCode in (select publicCode from activity where id = #{activityId})
         </if>
@@ -81,7 +84,7 @@
 	</select>
 	
 	<select id="searchListByCondition" resultType="com.crm.domain.dto.WaresDto">
-		select w.id, w.publicCode, w.privateCode, w.insideCode, w.createTime, w.status, ss.userName, ss.scanTime from wares w 
+		select w.id, w.publicCode, w.privateCode, w.insideCode, w.wechatCode, w.createTime, w.status, ss.userName, ss.scanTime from wares w 
 		left join 
 		(select waresId, userId, userName, scanTime from scan_record where userType = '2') ss
 		on w.id = ss.waresId where 1=1 
@@ -110,7 +113,7 @@
 	</select>
 	
 	<select id="datagridWares" resultType="com.crm.domain.Wares">
-		select t.id,t.name,t.creater,t.publicCode,t.privateCode,t.insideCode,t.createTime,t.status,t.awardId from wares t where 1=1
+		select t.id,t.name,t.creater,t.publicCode,t.privateCode,t.insideCode,t.wechatCode,t.createTime,t.status,t.awardId from wares t where 1=1
 		<if test="wares.name != null and wares.name != ''">
 			and t.name like concat('%',#{wares.name},'%')
 		</if>
@@ -129,7 +132,7 @@
 	</select>
 	
 	<select id="datagridWaresByCondition" resultType="com.crm.domain.Wares">
-		select t.id,t.name,t.creater,t.publicCode,t.privateCode,t.insideCode,t.insideCodeTmp,t.createTime,t.status,t.awardId from wares t where 1=1
+		select t.id,t.name,t.creater,t.publicCode,t.privateCode,t.insideCode,t.wechatCode,t.insideCodeTmp,t.createTime,t.status,t.awardId from wares t where 1=1
 		<if test="conditionSql != null and conditionSql != ''">
 			${conditionSql}
 		</if>
@@ -145,10 +148,10 @@
 		<!-- <selectKey keyProperty="id" resultType="String" order="BEFORE">
 			select replace(UUID(), "-", "")
 		</selectKey> -->
-		insert into wares(id, creater, publicCode, privateCode, insideCode, insideCodeTmp, status, createTime, awardId)
+		insert into wares(id, creater, publicCode, privateCode, insideCode, t.wechatCode, insideCodeTmp, status, createTime, awardId)
 		values
 		<foreach collection="waresList" item="wares" index="index" separator=",">
-			(#{wares.id}, #{wares.creater}, #{wares.publicCode}, #{wares.privateCode}, #{wares.insideCode}, #{wares.insideCodeTmp},
+			(#{wares.id}, #{wares.creater}, #{wares.publicCode}, #{wares.privateCode}, #{wares.insideCode}, #{wares.wechatCode}, #{wares.insideCodeTmp},
 			#{wares.status}, #{wares.createTime}, #{wares.awardId})
 		</foreach>
 	</insert>

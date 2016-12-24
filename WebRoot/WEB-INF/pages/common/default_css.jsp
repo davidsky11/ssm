@@ -34,3 +34,5 @@
 	href="<%=request.getContextPath()%>/resources/AdminLTE/plugins/datepicker/datepicker3.css">
 <link rel="stylesheet"
 	href="<%=request.getContextPath()%>/resources/css/app.css">
+<link rel="stylesheet"
+	href="<%=request.getContextPath()%>/css/timeline.css">

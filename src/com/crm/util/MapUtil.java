@@ -37,7 +37,7 @@ public class MapUtil {
 			URI base = new URI(url, false);
 			method.setURI(new URI(base, "", false));
 			method.setQueryString(new NameValuePair[] { 
-					new NameValuePair("ak", Const.MAP_AK),
+					new NameValuePair("ak", "47TS2lczgTxANcKZepTmQVrQuhMWHPVK"),
 					new NameValuePair("location", lat +"," +lng),
 					new NameValuePair("output", "json"), 
 					new NameValuePair("pois", "0")
@@ -51,7 +51,7 @@ public class MapUtil {
 				while ((len = in.read(buffer)) != -1) {
 					baos.write(buffer, 0, len);
 				}
-				json = URLDecoder.decode(baos.toString(), "UTF-8");
+				json = URLDecoder.decode(baos.toString(), "GBK");
 			} else {
 				throw new Exception("HTTP ERROR Status: " + method.getStatusCode() + ":" + method.getStatusText());
 			}

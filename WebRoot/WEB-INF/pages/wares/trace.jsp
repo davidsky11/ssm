@@ -78,6 +78,7 @@
 							<th>出厂时间</th>
 							<th>经销商</th>
 							<th>状态</th>
+							<th>操作</th>
 						</tr>
 						<c:forEach items="${list}" var="wes" varStatus="status">
 							<tr>
@@ -96,6 +97,10 @@
 										</c:when>
 									</c:choose>
 								</td>
+								<td>
+									<button id="traceBtn" type="button"
+										class="btn btn-xs btn-primary btn-flat" onclick="traceItem('${wes.id}');">追踪信息</button>
+								</td>
 							</tr>
 						</c:forEach>
 					</table>
@@ -110,6 +115,15 @@
 	</div>
 </section>
 <!-- /.content -->
+
+<div class="modal fade" id="modal" tabindex="-1" role="dialog"
+	aria-labelledby="exampleModalLabel">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			
+		</div>
+	</div>
+</div>
 
 <script>
 	//Date picker
@@ -146,4 +160,13 @@
 			}
 		});
 	});
+	
+	function modalLoadAndDisplay(url){	
+		$('#modal .modal-content').load(url,function(){
+			$("#modal").modal();
+		});		
+	}
+	function traceItem(id){	
+		modalLoadAndDisplay('wes/traceDetail/'+id);
+	}
 </script>

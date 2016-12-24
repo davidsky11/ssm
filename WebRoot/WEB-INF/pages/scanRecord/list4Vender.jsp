@@ -71,7 +71,7 @@
 							<th>扫码时间</th>
 							<th>活动名称</th>
 							<c:if test="${userType eq '3'}">
-								<th>奖项名称</th>
+								<th>奖品</th>
 							</c:if>
 							<c:if test="${userType eq '2'}">
 								<th>公共编码</th>

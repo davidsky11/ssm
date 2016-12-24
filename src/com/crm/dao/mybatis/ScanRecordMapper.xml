@@ -23,6 +23,7 @@
 		<result property="formattedAddress" column="formattedAddress" />
 		<result property="waresId" column="waresId" />
 		
+		<association property="award" resultMap="awardMap" />
 		<association property="user" resultMap="userMap" />
 		<association property="wares" resultMap="waresMap" />
 		<association property="activity" resultMap="activityMap" />
@@ -39,6 +40,8 @@
 		<result property="userType" column="u_userType" />
 		<result property="generateName" column="u_generateName" />
 		<result property="userAlias" column="u_userAlias" />
+		<result property="thirdType" column="u_thirdType" />
+		<result property="userType" column="u_userType" />
 	</resultMap>
 	
 	<resultMap type="com.crm.domain.Wares" id="waresMap" >
@@ -54,6 +57,19 @@
 		<result property="title" column="a_title" />
 		<result property="description" column="a_description" />
 		<result property="content" column="a_content" />
+	</resultMap>
+	
+	<resultMap type="com.crm.domain.Award" id="awardMap">
+		<id property="id" column="aw_id" />
+		<result property="title" column="aw_title" />
+		<result property="serialNo" column="aw_serialNo" />
+		<result property="description" column="aw_description" />
+		<result property="hierarchy" column="aw_hierarchy" />
+		<result property="sort" column="aw_sort" />
+		<result property="amount" column="aw_amount" />
+		<result property="total" column="aw_total" />
+		<result property="remain" column="aw_remain" />
+		<result property="publisherId" column="aw_publisherId" />
 	</resultMap>
 	
 	<insert id="saveScanRecord" parameterType="com.crm.domain.ScanRecord" >
@@ -150,10 +166,15 @@
         </if>
 	</select>
 	
-	<select id="findByCondition" resultType="com.crm.domain.ScanRecord">
+	<select id="findByCondition" resultMap="scanRecordMap">
 		select t.id,t.userId,t.userName,t.longitude,t.latitude,t.scanTime,t.country,t.province,t.city,
 		t.distance,t.street,t.sematicDescription,t.formattedAddress,t.waresId,t.publicCode,t.privateCode,
-		t.insideCode from scan_record t where 1=1
+		t.insideCode,
+		u.id u_id, u.username u_username, u.email u_email, u.regtime u_regtime, u.userAlias u_userAlias, 
+		u.gender u_gender, u.userType u_userType
+		 from scan_record t
+		left join sysuser u on t.userId = u.id
+		 where 1=1
 		<if test="conditionSql !=null and conditionSql !=''">
 			${conditionSql}
 		</if>
@@ -228,7 +249,7 @@
 	<select id="srPages" resultMap="scanRecordMap">
 		select t.id,t.userId,t.userName,t.longitude,t.latitude,t.scanTime,t.country,t.province,t.city,t.distance,
 		t.street,t.sematicDescription,t.formattedAddress,t.waresId,t.publicCode,t.privateCode,t.insideCode,
-		u.id u_id, u.username u_username, u.email u_email, u.regtime u_regtime,
+		u.id u_id, u.username u_username, u.email u_email, u.regtime u_regtime, u.thirdType u_thirdType, u.userAlias u_userAlias,
 		w.id w_id, w.name w_name, w.creater w_creater, w.awardId w_awardId
 		from scan_record t 
 		left join sysuser u on t.userId = u.id
@@ -251,11 +272,15 @@
 	<select id="findById" resultMap="scanRecordMap">
 		select t.id,t.userId,t.userName,t.longitude,t.latitude,t.scanTime,t.country,t.province,t.city,t.distance,
 		t.street,t.sematicDescription,t.formattedAddress,t.waresId,t.publicCode,t.privateCode,t.insideCode,
-		u.id u_id, u.username u_username, u.email u_email, u.regtime u_regtime, u.userAlias u_userAlias,
-		w.id w_id, w.name w_name, w.creater w_creater, w.awardId w_awardId
+		u.id u_id, u.username u_username, u.email u_email, u.regtime u_regtime, u.userAlias u_userAlias, u.thirdType u_thirdType,
+		w.id w_id, w.name w_name, w.creater w_creater, w.awardId w_awardId,
+		a.id a_id, a.title a_title, a.description a_description, a.content a_content,
+		aw.id aw_id, aw.title aw_title, aw.description aw_description
 		from scan_record t
 		left join sysuser u on t.userId = u.id
 		left join wares w on t.waresId = w.id
+		left join award aw on w.awardId = aw.id
+		left join activity a on t.publicCode = a.publicCode
 		where t.id = #{id}
 	</select>
 	
@@ -270,7 +295,7 @@
 	<select id="selectByPublisher" resultMap="scanRecordMap">
 		select t.id,t.userId,t.userName,t.longitude,t.latitude,t.scanTime,t.country,t.province,t.city,t.distance,
 		t.street,t.formattedAddress,t.sematicDescription,
-		u.id u_id, u.username u_username, u.email u_email, u.regtime u_regtime,
+		u.id u_id, u.username u_username, u.email u_email, u.regtime u_regtime, u.thirdType u_thirdType,
 		a.id a_id, a.title a_title, a.description a_description, a.content a_content
 		from scan_record t
 		left join sysuser u on t.userId = u.id

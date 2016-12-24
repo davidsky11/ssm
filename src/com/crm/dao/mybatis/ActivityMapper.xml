@@ -20,7 +20,8 @@
             <if test="image !=null and enable !=''">image,</if>
             <if test="amount !=null and amount !=''">amount,</if>
             <if test="count !=null and count !=''">count,</if>
-            <if test="infoUrl !=null and infoUrl !=''">infoUrl</if>
+            <if test="infoUrl !=null and infoUrl !=''">infoUrl,</if>
+            <if test="atyCode !=null and atyCode !=''">atyCode</if>
             </trim>)values(<trim suffixOverrides=",">
             <if test="id !=null and id !=''">#{id},</if>
             <if test="title !=null and title !=''">#{title},</if>
@@ -35,7 +36,8 @@
             <if test="image !=null and image !=''">#{image},</if>
             <if test="amount !=null and amount !=''">#{amount},</if>
             <if test="count !=null and count !=''">#{count},</if>
-            <if test="infoUrl !=null and infoUrl !=''">#{infoUrl}</if>
+            <if test="infoUrl !=null and infoUrl !=''">#{infoUrl},</if>
+            <if test="atyCode !=null and atyCode !=''">#{atyCode}</if>
             </trim>)
 	</insert> 
 	
@@ -58,38 +60,39 @@
             <if test="enable !=null and enable !=''">enable=#{enable},</if>
             <if test="amount !=null and amount !=''">amount=#{amount},</if>
             <if test="count !=null and count !=''">count=#{count},</if>
-            <if test="infoUrl !=null and infoUrl !=''">infoUrl=#{infoUrl}</if>
+            <if test="infoUrl !=null and infoUrl !=''">infoUrl=#{infoUrl},</if>
+            <if test="atyCode !=null and atyCode !=''">atyCode=#{atyCode}</if>
     	</set>
     	where id = #{id}
     </update>
 
 	<select id="getActivityList" resultType="com.crm.domain.Activity">
-		select t.id,t.title,t.description,t.startTime,t.endTime,t.content,t.publisherId,t.publisherName,t.publicCode,t.enable,t.image,t.count,t.amount,t.infoUrl from activity t where 1=1
+		select t.id,t.title,t.description,t.startTime,t.endTime,t.content,t.publisherId,t.publisherName,t.publicCode,t.enable,t.image,t.count,t.amount,t.infoUrl,t.atyCode from activity t where 1=1
 		<if test="conditionSql != null and conditionSql != ''">
             ${conditionSql}
         </if>
 	</select>
 	
 	<select id="getDatagrid" resultType="com.crm.domain.Activity">
-		select t.id,t.title,t.description,t.startTime,t.endTime,t.content,t.publisherId,t.publisherName,t.publicCode,t.enable,t.image,t.count,t.amount,t.infoUrl from activity t where 1=1
+		select t.id,t.title,t.description,t.startTime,t.endTime,t.content,t.publisherId,t.publisherName,t.publicCode,t.enable,t.image,t.count,t.amount,t.infoUrl,t.atyCode from activity t where 1=1
 		<if test="conditionSql != null and conditionSql != ''">
 			${conditionSql}
         </if>
 	</select>
 	
 	<select id="findByTitle" resultType="com.crm.domain.Activity">
-		select t.id,t.title,t.description,t.startTime,t.endTime,t.content,t.publisherId,t.publisherName,t.publicCode,t.enable,t.image,t.count,t.amount,t.infoUrl from activity t where title like concat('%',#{title},'%')
+		select t.id,t.title,t.description,t.startTime,t.endTime,t.content,t.publisherId,t.publisherName,t.publicCode,t.enable,t.image,t.count,t.amount,t.infoUrl,t.atyCode from activity t where title like concat('%',#{title},'%')
 	</select>
 	
 	<select id="findByPublisher" parameterType="com.crm.domain.User" resultType="com.crm.domain.Activity">
 		<!-- select t.id,t.title,t.description,t.startDate,t.endDate,t.content,t.publisherId,t.publisherName from activity t, sysuser u
 		where t.publisherId = u.id and u.id = #{id} -->
-		select t.id,t.title,t.description,t.startTime,t.endTime,t.content,t.publisherId,t.publisherName,t.publicCode,t.enable,t.image,t.count,t.amount,t.infoUrl from activity t where t.publisherId in (select u.id from sysuser u
+		select t.id,t.title,t.description,t.startTime,t.endTime,t.content,t.publisherId,t.publisherName,t.publicCode,t.enable,t.image,t.count,t.amount,t.infoUrl,t.atyCode from activity t where t.publisherId in (select u.id from sysuser u
 		where u.id = #{id})
 	</select> 
 	
 	<select id="findById" resultType="com.crm.domain.Activity">
-		select t.id,t.title,t.description,t.startTime,t.endTime,t.content,t.publisherId,t.publisherName,t.publicCode,t.enable,t.image,t.count,t.amount,t.infoUrl from activity t where t.id=#{id}
+		select t.id,t.title,t.description,t.startTime,t.endTime,t.content,t.publisherId,t.publisherName,t.publicCode,t.enable,t.image,t.count,t.amount,t.infoUrl,t.atyCode from activity t where t.id=#{id}
 	</select> 
 	
 	<select id="getDatagridTotal" resultType="int">
@@ -127,7 +130,7 @@
 	
 	<select id="atyPages" resultType="com.crm.domain.Activity">
 		select a.id, a.title, a.description, a.startTime, a.endTime, a.content, a.publisherId, 
-		a.publisherName, a.enable, a.publicCode, a.image, a.count, a.amount, a.infoUrl from activity a where 1=1 
+		a.publisherName, a.enable, a.publicCode, a.image, a.count, a.amount, a.infoUrl, a.atyCode from activity a where 1=1 
 		<if test="conditionSql != null and conditionSql != ''">
 			${conditionSql}
         </if>
