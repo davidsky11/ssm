@@ -28,6 +28,9 @@ public interface WaresService {
 	//根据id查询
 	public Wares findById(String id);
 	
+	//根据wechat'Code查询
+	public Wares findByWxCode(String wechatCode);
+	
 	//根据指定条件查询
 	public List<Wares> getDatagrid(String conditionSql);
 	

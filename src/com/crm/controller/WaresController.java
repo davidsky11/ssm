@@ -562,26 +562,32 @@ public class WaresController {
 		String endDate = Tool.nvl(request.getParameter("endDate"));
 		String code = Tool.nvl(request.getParameter("code")); // 编码查询
 		
+		Map<String, String> paramMap = new HashMap<String, String>();
 		StringBuffer conditionSql = new StringBuffer();
 		if (Tool.isNotNullOrEmpty(publicCode)) {
+			paramMap.put("publicCode", publicCode);
 			conditionSql.append(" and w.publicCode = '").append(publicCode).append("' ");
 		}
 		
 		if (Tool.isNotNullOrEmpty(startDate)) {
+			paramMap.put("startDate", startDate);
 			conditionSql.append(" and w.createTime >= '").append(startDate).append("' ");
 		}
 		
 		if (Tool.isNotNullOrEmpty(endDate)) {
+			paramMap.put("endDate", endDate);
 			conditionSql.append(" and w.createTime <= '").append(endDate).append("' ");
 		}
 		
 		if (Tool.isNotNullOrEmpty(code)) {
+			paramMap.put("code", code);
 			conditionSql.append(" and (w.publicCode = '").append(code)
 				.append("' or w.privateCode = '").append(code).append("') ");
 		}
 		
 		page = waresService.searchListByCondition(page, conditionSql.toString());
 		
+		mv.addObject("searchParams", Tool.doneQueryParam(paramMap));
 		mv.addObject("page", page);
 		mv.addObject("list", page.getContent());
 		

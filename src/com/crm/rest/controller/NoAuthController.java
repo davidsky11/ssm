@@ -509,6 +509,7 @@ public class NoAuthController {
 			@ApiParam(required = true, name = "publicCode", value = "公共编码") @RequestParam("publicCode") String publicCode, 
 			@ApiParam(required = true, name = "privateCode", value = "唯一码") @RequestParam("privateCode") String privateCode,
 			@ApiParam(required = false, name = "insideCode", value = "内码") @RequestParam(value = "insideCode", required= false) String insideCode, 
+			@ApiParam(required = false, name = "writeIn", value = "是否写入") @RequestParam(value = "writeIn", required= false) String writeIn, 
 			@ApiParam(required = false, name = "exType", value = "兑奖类型")@RequestParam(value = "exType", required = false) String exType,
 			@ApiParam(required = false, name = "recNo", value = "兑奖账号，如果不设置，就对应当前用户的对应账号")@RequestParam(value = "recNo", required = false) String recNo) {
     	StringBuffer conditionSql = new StringBuffer();
@@ -610,7 +611,9 @@ public class NoAuthController {
     			} else {
     				sr.setWaresId(wares.getId());
     				try {
-    					this.scanRecordService.saveScanRecord(sr);
+    					if (writeIn != null && !writeIn.equals("")) {  // “写入”参数非空，则写入数据库
+    						this.scanRecordService.saveScanRecord(sr);
+    					}
     				} catch (Exception e) {
     					e.printStackTrace();
     				}

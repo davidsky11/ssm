@@ -87,6 +87,11 @@ public class WaresServiceImpl implements WaresService {
 		
 		return page;
 	}
+
+	@Override
+	public Wares findByWxCode(String wechatCode) {
+		return waresMapper.findByWxCode(wechatCode);
+	}
 	
 }
  

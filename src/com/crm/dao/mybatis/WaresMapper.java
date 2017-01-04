@@ -32,6 +32,9 @@ public interface WaresMapper {
 	//根据id查询
 	public Wares findById(@Param("id") String id);
 	
+	//根据wechatCode查询
+	public Wares findByWxCode(@Param("wechatCode") String wechatCode);
+	
 	//根据指定条件查询
 	public List<Wares> getDatagrid(@Param("conditionSql") String conditionSql);
 	
