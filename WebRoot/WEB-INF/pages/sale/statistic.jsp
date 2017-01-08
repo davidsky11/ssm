@@ -20,7 +20,7 @@
 								<div class="col-xs-1">
 									<label>活动： </label>
 								</div>
-								<div class="col-xs-3">
+								<div class="col-xs-2">
 									<select class="form-control" id="activityId" name="activityId">
 										<c:forEach items="${atyList}" var="aty">
 											<option value="${aty.id}"
@@ -32,7 +32,7 @@
 								<div class="col-xs-1">
 									<label>年份： </label>
 								</div>
-								<div class="col-xs-3">
+								<div class="col-xs-2">
 									<select class="form-control" id="year" name="year">
 										<option value="">请选择年份</option>
 										<c:forEach items="${yearArr}" var="arr">
@@ -41,8 +41,21 @@
 										</c:forEach>
 									</select>
 								</div>
+								
+								<div class="col-xs-1">
+									<label>月份： </label>
+								</div>
+								<div class="col-xs-2">
+									<select class="form-control" id="month" name="month">
+										<option value="">请选择月份</option>
+										<c:forEach items="${monthArr}" var="mon">
+											<option value="${mon}"
+												<c:if test="${month eq mon}">selected=selected</c:if>>${mon}</option>
+										</c:forEach>
+									</select>
+								</div>
 
-								<div class="col-xs-4">
+								<div class="col-xs-3">
 									<button id="searchBtn" type="button"
 										class="btn btn-info pull-right">统计</button>
 								</div>
@@ -127,7 +140,8 @@
 			url : "ajax_sale_charts.do",
 			data : {
 				activityId : $('#activityId').val(),
-				year: $('#year').val()
+				year: $('#year').val(),
+				month: $('#month').val()
 			},
 			dataType : "json", //返回数据形式为json  
 			success : function(result) {

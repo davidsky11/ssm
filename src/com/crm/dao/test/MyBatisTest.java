@@ -328,10 +328,10 @@ public class MyBatisTest extends AbstractJUnit4SpringContextTests {
 	
 	@Test
 	public void findPlaceAnalysis() {
-		List<PlaceAnalysis> paList = analysisMapper.findPlaceAnalysis("123", "2");
+		/*List<PlaceAnalysis> paList = analysisMapper.findPlaceAnalysis("123", "2");
 		for (PlaceAnalysis pa : paList) {
 			System.out.println(pa.toString());
-		}
+		}*/
 	}
 	
 	@Test
@@ -657,4 +657,99 @@ public class MyBatisTest extends AbstractJUnit4SpringContextTests {
 			System.out.println(ex);
 		}
 	}
+	
+	@Test
+	public void findPlaceAnalysis1() {
+		List<PlaceAnalysis> list = analysisMapper.findPlaceAnalysis("city", "123", "湖北省", "", "");
+	
+		for (PlaceAnalysis pa : list) {
+			System.out.println(pa.toString());
+		}
+	}
+	
+	@Test
+	public void resetScanRecord2Sale() {
+    	String startDay;
+    	String endDay;
+    	
+    	int year = 2017;
+    	int month = 01;
+    	int day = 01;
+    	
+    	SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd"); 
+
+    	if (scanRecordMapper != null) {
+    		Date date = new Date();
+    		
+	    	// 获取前月的第一天
+	    	Calendar cal_1=Calendar.getInstance();//获取当前日期 
+	    	cal_1.setTime(date);
+	    	cal_1.add(Calendar.DATE, -1);
+	    	
+	    	year = cal_1.get(Calendar.YEAR);
+	    	month = cal_1.get(Calendar.MONTH) + 1;
+	    	day = cal_1.get(Calendar.DAY_OF_MONTH);
+	    	
+	    	startDay = format.format(cal_1.getTime());
+	    	endDay = format.format(date);
+	    	
+	    	StringBuffer conditionSql = new StringBuffer();
+	    	conditionSql.append(" and t.userType = '3'");
+	    	
+	    	conditionSql.append(" and t.scanTime >= '").append(startDay).append("'");
+	    	conditionSql.append(" and t.scanTime < '").append(endDay).append("'");
+	    	
+	    	//conditionSql.append(" and t.scanTime <= date_sub('").append(lastDay).append("', interval -1 day)");
+			
+	    	List<SrDto> srList = scanRecordMapper.findOnlyByUserAndWares(conditionSql.toString());
+	    	
+	    	/**
+	    	 * 获取所有的用户id
+	    	 */
+	    	Set<String> userIdSet = new HashSet<String>();
+	    	for (SrDto sd : srList) {
+	    		userIdSet.add(sd.getUserId());
+	    	}
+	    	
+	    	/**
+	    	 * 获取所有的活动列表
+	    	 */
+	    	List<Activity> atyList = activityMapper.getActivityList("");
+	    	
+	    	/**
+	    	 * 生成Sale列表
+	    	 */
+	    	List<Sale> saleList = new ArrayList<Sale>();
+	    	
+	    	for (String userId : userIdSet) {
+	    		for (Activity aty : atyList) {
+	    			Sale sale = new Sale();
+		    		
+		    		sale.setUserId(userId);
+		    		sale.setYear(year);
+		    		sale.setMonth(month);
+		    		sale.setDay(day);
+		    		
+		    		Integer amount = 0;
+	    		
+		    		for (SrDto dto : srList) {
+		    			if (dto.getPublicCode().equals(aty.getPublicCode()) && dto.getUserId().equals(userId)) {
+		    				sale.setActivityId(aty.getId());
+		    				amount += dto.getCount();
+			    		}
+		    		}
+		    		
+		    		sale.setAmount(amount + 0.0d);
+		    		
+		    		if (Tool.isNotNullOrEmpty(sale.getActivityId()))	saleList.add(sale);
+	    		}
+	    	}
+	    	
+	    	/**
+	    	 * 将saleList数据保存到sale数据表中
+	    	 */
+	    	saleMapper.addSaleBatch(saleList);
+    	}
+    }
+	
 }

@@ -35,6 +35,10 @@ public class Const {
 	 */
 	public static final int ROOT_TREE_ID = 0;
 	
+	public static final String LEVEL_PLACE_PROVINCE = "province";
+	public static final String LEVEL_PLACE_CITY = "city";
+	public static final String LEVEL_PLACE_DISTANCE = "distance";
+	
 	/**
 	 * 地图相关信息
 	 */

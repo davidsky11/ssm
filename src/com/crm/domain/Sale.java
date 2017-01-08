@@ -12,6 +12,7 @@ public class Sale implements Comparable<Sale> {
 	private Integer id;
 	private Integer year;
 	private Integer month;
+	private Integer day;
 	private Double amount;
 	private String activityId;
 	private Activity activity;
@@ -68,7 +69,12 @@ public class Sale implements Comparable<Sale> {
 	public void setUserId(String userId) {
 		this.userId = userId;
 	}
-	
+	public Integer getDay() {
+		return day;
+	}
+	public void setDay(Integer day) {
+		this.day = day;
+	}
 	@Override
 	public String toString() {
 		return "Sale [id=" + id + ", year=" + year + ", month=" + month + ", amount=" + amount + ", activityId="

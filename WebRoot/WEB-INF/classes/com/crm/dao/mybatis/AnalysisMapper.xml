@@ -3,11 +3,22 @@
 <mapper namespace="com.crm.dao.mybatis.AnalysisMapper">   
 
 	<select id="findPlaceAnalysis" resultType="com.crm.domain.dto.PlaceAnalysis">
-		SELECT province as province, count(*) as count FROM scan_record WHERE publicCode = #{publicCode} 
+		SELECT province as province, city as city, distance as distance, count(*) as count FROM scan_record WHERE 1=1
+		<if test="publicCode !=null and publicCode != ''">
+			and publicCode = #{publicCode} 
+		</if>
+		<if test="province !=null and province != ''">
+			and province = #{province} 
+		</if>
+		<if test="city !=null and city != ''">
+			and city = #{city} 
+		</if>
 		<if test="userId !=null and userId != ''">
 			and userId = #{userId}
 		</if>
-		 GROUP BY province
+		<if test="level !=null and level != ''">
+			group by ${level}
+		</if>
 	</select>
 	
 	<select id="findPlaceAnalysisPage" resultType="com.crm.domain.dto.PlaceAnalysis">

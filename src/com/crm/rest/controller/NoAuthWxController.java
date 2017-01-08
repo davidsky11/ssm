@@ -264,18 +264,6 @@ public class NoAuthWxController {
 					Award award = awardService.findById(awardId);
 					
 					/**
-					 * 如果不兑奖，直接返回
-					 */
-					if (!Tool.isNotNullOrEmpty(exType)) {
-    					result.setCode(Const.INFO_NORMAL);
-    					result.setSuccess(true);
-    					
-    					result.setMsg("您中了" + award.getTitle() + ", " + award.getDescription());
-    					result.setData(award);
-    					return result;
-					}
-					
-					/**
     				 * 判断insideCode是否匹配
     				 */
     				if (Tool.isNotNullOrEmpty(exType) && (insideCode == null || !insideCode.equals(wares.getInsideCode()))) {
@@ -287,6 +275,18 @@ public class NoAuthWxController {
     					result.setData(wares);
     					return result;
     				}
+					
+					/**
+					 * 如果不兑奖，直接返回
+					 */
+					if (!Tool.isNotNullOrEmpty(exType)) {
+    					result.setCode(Const.INFO_NORMAL);
+    					result.setSuccess(true);
+    					
+    					result.setMsg("您中了" + award.getTitle() + ", " + award.getDescription());
+    					result.setData(award);
+    					return result;
+					}
 					
 					/**
 					 * 兑奖处理
@@ -547,9 +547,8 @@ public class NoAuthWxController {
 	@ResponseBody
 	@Authorization
 	@ApiOperation(value = "商品防伪", httpMethod = "POST", response = ApiResult.class, 
-		notes = "wechatCode 在数据库中不存在，返回该商品还未生产\nwechatcode 对应的记录已经兑奖，返回该商品已消费\nwechatCode与insideCode不匹配，返回该商品涉嫌伪造\nwechatCode与insideCode匹配，返回该商品为正品，请扫码兑奖")
-	public ApiResult antiFakeWx(@ApiParam(required = true, name = "wechatCode", value = "微信编码") @RequestParam("wechatCode") String wechatCode, 
-			@ApiParam(required = false, name = "insideCode", value = "内码") @RequestParam(value = "insideCode", required = false) String insideCode) {
+		notes = "wechatCode 在数据库中未兑奖返回为消费\nwechatcode 在数据库已兑奖返回已消费，不再数据库返回未生产\n")
+	public ApiResult antiFakeWx(@ApiParam(required = true, name = "wechatCode", value = "微信编码") @RequestParam("wechatCode") String wechatCode) {
 		ApiResult result = new ApiResult();
 		result.setOperate(Const.OPERATE_ANTI_FAKE);
 		
@@ -564,7 +563,7 @@ public class NoAuthWxController {
 			
 			if (wares == null) {
 				result.setCode(Const.ERROR_NULL_POINTER);
-				result.setMsg("该商品不存在");
+				result.setMsg("该商品未生产");
 				result.setSuccess(false);
 				result.setData(null);
 				
@@ -580,43 +579,11 @@ public class NoAuthWxController {
 					
 					return result;
 				} else {  // 未消费
-					// 如果没有传insideCode，直接返回“无法判断”
-					if (insideCode == null || insideCode.equals("")) {
-						result.setCode(Const.WARN_NO_JUDGE);
-						result.setSuccess(true);
-						result.setMsg("该商品未消费");
-						
-						return result;
-					}
+					result.setCode(Const.WARN_NO_JUDGE);
+					result.setSuccess(true);
+					result.setMsg("该商品未消费");
 					
-					boolean isWaster = true;  // 是否正品，默认true
-					// 方法1
-					if (wares.getInsideCode().equals(insideCode)) {
-						isWaster = false;
-					}
-					
-					// 方法2
-					/*for (Wares w : waresList) {
-						if (w.getInsideCode().equals(insideCode)) {
-							isWaster = false;
-							break;
-						}
- 					}*/
-					
-					if (isWaster) {
-						/* --> 返回结果3
-						 */
-						result.setCode(Const.INFO_NORMAL);
-						result.setSuccess(true);
-						result.setCode(Const.ERROR_NOT_EQUALS);
-						result.setMsg("该商品涉嫌伪造");
-					} else {
-						/* --> 返回结果4
-						 */
-						result.setCode(Const.INFO_NORMAL);
-						result.setSuccess(true);
-						result.setMsg("该商品为正品，请扫码兑奖");
-					}
+					return result;
 				}
 			}
 			
@@ -807,5 +774,60 @@ public class NoAuthWxController {
 		return result;
 	}
 
+	@RequestMapping(value = "/awardAnalysisWx", method = RequestMethod.POST)
+	@ResponseBody
+	@ApiOperation(value = "奖项统计", httpMethod = "POST", response = ApiResult.class, notes = "统计当前奖项的基本信息和数目信息")
+	public ApiResult awardAnalysis(@ApiParam(required = true, name = "wechatCode", value = "微信编码") @RequestParam("wechatCode") String wechatCode) {
+	
+		ApiResult result = new ApiResult();
+		result.setOperate(Const.OPERATE_AWARD_ANALYSIS);
+		
+		Wares wares = this.waresService.findByWxCode(wechatCode);
+		String publicCode = "";
+		if (wares != null) {
+			publicCode = wares.getPublicCode();
+		} else {
+			result.setCode(Const.ERROR_NULL_POINTER);
+			result.setMsg("该商品未生产");
+			result.setSuccess(false);
+			result.setData(null);
+			
+			return result;
+		}
+		
+		/**
+		 * 1、获取所有对应publicCode（对应活动）的  活动信息
+		 */
+		StringBuffer conditionSql = new StringBuffer();
+		conditionSql.append(" and publicCode = '").append(publicCode).append("'");
+		
+		Activity activity = null;
+		List<Activity> activityList = activityService.getDatagrid(conditionSql.toString());
+		if (activityList != null && activityList.size() > 0) {
+			activity = activityList.get(0);
+		} else {
+			result.setCode(Const.ERROR_NULL_POINTER);
+			result.setSuccess(true);
+			result.setMsg("没有 " + publicCode + " 对应的活动");
+			result.setData(null);
+			
+			return result;
+		}
+		
+		/**
+		 * 2、根据活动信息获取奖项信息
+		 */
+		conditionSql.setLength(0);
+		conditionSql.append(" and activityId = '").append(activity.getId()).append("'")
+			.append(" order by hierarchy ");
+		List<Award> awardList = this.awardService.getDatagrid(conditionSql.toString());
+		
+		result.setCode(Const.INFO_NORMAL);
+		result.setSuccess(true);
+		result.setMsg("找到" + awardList.size() + "条奖项信息");
+		result.setData(awardList);
+		
+		return result;
+	}
 }
  

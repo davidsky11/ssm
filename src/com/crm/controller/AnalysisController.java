@@ -26,6 +26,7 @@ import com.crm.domain.Activity;
 import com.crm.domain.Sale;
 import com.crm.domain.User;
 import com.crm.domain.dto.AbstractChartDto;
+import com.crm.domain.dto.AddressType;
 import com.crm.domain.dto.PlaceAnalysis;
 import com.crm.domain.easyui.DataGrid;
 import com.crm.domain.easyui.PageHelper;
@@ -203,16 +204,12 @@ public class AnalysisController {
 		model.addAttribute("atyList", atyList);
 		
 		Calendar cal = Calendar.getInstance();
-		int year = cal.get(Calendar.YEAR);  // 年
 		
-		int start = year - 9;
-		
-		String[] yearArr = new String[10];
-		for (int i=0; i<10; i++) {
-			yearArr[i] = String.valueOf(start ++);
-		}
+		Integer[] yearArr = new Integer[]{2016, 2017, 2018, 2019, 2020};
+		Integer[] monthArr = new Integer[]{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12};
 		
 		model.addAttribute("yearArr", yearArr);
+		model.addAttribute("monthArr", monthArr);
 		
 		String yearS = Tool.nvl(request.getParameter("year"));
 		model.addAttribute("year", yearS);
@@ -228,10 +225,11 @@ public class AnalysisController {
 		List<AbstractChartDto> list = new ArrayList<AbstractChartDto>();
 		String activityId = Tool.nvl(request.getParameter("activityId"));
 		String yearS = Tool.nvl(request.getParameter("year"));
+		String monthS = Tool.nvl(request.getParameter("month"));
 		
 		Calendar cal = Calendar.getInstance();
 		int year = cal.get(Calendar.YEAR);  // 年
-		int month = cal.get(Calendar.MONTH);  // 月
+		int month = cal.get(Calendar.MONTH) + 1;  // 月
 		
 		int prevYear = year - 1;  // 上年
 		
@@ -272,30 +270,6 @@ public class AnalysisController {
 				 * 1、直接从销售统计表里获取数据
 				 */
 				saleList = saleService.findSaleList(conditionSql.toString());
-				
-				/*Collections.sort(saleList);  // 对销售记录进行排序
-				
-				Set<YearMonth> yearMonthSet = new TreeSet<YearMonth>();
-				
-				for (Sale sale : saleList) {
-					yearMonthSet.add(new YearMonth(sale.getYear(), sale.getMonth()));
-				}
-				
-				// 年月从小到大排列
-				for (YearMonth yearMonth : yearMonthSet) {
-					AbstractChartDto dto = new AbstractChartDto();
-					dto.setBar(yearMonth.getYear() + "-" + yearMonth.getMonth());
-					Double tmp = 0.0;
-					for (Sale s : saleList) {
-						if (yearMonth.getYear().equals(s.getYear()) 
-								&& yearMonth.getMonth().equals(s.getMonth())) {
-							tmp += s.getAmount();
-						}
-					}
-					dto.setCategory(tmp + "");
-					
-					list.add(dto);
-				}*/
 				
 				int size = yearMList.size();
 				for (int i=0; i<size; i++) {
@@ -396,27 +370,62 @@ public class AnalysisController {
 				break;
 		}
 		
+		List<AddressType> levelArr = new ArrayList<AddressType>();
+		levelArr.add(new AddressType("province", "省"));
+		levelArr.add(new AddressType("city", "市/县"));
+		levelArr.add(new AddressType("distance", "区/街道"));
+		
 		model.addAttribute("atyList", atyList);
+		model.addAttribute("levelArr", levelArr);
+		model.addAttribute("level", Const.LEVEL_PLACE_PROVINCE);
 		return "place/statistic";
 	}
 	
 	@RequestMapping(value = "/ajax_place_charts.do", method = RequestMethod.POST)
 	public void ajaxPlaceCharts(HttpServletRequest request,
 			HttpServletResponse response) {
-		User user =  (User)request.getSession().getAttribute(Const.SESSION_USER);
+		User user = (User)request.getSession().getAttribute(Const.SESSION_USER);
 		
+		String level = Const.LEVEL_PLACE_PROVINCE;  // 默认省
 		List<AbstractChartDto> list = new ArrayList<AbstractChartDto>();
 		String publicCode = Tool.nvl(request.getParameter("publicCode"));
+		String province = Tool.nvl(request.getParameter("province"));
+		String city = Tool.nvl(request.getParameter("city"));
+		String tmp = Tool.nvl(request.getParameter("level"));
+		
+		if (Tool.isNotNullOrEmpty(province)) {
+			level = Const.LEVEL_PLACE_CITY;  // 市级别
+		}
+		if (Tool.isNotNullOrEmpty(city)) {
+			level = Const.LEVEL_PLACE_DISTANCE;  // 区级别
+		}
+		if (Tool.isNotNullOrEmpty(tmp)) {
+			level = tmp;
+			switch (level) {
+			case Const.LEVEL_PLACE_DISTANCE:
+				
+				break;
+			case Const.LEVEL_PLACE_CITY:
+				city = "";
+				
+				break;
+			case Const.LEVEL_PLACE_PROVINCE:
+				province = "";
+				city = "";
+				
+				break;
+			}
+		}
 		
 		List<PlaceAnalysis> paList = new ArrayList<PlaceAnalysis>();
 		
 		switch (user.getUserType()) {
 			case Const.USERTYPE_VENDER:  // 厂商
-				paList = analysisService.findPlaceAnalysis(publicCode, "");
+				paList = analysisService.findPlaceAnalysis(level, publicCode, province, city, "");
 				
 				break;
 			case Const.USERTYPE_DEALER:  // 经销商
-				paList = analysisService.findPlaceAnalysis(publicCode, user.getId());
+				paList = analysisService.findPlaceAnalysis(level, publicCode, province, city, user.getId());
 				
 				break;
 			default:
@@ -427,7 +436,16 @@ public class AnalysisController {
 		for (PlaceAnalysis pa : paList) {
 			AbstractChartDto dto = new AbstractChartDto();
 			dto.setCategory(pa.getCount() + "");
-			dto.setBar(pa.getProvince());
+			
+			if (level.equals(Const.LEVEL_PLACE_PROVINCE)) {
+				dto.setBar(pa.getProvince() == null ? "未知区域" : pa.getProvince());
+			}
+			if (level.equals(Const.LEVEL_PLACE_CITY)) {
+				dto.setBar(pa.getCity() == null ? "未知区域" : pa.getCity());
+			}
+			if (level.equals(Const.LEVEL_PLACE_DISTANCE)) {
+				dto.setBar(pa.getDistance() == null ? "未知区域" : pa.getDistance());
+			}
 			
 			list.add(dto);
 		}
@@ -543,4 +561,3 @@ class YearMonth implements Comparable<YearMonth> {
 	}
 	
 }
- 

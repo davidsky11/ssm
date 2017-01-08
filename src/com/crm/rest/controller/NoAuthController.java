@@ -284,7 +284,7 @@ public class NoAuthController {
 	 * @Title:			exchangeRecord
 	 * @Description:	APP用户查询自己的兑奖记录
 	 * @param userType	用户类型
-	 * @param username	用户名
+	 * @param userId	用户ID
 	 * @param beginTime	记录开始时间
 	 * @param endTime	记录结束时间
 	 * @return
@@ -292,8 +292,7 @@ public class NoAuthController {
 	@RequestMapping(value = "/exchangeRecord", method = RequestMethod.POST)
 	@ResponseBody
 	@ApiOperation(value = "兑奖记录", httpMethod = "POST", response = ApiResult.class, notes = "根据用户名、用户类型、时间查询兑奖记录")
-	public ApiResult exchangeRecord(@ApiParam(required = true, name = "userType", value = "用户类型") @RequestParam("userType") String userType, 
-			@ApiParam(required = true, name = "username", value = "用户类型") @RequestParam("username") String username, 
+	public ApiResult exchangeRecord(@ApiParam(required = true, name = "userId", value = "用户ID") @RequestParam("userId") String userId, 
 			@ApiParam(required = true, name = "beginTime", value = "开始时间") @RequestParam("beginTime") String beginTime,
 			@ApiParam(required = true, name = "endTime", value = "结束时间") @RequestParam("endTime") String endTime) {
 	
@@ -310,55 +309,12 @@ public class NoAuthController {
 			conditionsql.append(" and date(exchangeTime) < '").append(endTime).append("'");
 		}
 		
-		conditionsql.append(" and userId in (select id from sysuser where username = '")
-			.append(username).append("' and userType = '").append(userType).append("')")
+		conditionsql.append(" and userId = '").append(userId).append("')")
 			.append(" order by exchangeTime desc");
 		
 		List<Exchange> list = this.exchangeSercie.findByCondition(conditionsql.toString());
 		
-		/**
-		 * 获取当前兑奖记录对应的商品信息
-		 */
-		/*Set<String> waresIdSet = new HashSet<String>();
-		for (Exchange ex : list) {
-			waresIdSet.add(ex.getWaresId().trim());
-		}
-		
-		String[] arr = waresIdSet.toArray(new String[0]);
-		String sql = Tool.stringArrayToString(arr, true, ",");
-		List<Wares> waresList = new ArrayList<Wares>();
-		if (sql != null && !sql.equals("")) {
-			waresList = waresService.getDatagrid(" and id in (" + sql + ")");
-		}*/
-		
-		/**
-		 * 获取所有的奖品信息
-		 */
-		/*List<Award> awardList = awardService.getDatagrid(null);
-		for (Wares w : waresList) {
-			for (Award aw : awardList) {
-				if (w.getAwardId().equals(aw.getId())) {
-					w.setAward(aw);
-					continue;
-				}
-			}
-		}*/
-		
-		/*List<ExchangeQuery> eqList = new ArrayList<ExchangeQuery>();*/
 		if (list != null && list.size() > 0) {
-			
-			/*for (Exchange exchange : list) {
-				ExchangeQuery eq = new ExchangeQuery(exchange);
-				
-				for (Wares wa : waresList) {
-					if (exchange.getWaresId().equals(wa.getId())) {
-						eq.setAward(wa.getAward());
-					}
-				}
-				
-				eqList.add(eq);
-			}*/
-			
 			result.setCode(Const.INFO_NORMAL);
 			result.setSuccess(true);
 			result.setMsg("获取到 " + list.size() + " 条兑奖记录!");
@@ -377,7 +333,7 @@ public class NoAuthController {
 	 * @Title:			scanRecord
 	 * @Description:	APP用户查询自己的扫码记录（分页）
 	 * @param userType
-	 * @param username
+	 * @param userId
 	 * @param beginTime
 	 * @param endTime
 	 * @param currentPage	从1开始
@@ -386,8 +342,7 @@ public class NoAuthController {
 	@RequestMapping(value = "/scanRecord", method = RequestMethod.POST)
 	@ResponseBody
 	@ApiOperation(value = "扫码记录", httpMethod = "POST", response = ApiResult.class, notes = "根据用户名、用户类型、时间查询分页查询扫码记录")
-	public ApiResult scanRecord(@ApiParam(required = true, name = "userType", value = "用户类型") @RequestParam("userType") String userType, 
-			@ApiParam(required = true, name = "username", value = "用户名称") @RequestParam("username") String username, 
+	public ApiResult scanRecord(@ApiParam(required = true, name = "userId", value = "用户ID") @RequestParam("userId") String userId, 
 			@ApiParam(required = false, name = "beginTime", value = "开始时间") @RequestParam(value = "beginTime", required = false) String beginTime,
 			@ApiParam(required = false, name = "endTime", value = "结束时间") @RequestParam(value = "endTime", required = false) String endTime, 
 			@ApiParam(required = true, name = "currentPage", value = "当前页数") @RequestParam("currentPage") int currentPage,
@@ -420,12 +375,7 @@ public class NoAuthController {
 			conditionsql.append(" and date(t.scanTime) < '").append(endTime).append("'");
 		}
 		
-		/*conditionsql.append(" and (t.userId in (select id from sysuser where username = '")
-			.append(username).append("' and userType = '").append(userType).append("')")
-			.append(" or userName = '").append(username).append("')");*/
-		
-		conditionsql.append(" and t.userName = '").append(username).append("' and t.userType = '")
-			.append(userType).append("'");
+		conditionsql.append(" and t.userId = '").append(userId);
 		
 		long total = scanRecordService.getDatagridTotalByCondition(conditionsql.toString());
 		
@@ -484,7 +434,7 @@ public class NoAuthController {
 	 * @Title:			userWithInfo
 	 * @Description:	顾客扫码兑奖函数	上传的全部信息
 	 * @param userType		用户类型
-	 * @param username		用户名
+	 * @param userId		用户ID
 	 * @param flagCode		客户端硬件标识码
 	 * @param time			客户端时间
 	 * @param longitude		经度
@@ -501,7 +451,7 @@ public class NoAuthController {
 	@Authorization
 	@ApiOperation(value = "扫码兑奖", httpMethod = "POST", response = ApiResult.class, notes = "先扫码，如果有奖，再进行兑奖操作")
 	public ApiResult userWithInfo(@ApiParam(required = true, name = "userType", value = "用户类型") @RequestParam("userType") String userType, 
-			@ApiParam(required = true, name = "username", value = "用户名称") @RequestParam("username") String username, 
+			@ApiParam(required = true, name = "userId", value = "用户ID") @RequestParam("userId") String userId, 
 			@ApiParam(required = true, name = "flagCode", value = "硬件标识码") @RequestParam("flagCode") String flagCode,
 			@ApiParam(required = true, name = "time", value = "客户端时间") @RequestParam("time") String time,
 			@ApiParam(required = true, name = "longitude", value = "经度") @RequestParam("longitude") String longitude, 
@@ -531,11 +481,8 @@ public class NoAuthController {
     	/**
 		 * 0、添加扫码记录
 		 */
-		List<User> userList = userService.findByNameAndType(username, userType);  // 1.找用户
-		User user = null;
-		if (userList != null && userList.size() > 0) {
-			user = userList.get(0);
-		} else {
+    	User user = userService.getUserById(userId);
+		if (user == null) {
 			result.setCode(Const.ERROR_NULL_POINTER);
 			result.setSuccess(false);
 			result.setMsg("用户不存在");
@@ -660,18 +607,6 @@ public class NoAuthController {
     					Award award = awardService.findById(awardId);
     					
     					/**
-    					 * 如果不兑奖，直接返回
-    					 */
-    					if (!Tool.isNotNullOrEmpty(exType)) {
-	    					result.setCode(Const.INFO_NORMAL);
-	    					result.setSuccess(true);
-	    					
-	    					result.setMsg("您中了" + award.getTitle() + ", " + award.getDescription());
-	    					result.setData(award);
-	    					return result;
-    					}
-    					
-    					/**
         				 * 判断insideCode是否匹配
         				 */
         				if (Tool.isNotNullOrEmpty(exType) && (insideCode == null || !insideCode.equals(wares.getInsideCode()))) {
@@ -683,6 +618,18 @@ public class NoAuthController {
         					result.setData(wares);
         					return result;
         				}
+    					
+    					/**
+    					 * 如果不兑奖，直接返回
+    					 */
+    					if (!Tool.isNotNullOrEmpty(exType)) {
+	    					result.setCode(Const.INFO_NORMAL);
+	    					result.setSuccess(true);
+	    					
+	    					result.setMsg("您中了" + award.getTitle() + ", " + award.getDescription());
+	    					result.setData(award);
+	    					return result;
+    					}
     					
     					/**
 						 * 兑奖处理
@@ -1116,8 +1063,6 @@ public class NoAuthController {
 	/**
 	 * @Title:			awardAnalysis
 	 * @Description:	奖项统计  针对经销商和APP用户
-	 * @param userType
-	 * @param username
 	 * @param publicCode	公共编码，对应一个活动
 	 * @return
 	 * 		输出参数：  	award  --------------  奖项
@@ -1182,7 +1127,7 @@ public class NoAuthController {
 		ApiResult result = new ApiResult();
 		result.setOperate(Const.OPERATE_PLACE_ANALYSIS);
 		
-		List<PlaceAnalysis> paList = analysisService.findPlaceAnalysis(publicCode, userId);
+		List<PlaceAnalysis> paList = analysisService.findPlaceAnalysis(Const.LEVEL_PLACE_PROVINCE, publicCode, "", "", userId);
 		result.setSuccess(true);
 		result.setMsg("查询到" + paList.size() + "条数据.");
 		result.setData(paList);
@@ -1193,14 +1138,14 @@ public class NoAuthController {
 	/**
 	 * @Title:			saleAnalysis
 	 * @Description:	销售统计  针对经销商
-	 * @param username
+	 * @param userId
 	 * @param publicCode
 	 * @return
 	 */
 	@RequestMapping(value = "/saleAnalysis", method = RequestMethod.POST)
 	@ResponseBody
 	@ApiOperation(value = "销售统计", httpMethod = "POST", response = ApiResult.class, notes = "统计当前商品各个月份的的销售情况（向前推算一年）")
-	public ApiResult saleAnalysis(@ApiParam(required = true, name = "userId", value = "用户名称") @RequestParam("userId") String userId,
+	public ApiResult saleAnalysis(@ApiParam(required = true, name = "userId", value = "用户ID") @RequestParam("userId") String userId,
 			@ApiParam(required = true, name = "publicCode", value = "公共编码") @RequestParam("publicCode") String publicCode) {
 		ApiResult result = new ApiResult();
 		result.setOperate(Const.OPERATE_SALE_ANALYSIS);

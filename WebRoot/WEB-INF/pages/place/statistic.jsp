@@ -11,33 +11,55 @@
 					<div class="form-group">
 						<div class="box-body">
 							<div class="row">
-								<div class="col-xs-1">
-									<label>活动： </label>
-								</div>
 								<div class="col-xs-3">
-									<select class="form-control" id="publicCode" name="publicCode">
-										<c:forEach items="${atyList}" var="aty">
-											<option value="${aty.publicCode}"
-												<c:if test="${publicCode eq aty.publicCode }">selected=selected</c:if>>${aty.title}</option>
-										</c:forEach>
-									</select>
+									<div class="col-xs-4"> <label>活动:</label></div>
+									<div class="col-xs-8">
+										<select class="form-control" id="publicCode" name="publicCode">
+											<c:forEach items="${atyList}" var="aty">
+												<option value="${aty.publicCode}"
+													<c:if test="${publicCode eq aty.publicCode }">selected=selected</c:if>>${aty.title}</option>
+											</c:forEach>
+										</select>
+									</div>
+								</div>
+								
+								<div class="col-xs-2">
+									<div class="col-xs-3"><label>省份:</label></div>
+									<div class="col-xs-9">
+										<input id="province" name="province" class="form-control" value="${province}" />
+									</div>
+								</div>
+								
+								<div class="col-xs-2">
+									<div class="col-xs-3"><label>市/县:</label></div>
+									<div class="col-xs-9">
+										<input id="city" name="city" class="form-control" value="${city}" />
+									</div>
 								</div>
 
-								<div class="col-xs-8">
-									<button id="searchBtn" type="button"
-										class="btn btn-info pull-right">统计</button>
+								<div class="col-xs-2">
+									<div class="col-xs-3"><label>级别:</label></div>
+									<div class="col-xs-9">
+										<select class="form-control" id="level" name="level">
+											<c:forEach items="${levelArr}" var="arr">
+												<option value="${arr.key}"
+													<c:if test="${arr.value eq level }">selected=selected</c:if>>${arr.value}</option>
+											</c:forEach>
+										</select>
+									</div>
+									
+								</div>
+								<div class="col-xs-3">
+									<button id="searchBtn" type="button" class="btn btn-info pull-right">统计</button>
 								</div>
 							</div>
 						</div>
 
-						<!-- <div class="table-responsive"> -->
 						<div>
-							<div id="placeChartArea"
-								style="height: 500px; border: 1px solid #ccc; padding: 10px;"></div>
-							<!-- <div id="placeChartAreaPie"
-								style="height: 500px; width:30%; float: left; border: 1px solid #ccc; padding: 10px;"></div> -->
+							<div id="placeChartArea" style="height: 500px; border: 1px solid #ccc; padding: 10px;">
+								
+							</div>
 						</div>
-						<!-- </div> -->
 					</div>
 				</div>
 			</div>
@@ -104,6 +126,22 @@
 		]
 	};
 	
+	myChart.on('click', function(params){
+		var level = $('#level').val();
+		if (level == "province") {
+			$('#province').val(params.name);
+			$('#level').val("city");
+		}
+		if (level == "city") {
+			$('#city').val(params.name);
+			$('#level').val("distance");
+		}
+		if (level == "" || typeof(level) == "undefined") {
+			$('#level').val("province");
+		}
+		getChartData();
+	});
+	
 	function getChartData() {
 		myChart.showLoading({
 			text : '正在努力的加载数据中...'
@@ -115,7 +153,10 @@
 			async : true, //同步执行  
 			url : "ajax_place_charts.do",
 			data : {
-				publicCode : $('#publicCode').val()
+				publicCode : $('#publicCode').val(),
+				province: $('#province').val(),
+				city: $('#city').val(),
+				level: $('#level').val()
 			},
 			dataType : "json", //返回数据形式为json  
 			success : function(result) {
@@ -141,7 +182,7 @@
 				myChart.setOption(option);
 			},
 			error : function(errorMsg) {
-				alert("不好意思，图表请求数据失败啦!");
+				alert("没有找到想要的数据!");
 				myChart.hideLoading();
 			}
 			
@@ -154,6 +195,15 @@
 	getChartData();
 	
 	$("#searchBtn").click(function() {
+		var level = $('#level').val();
+		if (level == "province") {
+			$('#province').val("");
+			$('#city').val("");
+		}
+		if (level == "city") {
+			$('#city').val("");
+		}
+		
 		getChartData();
 	});
 

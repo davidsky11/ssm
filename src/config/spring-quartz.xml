@@ -19,7 +19,7 @@
     
     <!-- 计算销售记录汇总 -->
     <bean id="saleCountJob" class="org.springframework.scheduling.quartz.JobDetailFactoryBean">
-    	<property name="jobClass" value="com.crm.task.SaleRecordJob" />
+    	<property name="jobClass" value="com.crm.task.SaleRecordByDayJob" />
     	<property name="durability" value="true"></property>
     </bean>
     
@@ -34,8 +34,9 @@
     <!-- 计算销售记录汇总 -->
     <bean id="saleCountTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
         <property name="jobDetail" ref="saleCountJob" />
-        <!-- 每月第一天触发一次 0 0 1 1 * ? -->
-        <property name="cronExpression" value="0 0 1 1 * ?" />
+        <!-- 每天凌晨一点触发一次 0 0 1 * * ? -->
+        <!-- <property name="cronExpression" value="0 0 1 1 * ?" /> -->
+        <property name="cronExpression" value="0 0 1 * * ?" />
     </bean>
     
     <!-- ************SchedulerFactoryBean************ -->

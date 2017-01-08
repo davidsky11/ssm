@@ -9,7 +9,10 @@ package com.crm.domain.dto;
  */
 public class PlaceAnalysis {
 	
+	private String level;  // province\city\distance
 	private String province;
+	private String city;
+	private String distance;
 	private Long count;
 	
 	public String getProvince() {
@@ -24,10 +27,29 @@ public class PlaceAnalysis {
 	public void setCount(Long count) {
 		this.count = count;
 	}
+	public String getLevel() {
+		return level;
+	}
+	public String getCity() {
+		return city;
+	}
+	public String getDistance() {
+		return distance;
+	}
+	public void setLevel(String level) {
+		this.level = level;
+	}
+	public void setCity(String city) {
+		this.city = city;
+	}
+	public void setDistance(String distance) {
+		this.distance = distance;
+	}
 	
 	@Override
 	public String toString() {
-		return "PlaceAnysis [province=" + province + ", count=" + count + "]";
+		return "PlaceAnalysis [level=" + level + ", province=" + province + ", city=" + city + ", distance=" + distance
+				+ ", count=" + count + "]";
 	}
 	
 }

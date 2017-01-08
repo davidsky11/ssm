@@ -23,8 +23,8 @@ public class AnalysisServiceImpl implements AnalysisService {
 	@Autowired
 	private AnalysisMapper analysisMapper;
 
-	public List<PlaceAnalysis> findPlaceAnalysis(String publicCode, String userId) {
-		return analysisMapper.findPlaceAnalysis(publicCode, userId);
+	public List<PlaceAnalysis> findPlaceAnalysis(String level, String publicCode, String province, String city, String userId) {
+		return analysisMapper.findPlaceAnalysis(level, publicCode, province, city, userId);
 	}
 	
 	public List<PlaceAnalysis> findPlaceAnalysisPage(String publicCode, String userId, PageHelper page) {

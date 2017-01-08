@@ -6,6 +6,7 @@
 		<id property="id" column="s_id" />
 		<result property="year" column="s_year" />
 		<result property="month" column="s_month" />
+		<result property="day" column="s_day" />
 		<result property="amount" column="s_amount" />
 		<result property="activityId" column="s_activityId" />
 		<association property="activity" resultMap="activityMap" />
@@ -37,22 +38,23 @@
 	<update id="updateSale" parameterType="com.crm.domain.Sale">
     	update sale
     	<set>
-            <if test="year !=null and year !=''">year=#{year}</if>
-            <if test="month !=null and month !=''">month=#{month}</if>
+            <if test="year !=null and year !=''">year=#{year},</if>
+            <if test="month !=null and month !=''">month=#{month},</if>
+            <if test="day !=null and day != ''">day=#{day},</if>
             <if test="amount !=null and amount !=''">amount=#{amount}</if>
     	</set>
     	where id = #{id}
     </update>
 
 	<select id="getSaleList" resultType="com.crm.domain.Sale">
-		select t.id,t.year,t.month,t.amount from sale t where 1=1
+		select t.id,t.year,t.month,t.day,t.amount from sale t where 1=1
 		<if test="conditionSql != null and conditionSql != ''">
             ${conditionSql}
         </if>
 	</select>
 	
 	<select id="findById" resultType="com.crm.domain.Sale">
-		select t.id,t.year,t.month,t.amount from sale t where t.id=#{id}
+		select t.id,t.year,t.month,t.day,t.amount from sale t where t.id=#{id}
 	</select> 
 	
 	<select id="getDatagridTotal" resultType="long">
@@ -63,15 +65,21 @@
         <if test="month != null and month != ''">
             and month = #{month}
         </if>
+        <if test="day != null and day != ''">
+            and day = #{day}
+        </if>
 	</select>
 	
 	<select id="datagridSale" resultType="com.crm.domain.Sale">
-		select t.id,t.year,t.month,t.amount from sale t where 1=1
+		select t.id,t.year,t.month,t.day,t.amount from sale t where 1=1
 		<if test="sale.year != null and sale.year != ''">
             and year = #{sale.year}
         </if>
         <if test="sale.month != null and sale.month != ''">
             and month = #{sale.month}
+        </if>
+        <if test="sale.day != null and sale.day != ''">
+            and day = #{sale.day}
         </if>
 		<if test="page.sort != null and page.sort != ''">
             order by #{page.sort} #{page.order}
@@ -82,7 +90,7 @@
 	</select>
 	
 	<select id="findSaleListPage" resultMap="saleMap">
-		select t.id s_id, t.year s_year, t.month s_month, t.amount s_amount, t.activityId s_activityId,
+		select t.id s_id, t.year s_year, t.month s_month, t.day s_day, t.amount s_amount, t.activityId s_activityId,
 		 a.id a_id, a.title a_title, a.description a_description, a.publicCode a_publicCode
 		 from sale t right join activity a on t.activityId = a.id 
 		 where a.publicCode in (${publicCode})
@@ -98,7 +106,7 @@
 	</select>
 	
 	<select id="findSaleListBy" resultMap="saleMap">
-		select t.id s_id, t.year s_year, t.month s_month, t.amount s_amount, t.activityId s_activityId,
+		select t.id s_id, t.year s_year, t.month s_month, t.day s_day, t.amount s_amount, t.activityId s_activityId,
 		 a.id a_id, a.title a_title, a.description a_description, a.publicCode a_publicCode
 		 from sale t left join activity a on t.activityId = a.id 
 		 where t.activityId in (${atyIds})
@@ -108,7 +116,7 @@
 	</select>
 	
 	<select id="findSaleList" resultMap="saleMap">
-		select t.id s_id, t.year s_year, t.month s_month, t.amount s_amount, t.activityId s_activityId,
+		select t.id s_id, t.year s_year, t.month s_month, t.day s_day, t.amount s_amount, t.activityId s_activityId,
 		 a.id a_id, a.title a_title, a.description a_description, a.publicCode a_publicCode
 		 from sale t left join activity a on t.activityId = a.id 
 		 where 1=1
@@ -118,10 +126,10 @@
 	</select>
 	
 	<insert id="addSaleBatch" parameterType="java.util.List" >
-		insert into sale(year, month, amount, activityId, userId)
+		insert into sale(year, month, day, amount, activityId, userId)
 		values
 		<foreach collection="saleList" item="sale" index="index" separator=",">
-			(#{sale.year}, #{sale.month}, #{sale.amount}, #{sale.activityId}, #{sale.userId})
+			(#{sale.year}, #{sale.month}, #{sale.day}, #{sale.amount}, #{sale.activityId}, #{sale.userId})
 		</foreach>
 	</insert>
     
