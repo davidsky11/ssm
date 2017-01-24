@@ -17,22 +17,23 @@
 					<div class="form-group">
 						<div class="box-body">
 							<div class="row">
-								<div class="col-xs-1">
-									<label>活动： </label>
-								</div>
-								<div class="col-xs-2">
+								<div class="col-xs-3">
+									<div class="col-xs-3"><label>活动： </label>
+									</div>
+									<div class="col-xs-9">
 									<select class="form-control" id="activityId" name="activityId">
 										<c:forEach items="${atyList}" var="aty">
 											<option value="${aty.id}"
 												<c:if test="${activityId eq aty.id }">selected=selected</c:if>>${aty.title}</option>
 										</c:forEach>
 									</select>
+									</div>
 								</div>
 								
-								<div class="col-xs-1">
-									<label>年份： </label>
-								</div>
 								<div class="col-xs-2">
+									<div class="col-xs-3"><label>年份： </label>
+									</div>
+									<div class="col-xs-9">
 									<select class="form-control" id="year" name="year">
 										<option value="">请选择年份</option>
 										<c:forEach items="${yearArr}" var="arr">
@@ -40,19 +41,32 @@
 												<c:if test="${year eq arr }">selected=selected</c:if>>${arr}</option>
 										</c:forEach>
 									</select>
+									</div>
 								</div>
 								
-								<div class="col-xs-1">
-									<label>月份： </label>
-								</div>
 								<div class="col-xs-2">
-									<select class="form-control" id="month" name="month">
+									<div class="col-xs-3"><label>月份： </label></div>
+									<div class="col-xs-9"><select class="form-control" id="month" name="month">
 										<option value="">请选择月份</option>
 										<c:forEach items="${monthArr}" var="mon">
 											<option value="${mon}"
 												<c:if test="${month eq mon}">selected=selected</c:if>>${mon}</option>
 										</c:forEach>
 									</select>
+									</div>
+								</div>
+								
+								<div class="col-xs-2">
+									<div class="col-xs-3"><label>级别:</label></div>
+									<div class="col-xs-9">
+										<select class="form-control" id="level" name="level">
+											<c:forEach items="${levelArr}" var="arr">
+												<option value="${arr.key}"
+													<c:if test="${arr.value eq level}">selected=selected</c:if>>${arr.value}</option>
+											</c:forEach>
+										</select>
+									</div>
+									
 								</div>
 
 								<div class="col-xs-3">
@@ -128,6 +142,34 @@
 		]
 	};
 	
+	myChart.on('click', function(params){
+		var value = params.name;
+		var level = $('#level').val();
+		if (level == "year") {
+			var idx = value.indexOf("-");
+			var year = value.substring(0, idx);
+			var month = value.substring(idx+1, value.length);
+			$('#year').val(year);
+			$('#month').val(month);
+			$('#level').val("month");
+		}
+		if (level == "month") {
+			$('#month').val(params.name);
+			$('#level').val("month");
+		}
+		if (level == "" || typeof(level) == "undefined") {
+			$('#level').val("month");
+			
+			var idx = value.indexOf("-");
+			var year = value.substring(0, idx);
+			var month = value.substring(idx+1, value.length);
+			$('#year').val(year);
+			$('#month').val(month);
+			alert(month);
+		}
+		getChartData();
+	});
+	
 	function getChartData() {
 		myChart.showLoading({
 			text : '正在努力的加载数据中...'
@@ -141,7 +183,8 @@
 			data : {
 				activityId : $('#activityId').val(),
 				year: $('#year').val(),
-				month: $('#month').val()
+				month: $('#month').val(),
+				level: $('#level').val()
 			},
 			dataType : "json", //返回数据形式为json  
 			success : function(result) {
@@ -180,6 +223,14 @@
 	getChartData();
 	
 	$("#searchBtn").click(function() {
+		var level = $('#level').val();
+		if (level == "year") {
+			$('#month').val("");
+		}
+		if (level == "month") {
+			$('#month').val("");
+		}
+		
 		getChartData();
 	});
 

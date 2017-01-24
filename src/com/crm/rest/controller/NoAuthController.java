@@ -309,7 +309,7 @@ public class NoAuthController {
 			conditionsql.append(" and date(exchangeTime) < '").append(endTime).append("'");
 		}
 		
-		conditionsql.append(" and userId = '").append(userId).append("')")
+		conditionsql.append(" and userId = '").append(userId).append("'")
 			.append(" order by exchangeTime desc");
 		
 		List<Exchange> list = this.exchangeSercie.findByCondition(conditionsql.toString());
@@ -375,7 +375,7 @@ public class NoAuthController {
 			conditionsql.append(" and date(t.scanTime) < '").append(endTime).append("'");
 		}
 		
-		conditionsql.append(" and t.userId = '").append(userId);
+		conditionsql.append(" and t.userId = '").append(userId).append("'");
 		
 		long total = scanRecordService.getDatagridTotalByCondition(conditionsql.toString());
 		
@@ -607,19 +607,6 @@ public class NoAuthController {
     					Award award = awardService.findById(awardId);
     					
     					/**
-        				 * 判断insideCode是否匹配
-        				 */
-        				if (Tool.isNotNullOrEmpty(exType) && (insideCode == null || !insideCode.equals(wares.getInsideCode()))) {
-        					result.setCode(Const.INFO_NO_AWARD);
-        					result.setSuccess(false);
-        					result.setMsg("兑奖操作，请扫描匹配的瓶盖[瓶盖内码不匹配]");
-        					
-        					wares.setInsideCode(null);
-        					result.setData(wares);
-        					return result;
-        				}
-    					
-    					/**
     					 * 如果不兑奖，直接返回
     					 */
     					if (!Tool.isNotNullOrEmpty(exType)) {
@@ -629,7 +616,18 @@ public class NoAuthController {
 	    					result.setMsg("您中了" + award.getTitle() + ", " + award.getDescription());
 	    					result.setData(award);
 	    					return result;
-    					}
+    					} else if (insideCode == null || !insideCode.equals(wares.getInsideCode())) {
+    						/**
+            				 * 判断insideCode是否匹配
+            				 */
+        					result.setCode(Const.INFO_NO_AWARD);
+        					result.setSuccess(false);
+        					result.setMsg("兑奖操作，请扫描匹配的瓶盖[瓶盖内码不匹配]");
+        					
+        					wares.setInsideCode(null);
+        					result.setData(wares);
+        					return result;
+        				}
     					
     					/**
 						 * 兑奖处理

@@ -690,6 +690,62 @@ public class NoAuthWxController {
 		 return result;
 	}
 	
+	@RequestMapping(value = "/awardAnalysisWx", method = RequestMethod.POST)
+	@ResponseBody
+	@ApiOperation(value = "奖项统计", httpMethod = "POST", response = ApiResult.class, notes = "统计当前奖项的基本信息和数目信息")
+	public ApiResult awardAnalysis(@ApiParam(required = true, name = "wechatCode", value = "微信编码") @RequestParam("wechatCode") String wechatCode) {
+	
+		ApiResult result = new ApiResult();
+		result.setOperate(Const.OPERATE_AWARD_ANALYSIS);
+		
+		Wares wares = this.waresService.findByWxCode(wechatCode);
+		String publicCode = "";
+		if (wares != null) {
+			publicCode = wares.getPublicCode();
+		} else {
+			result.setCode(Const.ERROR_NULL_POINTER);
+			result.setMsg("该商品未生产");
+			result.setSuccess(false);
+			result.setData(null);
+			
+			return result;
+		}
+		
+		/**
+		 * 1、获取所有对应publicCode（对应活动）的  活动信息
+		 */
+		StringBuffer conditionSql = new StringBuffer();
+		conditionSql.append(" and publicCode = '").append(publicCode).append("'");
+		
+		Activity activity = null;
+		List<Activity> activityList = activityService.getDatagrid(conditionSql.toString());
+		if (activityList != null && activityList.size() > 0) {
+			activity = activityList.get(0);
+		} else {
+			result.setCode(Const.ERROR_NULL_POINTER);
+			result.setSuccess(true);
+			result.setMsg("没有 " + publicCode + " 对应的活动");
+			result.setData(null);
+			
+			return result;
+		}
+		
+		/**
+		 * 2、根据活动信息获取奖项信息
+		 */
+		conditionSql.setLength(0);
+		conditionSql.append(" and activityId = '").append(activity.getId()).append("'")
+			.append(" order by hierarchy ");
+		List<Award> awardList = this.awardService.getDatagrid(conditionSql.toString());
+		
+		result.setCode(Const.INFO_NORMAL);
+		result.setSuccess(true);
+		result.setMsg("找到" + awardList.size() + "条奖项信息");
+		result.setData(awardList);
+		
+		return result;
+	}
+	
 	private ScanRecord pushAddress2SR(Address address) {
 		ScanRecord sr = new ScanRecord();
 		if (address == null)	return sr;
@@ -774,60 +830,5 @@ public class NoAuthWxController {
 		return result;
 	}
 
-	@RequestMapping(value = "/awardAnalysisWx", method = RequestMethod.POST)
-	@ResponseBody
-	@ApiOperation(value = "奖项统计", httpMethod = "POST", response = ApiResult.class, notes = "统计当前奖项的基本信息和数目信息")
-	public ApiResult awardAnalysis(@ApiParam(required = true, name = "wechatCode", value = "微信编码") @RequestParam("wechatCode") String wechatCode) {
-	
-		ApiResult result = new ApiResult();
-		result.setOperate(Const.OPERATE_AWARD_ANALYSIS);
-		
-		Wares wares = this.waresService.findByWxCode(wechatCode);
-		String publicCode = "";
-		if (wares != null) {
-			publicCode = wares.getPublicCode();
-		} else {
-			result.setCode(Const.ERROR_NULL_POINTER);
-			result.setMsg("该商品未生产");
-			result.setSuccess(false);
-			result.setData(null);
-			
-			return result;
-		}
-		
-		/**
-		 * 1、获取所有对应publicCode（对应活动）的  活动信息
-		 */
-		StringBuffer conditionSql = new StringBuffer();
-		conditionSql.append(" and publicCode = '").append(publicCode).append("'");
-		
-		Activity activity = null;
-		List<Activity> activityList = activityService.getDatagrid(conditionSql.toString());
-		if (activityList != null && activityList.size() > 0) {
-			activity = activityList.get(0);
-		} else {
-			result.setCode(Const.ERROR_NULL_POINTER);
-			result.setSuccess(true);
-			result.setMsg("没有 " + publicCode + " 对应的活动");
-			result.setData(null);
-			
-			return result;
-		}
-		
-		/**
-		 * 2、根据活动信息获取奖项信息
-		 */
-		conditionSql.setLength(0);
-		conditionSql.append(" and activityId = '").append(activity.getId()).append("'")
-			.append(" order by hierarchy ");
-		List<Award> awardList = this.awardService.getDatagrid(conditionSql.toString());
-		
-		result.setCode(Const.INFO_NORMAL);
-		result.setSuccess(true);
-		result.setMsg("找到" + awardList.size() + "条奖项信息");
-		result.setData(awardList);
-		
-		return result;
-	}
 }
  

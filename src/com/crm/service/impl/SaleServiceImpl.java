@@ -38,8 +38,8 @@ public class SaleServiceImpl implements SaleService {
 	}
 	
 	// 查询所有活动
-	public List<Sale> getSaleList(String conditionSql) {
-		return saleMapper.getSaleList(conditionSql);
+	public List<Sale> findSaleList(String level, String activityId, String year, String month, String userId) {
+		return saleMapper.findSaleList(level, activityId, year, month, userId);
 	}
 	
 	public Sale findById(String id) {
@@ -66,8 +66,8 @@ public class SaleServiceImpl implements SaleService {
 		return saleMapper.findSaleListBy(atyIds, conditionSql);
 	}
 	
-	public List<Sale> findSaleList(String conditionSql) {
-		return saleMapper.findSaleList(conditionSql);
+	public List<Sale> getSaleList(String conditionSql) {
+		return saleMapper.getSaleList(conditionSql);
 	}
 
 }

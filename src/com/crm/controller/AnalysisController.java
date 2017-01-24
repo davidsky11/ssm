@@ -5,6 +5,7 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -208,8 +209,14 @@ public class AnalysisController {
 		Integer[] yearArr = new Integer[]{2016, 2017, 2018, 2019, 2020};
 		Integer[] monthArr = new Integer[]{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12};
 		
+		List<AddressType> levelArr = new ArrayList<AddressType>();
+		levelArr.add(new AddressType("", "请选择 "));
+		levelArr.add(new AddressType("year", "年份"));
+		levelArr.add(new AddressType("month", "月份"));
+		
 		model.addAttribute("yearArr", yearArr);
 		model.addAttribute("monthArr", monthArr);
+		model.addAttribute("levelArr", levelArr);
 		
 		String yearS = Tool.nvl(request.getParameter("year"));
 		model.addAttribute("year", yearS);
@@ -226,12 +233,22 @@ public class AnalysisController {
 		String activityId = Tool.nvl(request.getParameter("activityId"));
 		String yearS = Tool.nvl(request.getParameter("year"));
 		String monthS = Tool.nvl(request.getParameter("month"));
+		String level = Tool.nvl(request.getParameter("level"));
 		
 		Calendar cal = Calendar.getInstance();
 		int year = cal.get(Calendar.YEAR);  // 年
 		int month = cal.get(Calendar.MONTH) + 1;  // 月
 		
 		int prevYear = year - 1;  // 上年
+		
+		int daysOfMonth = 30;
+		
+		if (Tool.isNotNullOrEmpty(yearS) && Tool.isNotNullOrEmpty(monthS)) {
+			Calendar calendar = Calendar.getInstance();
+			calendar.setTime(new Date(Integer.valueOf(yearS),
+					Integer.valueOf(monthS), 1));
+			daysOfMonth = calendar.getActualMaximum(Calendar.DAY_OF_MONTH);  // 当月的天数
+		}
 		
 		List<String> yearMList = new ArrayList<String>();
 		if (Tool.isNotNullOrEmpty(yearS)) {
@@ -253,81 +270,140 @@ public class AnalysisController {
 		
 		switch (user.getUserType()) {
 			case Const.USERTYPE_VENDER:  // 厂商
+				
 				if (Tool.isNotNullOrEmpty(yearS)) { // 选中了年份
-					conditionSql
-						.append(" and t.year = '").append(yearS).append("' ");
+					switch (level) {
+						case "year":
+							saleList = this.saleService.findSaleList("year, month", activityId, yearS, "", "");
+							break;
+						case "month":
+							saleList = this.saleService.findSaleList("year, month, day", activityId, yearS, monthS, "");
+							break;
+						default:
+							
+							break;
+					}
 				} else {
 					conditionSql
 						.append(" and ((t.year = '").append(prevYear).append("' and t.month > '").append(month-1).append("') ")
-						.append(" or (t.year = '").append(year).append("' and t.month < '").append(month).append("')) ");
-				}
-				
-				if (Tool.isNotNullOrEmpty(activityId)) {
-					conditionSql.append(" and t.activityId = '").append(activityId).append("'");
-				}
-
-				/**
-				 * 1、直接从销售统计表里获取数据
-				 */
-				saleList = saleService.findSaleList(conditionSql.toString());
-				
-				int size = yearMList.size();
-				for (int i=0; i<size; i++) {
-					AbstractChartDto dto = new AbstractChartDto();
-					
-					String yearM = yearMList.get(i);
-					dto.setBar(yearM);
-					
-					for (Sale sale : saleList) {
-						if (yearM.equals(sale.getYear() + "-" + sale.getMonth())) {
-							dto.setCategory(sale.getAmount() + "");
-							continue;
-						}
+						.append(" or (t.year = '").append(year).append("' and t.month < '").append(month+1).append("')) ");
+					if (Tool.isNotNullOrEmpty(activityId)) {
+						conditionSql.append(" and t.activityId = '").append(activityId).append("'");
 					}
-					list.add(dto);
+					
+					conditionSql.append(" group by year, month");
+					
+					saleList = saleService.getSaleList(conditionSql.toString());
+					Collections.sort(saleList);  // 对销售记录进行排序
+				}
+				
+				switch (level) {
+					case "month":
+						
+						for (int i=1; i<=daysOfMonth; i++) {
+							AbstractChartDto dto = new AbstractChartDto();
+							
+							dto.setBar(i + "");
+							
+							for (Sale sale : saleList) {
+								if (sale.getDay() != null && i == sale.getDay()) {
+									dto.setCategory(sale.getAmount() + "");
+									continue;
+								}
+							}
+							list.add(dto);
+						}
+						break;
+					case "year":
+												
+					default:
+						int size = yearMList.size();
+						for (int i=0; i<size; i++) {
+							AbstractChartDto dto = new AbstractChartDto();
+							
+							String yearM = yearMList.get(i);
+							dto.setBar(yearM);
+							
+							for (Sale sale : saleList) {
+								if (yearM.equals(sale.getYear() + "-" + sale.getMonth())) {
+									dto.setCategory(sale.getAmount() + "");
+									continue;
+								}
+							}
+							list.add(dto);
+						}
+						break;
 				}
 				
 				break;
 			case Const.USERTYPE_DEALER:  // 经销商
 				if (Tool.isNotNullOrEmpty(yearS)) { // 选中了年份
-					conditionSql
-						.append(" and (t.year = '").append(yearS).append("') ")
-						.append(" and t.userId = '").append(user.getId()).append("'");
+					switch (level) {
+						case "year":
+							saleList = this.saleService.findSaleList("year, month", activityId, yearS, "", user.getId());
+							break;
+						case "month":
+							saleList = this.saleService.findSaleList("year, month, day", activityId, yearS, monthS, user.getId());
+							break;
+						default:
+							
+							break;
+					}
 				} else {
 					conditionSql
-						.append(" and ((t.year = '").append(prevYear).append("' and t.month > '").append(month).append("') ")
-						.append(" or (t.year = '").append(year).append("' and t.month <= '").append(month+1).append("')) ")
+						.append(" and ((t.year = '").append(prevYear).append("' and t.month > '").append(month-1).append("') ")
+						.append(" or (t.year = '").append(year).append("' and t.month < '").append(month+1).append("')) ")
 						.append(" and t.userId = '").append(user.getId()).append("'");
-				}
-				
-				if (Tool.isNotNullOrEmpty(activityId)) {
-					conditionSql.append(" and t.activityId = '").append(activityId).append("'");
-				}
-				
-				/**
-				 * 1、直接从销售统计表里获取数据
-				 */
-				saleList = saleService.findSaleList(conditionSql.toString());
-				
-				Collections.sort(saleList);  // 对销售记录进行排序
-				
-				int size_ = yearMList.size();
-				for (int i=0; i<size_; i++) {
-					AbstractChartDto dto = new AbstractChartDto();
 					
-					String yearM = yearMList.get(i);
-					dto.setBar(yearM);
-
-					for (Sale sale : saleList) {
-						if (yearM.equals(sale.getYear() + "-" + sale.getMonth())) {
-							dto.setCategory(sale.getAmount() + "");
-							
-							continue;
-						}
+					if (Tool.isNotNullOrEmpty(activityId)) {
+						conditionSql.append(" and t.activityId = '").append(activityId).append("'");
 					}
-					list.add(dto);
+					
+					conditionSql.append(" group by year, month");
+					
+					saleList = saleService.getSaleList(conditionSql.toString());
+					Collections.sort(saleList);  // 对销售记录进行排序
 				}
 				
+				switch (level) {
+					case "month":
+						
+						for (int i=1; i<=daysOfMonth; i++) {
+							AbstractChartDto dto = new AbstractChartDto();
+							
+							dto.setBar(i + "");
+							
+							for (Sale sale : saleList) {
+								if (sale.getDay() != null && i == sale.getDay()) {
+									dto.setCategory(sale.getAmount() + "");
+									continue;
+								}
+							}
+							list.add(dto);
+						}
+						break;
+					case "year":
+					
+					default:
+						int size = yearMList.size();
+						for (int i=0; i<size; i++) {
+							AbstractChartDto dto = new AbstractChartDto();
+							
+							String yearM = yearMList.get(i);
+							dto.setBar(yearM);
+							
+							for (Sale sale : saleList) {
+								if (yearM.equals(sale.getYear() + "-" + sale.getMonth())) {
+									dto.setCategory(sale.getAmount() + "");
+									continue;
+								}
+							}
+							list.add(dto);
+						}
+						
+						break;
+				}
+					
 				break;
 			default:
 				

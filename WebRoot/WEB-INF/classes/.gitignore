@@ -1,11 +1,3 @@
 /cert/
-/.gitignore
 /com/
-/config/
-/configuration.properties
-/ehcache.xml
-/ehcache1.xml
-/logback.xml
-/quartz.properties
 /ssm/
-/template/

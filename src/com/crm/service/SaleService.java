@@ -23,7 +23,7 @@ public interface SaleService {
 	public int updateSale(Sale sale);
 	
 	// 查询所有活动
-	public List<Sale> getSaleList(String conditionSql);
+	public List<Sale> findSaleList(String level, String activityId, String year, String month, String userId);
 	
 	public Sale findById(String id);
 
@@ -35,7 +35,7 @@ public interface SaleService {
 	
 	public List<Sale> findSaleListBy(String atyIds, String conditionSql);
 	
-	public List<Sale> findSaleList(String conditionSql);
+	public List<Sale> getSaleList(String conditionSql);
 
 }
  

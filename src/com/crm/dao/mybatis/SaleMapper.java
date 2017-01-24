@@ -38,7 +38,8 @@ public interface SaleMapper {
 	
 	public List<Sale> findSaleListBy(@Param("atyIds") String atyIds, @Param("conditionSql") String conditionSql);
 
-	public List<Sale> findSaleList(@Param("conditionSql") String conditionSql);
+	public List<Sale> findSaleList(@Param("level") String level, @Param("activityId") String activityId, @Param("year") String year,
+			@Param("month") String month, @Param("userId") String userId);
 
 	public int addSaleBatch(@Param("saleList") List<Sale> saleList);
 	
