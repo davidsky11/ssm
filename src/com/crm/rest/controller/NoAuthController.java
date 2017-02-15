@@ -547,7 +547,7 @@ public class NoAuthController {
 	    			
 	    			return result;
 	    		}
-    			
+	    		
     			if (wares == null) {
     				/* --> 返回值1
     				 */
@@ -606,17 +606,7 @@ public class NoAuthController {
     					 */
     					Award award = awardService.findById(awardId);
     					
-    					/**
-    					 * 如果不兑奖，直接返回
-    					 */
-    					if (!Tool.isNotNullOrEmpty(exType)) {
-	    					result.setCode(Const.INFO_NORMAL);
-	    					result.setSuccess(true);
-	    					
-	    					result.setMsg("您中了" + award.getTitle() + ", " + award.getDescription());
-	    					result.setData(award);
-	    					return result;
-    					} else if (insideCode == null || !insideCode.equals(wares.getInsideCode())) {
+    					if (insideCode == null || !insideCode.equals(wares.getInsideCode())) {
     						/**
             				 * 判断insideCode是否匹配
             				 */
@@ -628,6 +618,18 @@ public class NoAuthController {
         					result.setData(wares);
         					return result;
         				}
+    					
+    					/**
+    					 * 如果不兑奖，直接返回
+    					 */
+    					if (!Tool.isNotNullOrEmpty(exType)) {
+	    					result.setCode(Const.INFO_NORMAL);
+	    					result.setSuccess(true);
+	    					
+	    					result.setMsg("您中了" + award.getTitle() + ", " + award.getDescription());
+	    					result.setData(award);
+	    					return result;
+    					}
     					
     					/**
 						 * 兑奖处理

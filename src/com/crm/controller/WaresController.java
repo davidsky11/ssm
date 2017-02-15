@@ -581,8 +581,8 @@ public class WaresController {
 		
 		if (Tool.isNotNullOrEmpty(code)) {
 			paramMap.put("code", code);
-			conditionSql.append(" and (w.publicCode = '").append(code)
-				.append("' or w.privateCode = '").append(code).append("') ");
+			conditionSql.append(" and (w.publicCode like '%").append(code)
+				.append("%' or w.privateCode like '%").append(code).append("%') ");
 		}
 		
 		page = waresService.searchListByCondition(page, conditionSql.toString());

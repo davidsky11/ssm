@@ -73,20 +73,28 @@
 					<table class="table table-hover center">
 						<tr>
 							<th style="width: 10px">#</th>
-							<th>公共编码</th>
+							<th>活动[编码]</th>
 							<th>瓶身内码</th>
 							<th>出厂时间</th>
 							<th>经销商</th>
+							<th>扫描时间</th>
+							<th>扫描地点</th>
 							<th>状态</th>
 							<th>操作</th>
 						</tr>
 						<c:forEach items="${list}" var="wes" varStatus="status">
 							<tr>
 								<td>${status.count}</td>
-								<td>${wes.publicCode}</td>
+								<td>${wes.title} 
+									<c:if test="${wes.publicCode ne ''}">
+									[${wes.publicCode}]
+									</c:if>
+								</td>
 								<td>${wes.privateCode}</td>
 								<td><fmt:formatDate pattern="yyyy-MM-dd HH:mm:ss" value="${wes.createTime}" /></td>
 								<td>${wes.userName}</td>
+								<td><fmt:formatDate pattern="yyyy-MM-dd HH:mm:ss" value="${wes.scanTime}" /></td>
+								<td>${wes.formattedAddress}</td>
 								<td>
 									<c:choose>
 										<c:when test="${wes.status eq '1' }">

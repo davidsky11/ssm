@@ -88,16 +88,20 @@
 	</select>
 	
 	<select id="searchListByCondition" resultType="com.crm.domain.dto.WaresDto">
-		select w.id, w.publicCode, w.privateCode, w.insideCode, w.wechatCode, w.createTime, w.status, ss.userName, ss.scanTime from wares w 
+		select w.id, w.publicCode, w.privateCode, w.insideCode, w.wechatCode, w.createTime, 
+		w.status, ss.userName, ss.scanTime, ss.formattedAddress, ss.sematicDescription, a.title 
+		from wares w 
 		left join 
-		(select waresId, userId, userName, scanTime from scan_record where userType = '2') ss
-		on w.id = ss.waresId where 1=1 
+		(select waresId, userId, userName, max(scanTime) scanTime, formattedAddress, sematicDescription from scan_record where userType = '2' group by waresId) ss
+		on w.id = ss.waresId 
+		left join activity a on a.publicCode = w.publicCode where 1=1 
 		<if test="conditionSql != null and conditionSql != ''">
             ${conditionSql}
         </if>
-        <if test="page.sort != null and page.sort != ''">
+        <!-- <if test="page.sort != null and page.sort != ''">
             order by #{page.sort} #{page.order}
-        </if>
+        </if> -->
+        ORDER BY w.createTime DESC, ss.scanTime DESC 
         <if test="page.page > 0">
             limit #{page.start},#{page.end}
         </if>
@@ -152,7 +156,7 @@
 		<!-- <selectKey keyProperty="id" resultType="String" order="BEFORE">
 			select replace(UUID(), "-", "")
 		</selectKey> -->
-		insert into wares(id, creater, publicCode, privateCode, insideCode, t.wechatCode, insideCodeTmp, status, createTime, awardId)
+		insert into wares(id, creater, publicCode, privateCode, insideCode, wechatCode, insideCodeTmp, status, createTime, awardId)
 		values
 		<foreach collection="waresList" item="wares" index="index" separator=",">
 			(#{wares.id}, #{wares.creater}, #{wares.publicCode}, #{wares.privateCode}, #{wares.insideCode}, #{wares.wechatCode}, #{wares.insideCodeTmp},

@@ -17,7 +17,10 @@ public class WaresDto {
 	private String insideCode;
 	private Date createTime;
 	private String userName;
+	private String title;
 	private Date scanTime;
+	private String formattedAddress;
+	private String sematicDescription;
 	private String status;
 	
 	public String getId() {
@@ -69,12 +72,31 @@ public class WaresDto {
 	public void setStatus(String status) {
 		this.status = status;
 	}
+	public String getFormattedAddress() {
+		return formattedAddress;
+	}
+	public String getSematicDescription() {
+		return sematicDescription;
+	}
+	public void setFormattedAddress(String formattedAddress) {
+		this.formattedAddress = formattedAddress;
+	}
+	public void setSematicDescription(String sematicDescription) {
+		this.sematicDescription = sematicDescription;
+	}
+	public String getTitle() {
+		return title;
+	}
+	public void setTitle(String title) {
+		this.title = title;
+	}
 	
 	@Override
 	public String toString() {
 		return "WaresDto [id=" + id + ", publicCode=" + publicCode + ", privateCode=" + privateCode + ", insideCode="
-				+ insideCode + ", createTime=" + createTime + ", userName=" + userName + ", scanTime=" + scanTime
-				+ ", status=" + status + "]";
+				+ insideCode + ", createTime=" + createTime + ", userName=" + userName + ", title=" + title
+				+ ", scanTime=" + scanTime + ", formattedAddress=" + formattedAddress + ", sematicDescription="
+				+ sematicDescription + ", status=" + status + "]";
 	}
 
 }
