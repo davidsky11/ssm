@@ -294,7 +294,7 @@
 	
 	<select id="selectByPublisher" resultMap="scanRecordMap">
 		select t.id,t.userId,t.userName,t.longitude,t.latitude,t.scanTime,t.country,t.province,t.city,t.distance,
-		t.street,t.formattedAddress,t.sematicDescription,
+		t.street,t.formattedAddress,t.sematicDescription,t.publicCode,t.privateCode,
 		u.id u_id, u.username u_username, u.email u_email, u.regtime u_regtime, u.thirdType u_thirdType,
 		a.id a_id, a.title a_title, a.description a_description, a.content a_content
 		from scan_record t

@@ -504,6 +504,9 @@ public class NoAuthWxController {
 			    		 * 4、添加扫码记录
 			    		 */
 						sr.setWaresId(wares.getId());
+						sr.setPublicCode(wares.getPublicCode());
+						sr.setPrivateCode(wares.getPrivateCode());
+						
 						this.scanRecordService.saveScanRecord(sr);
 						
 						result.setCode(Const.INFO_NORMAL);

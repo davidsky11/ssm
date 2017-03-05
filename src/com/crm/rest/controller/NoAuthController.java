@@ -3,7 +3,6 @@ package com.crm.rest.controller;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
@@ -1683,7 +1682,7 @@ public class NoAuthController {
 		try {
 			String url = "http://api.map.baidu.com/geocoder/v2/";
 			
-			Address addr = new Address();
+			address = new Address();
 			String json = "";
 			
 			HttpClient client = new HttpClient(new HttpClientParams(), new SimpleHttpConnectionManager(true));
@@ -1706,7 +1705,8 @@ public class NoAuthController {
 					while ((len = in.read(buffer)) != -1) {
 						baos.write(buffer, 0, len);
 					}
-					json = URLDecoder.decode(baos.toString(), "UTF-8");
+					//json = URLDecoder.decode(baos.toString("UTF-8"), "UTF-8");
+					json = baos.toString("UTF-8");
 				} else {
 					throw new Exception("HTTP ERROR Status: " + method.getStatusCode() + ":" + method.getStatusText());
 				}
@@ -1720,9 +1720,9 @@ public class NoAuthController {
 			log.info("[map] -- json: " + json);
 			
 			//Gson gson = new Gson();
-			addr = GsonUtils.fromJson(json, Address.class);
-			if (addr != null)
-				System.out.println(addr.toString());
+			address = GsonUtils.fromJson(json, Address.class);
+			if (address != null)
+				System.out.println(address.toString());
 			
 		} catch (NumberFormatException e) {
 			result.setCode(Const.ERROR_PARAM_MISS);

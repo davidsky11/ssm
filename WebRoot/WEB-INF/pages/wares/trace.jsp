@@ -74,7 +74,7 @@
 						<tr>
 							<th style="width: 10px">#</th>
 							<th>活动[编码]</th>
-							<th>瓶身内码</th>
+							<th>商品编码</th>
 							<th>出厂时间</th>
 							<th>经销商</th>
 							<th>扫描时间</th>

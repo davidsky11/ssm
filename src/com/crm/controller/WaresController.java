@@ -506,7 +506,7 @@ public class WaresController {
 	}
 	
 	private void createExcel(Activity aty, OutputStream os, List<Wares> list){
-		String[] heads={"atyCode[活动编码]","publicCode[公共编码]","privateCodeTmp[瓶身外码]","insideCode[实验内码]"};
+		String[] heads={"publicCode[公共编码]","atyCode[活动编码]","privateCodeTmp[瓶身外码]","insideCode[实验内码]"};
 		WritableWorkbook workbook=null;
 		try {
 			workbook = Workbook.createWorkbook(os);
@@ -514,10 +514,11 @@ public class WaresController {
 			WritableSheet sheet = workbook.createSheet(aty.getTitle() + "_相关编码", 0);
 			for(int i=0;i<heads.length;i++){
 				sheet.addCell(new Label(i,0,heads[i]));
+				sheet.setColumnView(i, 25);  // 设置列宽
 			}
 			for(int i=0;i<list.size();i++){
-				sheet.addCell(new Label(0, i+1, aty.getAtyCode()));
 				sheet.addCell(new Label(1, i+1, list.get(i).getPublicCode()));
+				sheet.addCell(new Label(0, i+1, aty.getAtyCode()));
 				sheet.addCell(new Label(2, i+1, list.get(i).getPrivateCode()));
 				sheet.addCell(new Label(3, i+1, list.get(i).getInsideCodeTmp()));
 			}

@@ -69,6 +69,7 @@
 							</label></th> -->
 							<th style="width: 10px">#</th>
 							<th>活动名称</th>
+							<th>商品编码</th>
 							<th>奖品</th>
 							<th>兑奖者</th>
 							<th>兑奖时间</th>
@@ -88,6 +89,7 @@
 										${ex.activity.title}
 									</c:if>
 								</td>
+								<td>${ex.privateCode}</td>
 								<td>
 									<c:if test="${ex.award != null}">
 										${ex.award.title}(${ex.award.description})

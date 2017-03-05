@@ -17,12 +17,12 @@
 			<input type="text" class="form-control" id="title" name="title">
 		</div>
 		<div class="form-group">
-			<label for="atyCode" class="control-label"><font color="red">*</font>活动编码:</label> 
-			<input type="text" class="form-control" id="atyCode" name="atyCode">
+			<label for="publicCode" class="control-label"><font color="red">*</font>活动编码:</label> 
+			<input type="text" class="form-control" id="publicCode" name="publicCode">
 		</div>
 		<div class="form-group">
-			<label for="publicCode" class="control-label"><font color="red">*</font>公共编码:</label> 
-			<input type="text" class="form-control" id="publicCode" name="publicCode">
+			<label for="atyCode" class="control-label"><font color="red">*</font>公共编码:</label> 
+			<input type="text" class="form-control" id="atyCode" name="atyCode">
 		</div>
 		<div class="form-group">
 			<label for="startTime" class="control-label"><font color="red">*</font>开始时间</label>
@@ -73,10 +73,23 @@
 </div>
 	<div class="modal-footer">
 		<button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
-		<button type="submit" class="btn btn-primary" id="addSubmitBtn">提交</button>
+		<button type="submit" class="btn btn-primary" id="addSubmitBtn" onclick="return validate();">提交</button>
 	</div>
 </form>
 <script>
+
+	function validate() {
+		var str = $('#publicCode').val();
+		
+		var valid = /^\d{3}$/;
+		
+		if (valid.test(str)) {
+			return true;
+		} else {
+			alert("活动编码必须是三位数字!");
+			return false;
+		}
+	}
 
 /*modal框事件监听 详情：http://v3.bootcss.com/javascript/#modals-events */
 $('#modal').on('shown.bs.modal', function(event) {	

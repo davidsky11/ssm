@@ -78,6 +78,7 @@
 								<th>瓶身码</th>
 							</c:if>
 							<c:if test="${userType eq '1'}">
+								<th>商品编码</th>
 								<th>扫码地址</th>
 							</c:if>
 							<th>操作</th>
@@ -111,6 +112,7 @@
 									<td>${sr.privateCode}</td>
 								</c:if>
 								<c:if test="${userType eq '1'}">
+									<td>${sr.privateCode}</td>
 									<td>${sr.province} ${sr.city} ${sr.distance } ${sr.street }</td>
 								</c:if>
 								<td>

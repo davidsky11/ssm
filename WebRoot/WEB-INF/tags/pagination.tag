@@ -5,10 +5,19 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 
 <%
+int step = 10;  // 步进10
 int current =  page.getPage();			// 当前页，从1开始
 int pageSize = page.getPageSize();		// 总共的页数
-int begin = Math.max(1, current - pageSize/2);			// 起始页
-long end = Math.min(begin + (pageSize - 1), pageSize);	// 结束页
+
+int begin = 1;
+if (current%step > 0) {
+	begin += current - current%step;
+} else {
+	begin += current - current%step - step;
+}
+//int begin = Math.max(1, current - pageSize/2);			// 起始页
+//long end = Math.min(begin + (pageSize - 1), pageSize);	// 结束页
+long end = Math.min(begin + step, pageSize);
 
 request.setAttribute("current", current);
 request.setAttribute("begin", begin);
@@ -21,21 +30,32 @@ request.setAttribute("contentSelector", contentSelector);
 	<ul class="pagination pagination-sm no-margin pull-right">
 		 <% if (page.hasPrevious()){%>
                	<li><a href="${action}?pageNumber=1&${searchParams}">首页</a></li>
-                <li><a href="${action}?pageNumber=${current}&${searchParams}">&laquo;</a></li>
+               	<c:if test="${current > 1}">
+                	<li><a href="${action}?pageNumber=${current-1}&${searchParams}">&laquo;</a></li>
+                </c:if>
+                <c:if test="${current <= 1}">
+                	<li class="disabled"><a href="#">&laquo;</a></li>
+                </c:if>
          <%}else{%>
                 <li class="disabled"><a href="#">首页</a></li>
                 <li class="disabled"><a href="#">&laquo;</a></li>
          <%} %>
  
+ 		<c:set var="flag" value="true" />
 		<c:forEach var="i" begin="${begin}" end="${end}">
-            <c:choose>
-                <c:when test="${i == current}">
-                    <li class="active"><a href="?pageNumber=${i}&${searchParams}">${i}</a></li>
-                </c:when>
-                <c:otherwise>
-                    <li><a href="${action}?pageNumber=${i}&${searchParams}">${i}</a></li>
-                </c:otherwise>
-            </c:choose>
+			<c:if test="${flag}">
+	            <c:choose>
+	                <c:when test="${i == current}">
+	                    <li class="active"><a href="${action}?pageNumber=${i}&${searchParams}">${i}</a></li>
+	                </c:when>
+	                <c:otherwise>
+	                    <li><a href="${action}?pageNumber=${i}&${searchParams}">${i}</a></li>
+	                </c:otherwise>
+	            </c:choose>
+            </c:if>
+            <c:if test="${i - begin >= step}">
+		        <c:set var="flag" value="false"/>
+		    </c:if>
         </c:forEach>
 	  
 	  	 <% if (page.hasNext()){%>

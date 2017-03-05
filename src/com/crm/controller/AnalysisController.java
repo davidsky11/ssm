@@ -246,7 +246,7 @@ public class AnalysisController {
 		if (Tool.isNotNullOrEmpty(yearS) && Tool.isNotNullOrEmpty(monthS)) {
 			Calendar calendar = Calendar.getInstance();
 			calendar.setTime(new Date(Integer.valueOf(yearS),
-					Integer.valueOf(monthS), 1));
+					Integer.valueOf(monthS), -1));
 			daysOfMonth = calendar.getActualMaximum(Calendar.DAY_OF_MONTH);  // 当月的天数
 		}
 		

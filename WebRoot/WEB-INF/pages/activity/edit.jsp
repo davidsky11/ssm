@@ -18,12 +18,12 @@
 				<input type="text" class="form-control" id="title" name="title" value="${aty.title}" >
 			</div>	
 			<div class="form-group">
-				<label for="atyCode" class="control-label">公共编码:</label> 
-				<input type="text" class="form-control" id="atyCode" name="atyCode" value="${aty.atyCode}" >
+				<label for="publicCode" class="control-label">活动编码:</label> 
+				<input type="text" class="form-control" id="publicCode" name="publicCode" value="${aty.publicCode}" >
 			</div>	
 			<div class="form-group">
-				<label for="publicCode" class="control-label">公共编码:</label> 
-				<input type="text" class="form-control" id="publicCode" name="publicCode" value="${aty.publicCode}" >
+				<label for="atyCode" class="control-label">公共编码:</label> 
+				<input type="text" class="form-control" id="atyCode" name="atyCode" value="${aty.atyCode}" >
 			</div>			
 			<div class="form-group">
 				<label for="startTime" class="control-label"><font color="red">*</font>开始时间</label>
@@ -68,10 +68,23 @@
 		</div>
 		<div class="modal-footer">
 			<button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
-			<button type="submit" class="btn btn-primary" id="updateSubmitBtn">提交</button>
+			<button type="submit" class="btn btn-primary" id="updateSubmitBtn" onclick="return validate();">提交</button>
 		</div>
 	</form>
 <script>
+
+	function validate() {
+		var str = $('#publicCode').val();
+		
+		var valid = /^\d{3}$/;
+		
+		if (valid.test(str)) {
+			return true;
+		} else {
+			alert("活动编码必须是三位数字!");
+			return false;
+		}
+	}
 
 	//Date picker
 	$('#startTime').datepicker({
