@@ -119,7 +119,7 @@
 								</c:if>
 								<c:if test="${userType eq '1'}">
 									<td>${sr.privateCode}</td>
-									<td>${sr.province} ${sr.city} ${sr.distance } ${sr.street }</td>
+									<td>${sr.province} ${sr.city} ${sr.district} ${sr.street}</td>
 								</c:if>
 								<td>
 									<button id="detailBtn" type="button"

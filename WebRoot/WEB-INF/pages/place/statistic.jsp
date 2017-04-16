@@ -134,7 +134,7 @@
 		}
 		if (level == "city") {
 			$('#city').val(params.name);
-			$('#level').val("distance");
+			$('#level').val("district");
 		}
 		if (level == "" || typeof(level) == "undefined") {
 			$('#level').val("province");
