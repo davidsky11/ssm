@@ -1,6 +1,0 @@
-2016-08-01 01:36:14 [org.springframework.beans.factory.xml.XmlBeanDefinitionReader:316] - Loading XML bean definitions from class path resource [config/spring-mybatis.xml]
-2016-08-01 01:36:14 [org.springframework.context.support.AbstractApplicationContext:513] - Refreshing org.springframework.context.support.GenericApplicationContext@36c82658: startup date [Mon Aug 01 01:36:14 CST 2016]; root of context hierarchy
-2016-08-01 01:36:14 [org.springframework.core.io.support.PropertiesLoaderSupport:172] - Loading properties file from class path resource [configuration.properties]
-2016-08-01 01:36:14 [com.alibaba.druid.pool.DruidDataSource:638] - {dataSource-1} inited
-2016-08-01 01:36:15 [org.springframework.context.support.AbstractApplicationContext:873] - Closing org.springframework.context.support.GenericApplicationContext@36c82658: startup date [Mon Aug 01 01:36:14 CST 2016]; root of context hierarchy
-2016-08-01 01:36:15 [com.alibaba.druid.pool.DruidDataSource:1288] - {dataSource-1} closed

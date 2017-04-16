@@ -38,6 +38,7 @@
 		u.qq u_qq, u.weixin u_weixin, u.regTime u_regTime, u.loginTime u_loginTime, u.userAlias u_userAlias,
 		u.telephone u_telephone, u.address u_address, u.merchant u_merchant, u.loginFrequency u_loginFrequency,
 		u.locked u_locked, u.lastLoginTime u_lastLoginTime, u.flagCode u_flagCode, r.id r_id, r.name r_name, 
+		u.points, u.noUsePoints,
 		r.roleDesc r_roleDesc
 		from sysuser u left join sysrole r on u.userType = r.id where u.username = #{username} 
 		and u.userType = #{userType}
@@ -46,17 +47,32 @@
 	<select id="findByConditionSql" resultType="com.crm.domain.User">
 		select id, username, password, userType, email, idcard, gender, qq, weixin, regTime, userType,
 		 generateName, loginTime, userAlias, lastLoginTime, creatorName, locked,
-		 telephone, address, merchant, flagCode, loginFrequency, thirdType, thirdOpenid
+		 telephone, address, merchant, flagCode, loginFrequency, thirdType, thirdOpenid,
+		 points, noUsePoints, points-noUsePoints as usePoints
 		 from sysuser where 1=1
 		<if test="conditionSql != null and conditionSql != ''">
 			${conditionSql}
 		</if>
 	</select>
 	
+	<select id="findByPhone" resultType="com.crm.domain.User">
+		select id, username, userType, email, idcard, gender, qq, weixin, regTime,
+		loginTime, lastLoginTime, creatorName, locked, wxOpenId, telephone, merchant, points,
+		noUsePoints,  points-noUsePoints as usePoints
+		from sysuser where userType = "3" and telephone = #{phone} limit 1
+	</select>
+	
+	<select id="findByOpenId" resultType="com.crm.domain.User">
+		select id, username, userType, email, idcard, gender, qq, weixin, regTime,
+		loginTime, lastLoginTime, creatorName, locked, wxOpenId, telephone, merchant, points,
+		noUsePoints, points-noUsePoints as usePoints
+		from sysuser where userType = "3" and wxOpenId = #{openId} limit 1
+	</select>
+	
 	<select id="getUserById" resultType="com.crm.domain.User">
-		select id, username, userType, email, idcard, gender, qq, weixin, regTime, userType,
+		select id, username, userType, email, idcard, gender, qq, weixin, regTime
 		 generateName, loginTime, userAlias, lastLoginTime, creatorName, locked, wxOpenId, telephone,
-		 merchant, loginFrequency, address, flagCode
+		 merchant, loginFrequency, address, flagCode, points, noUsePoints, points-noUsePoints as usePoints
 		 from sysuser where id = #{id} 
 	</select>
 	
@@ -167,7 +183,9 @@
             <if test="merchant != null and merchant != ''">merchant,</if>
             <if test="thirdType != null and thirdType != ''">thirdType,</if>
             <if test="thirdOpenid != null and thirdOpenid != ''">thirdOpenid,</if>
-            <if test="flagCode != null and flagCode != ''">flagCode</if>
+            <if test="flagCode != null and flagCode != ''">flagCode,</if>
+            <if test="wxOpenId != null and wxOpenId != ''">wxOpenId,</if>
+            points, noUsePoints
             </trim>)values(<trim suffixOverrides=",">
             <if test="id !=null and id !=''">#{id},</if>
             <if test="username !=null and username !=''">#{username},</if>
@@ -190,7 +208,9 @@
             <if test="merchant != null and merchant != ''">#{merchant}</if>
             <if test="thirdType != null and thirdType != ''">#{thirdType},</if>
             <if test="thirdOpenid != null and thirdOpenid != ''">#{thirdOpenid},</if>
-            <if test="flagCode != null and flagCode != ''">#{flagCode}</if>
+            <if test="flagCode != null and flagCode != ''">#{flagCode},</if>
+            <if test="wxOpenId != null and wxOpenId != ''">#{wxOpenId},</if>
+            #{points}, #{noUsePoints}
             </trim>)
 	</insert>
 	
@@ -218,7 +238,9 @@
             <if test="address != null and address != ''">address=#{address},</if>
             <if test="telephone != null and telephone != ''">telephone=#{telephone},</if>
             <if test="merchant != null and merchant != ''">merchant=#{merchant},</if>
-            <if test="flagCode != null and flagCode != ''">flagCode=#{flagCode}</if>
+            <if test="flagCode != null and flagCode != ''">flagCode=#{flagCode},</if>
+            <if test="wxOpenId != null and wxOpenId != ''">wxOpenId=#{wxOpenId},</if>
+            points=#{points}, noUsePoints=#{noUsePoints}
     	</set>
     	where id = #{id}
     </update>

@@ -306,12 +306,12 @@ public class MyBatisTest extends AbstractJUnit4SpringContextTests {
 	@Test
 	public void editUser() {
 		User user = new User();
-		user.setId("92cbfeec7ef511e6a36600ac1e83ba5a");
+		user.setId("01b30403960211e6b55e00ac1e83ba5a");
 		user.setLocked(Const.USER_UNLOCK);
-		
-		System.out.println(user);
+		user.setNoUsePoints(100);
 		
 		int i = userMapper.editUser(user);
+		System.out.println(user);
 		System.out.println(i);
 	}
 	
@@ -751,5 +751,7 @@ public class MyBatisTest extends AbstractJUnit4SpringContextTests {
 	    	saleMapper.addSaleBatch(saleList);
     	}
     }
+	
+	
 	
 }

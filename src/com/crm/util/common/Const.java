@@ -164,6 +164,7 @@ public class Const {
     public static final String EX_WECHAT = "WECHAT";
     public static final String EX_PHONE = "PHONE";
     public static final String EX_Q_BILL = "Q_BILL";
+    public static final String EX_POINT = "POINT";
     
     /**
      * 兑奖状态 【未兑奖】
@@ -234,6 +235,10 @@ public class Const {
      */
     public static final int WARN_NO_QQ = 308;  // QQ号码错误
     /**
+     * 数值不够
+     */
+    public static final int ERROR_NO_ENOUGH = 309;  // 数值不够
+    /**
      * 超时 400
      */
     public static final int WARN_TIMEOUT = 400; // 过期，超时
@@ -283,4 +288,7 @@ public class Const {
     public static final String OPERATE_EXCHANGE_TYPE = "EXCHANGE_TYPE";
     public static final String OPERATE_EXCHANGE_QUERY = "EXCHANGE_QUERY";
     public static final String OPERATE_FORGET_PASS = "FORGET_PASS";
+    public static final String OPERATE_BOUND_PHONE = "BOUND_PHONE";
+    public static final String OPERATE_POINTS_QUERY = "POINTS_QUERY";
+    public static final String OPERATE_POINTS_EXCHANGE = "POINTS_EXHCNAGE";
 }

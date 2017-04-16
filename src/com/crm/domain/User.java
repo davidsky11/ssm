@@ -61,6 +61,10 @@ public class User {
 	private String telephone;  // 手机号码
 	private String flagCode;  // 设备码
 	
+	private Integer points = 0;  // 用户对应的积分
+	private Integer noUsePoints = 0;  // 剩余积分
+	private Integer usePoints = 0;  // 已兑积分
+	
 	/**
 	 * 第三方登录需要
 	 */
@@ -292,6 +296,30 @@ public class User {
 	public void setFlagCode(String flagCode) {
 		this.flagCode = flagCode;
 	}
+	
+	public Integer getPoints() {
+		return points;
+	}
+
+	public void setPoints(Integer points) {
+		this.points = points;
+	}
+	
+	public Integer getNoUsePoints() {
+		return noUsePoints;
+	}
+
+	public void setNoUsePoints(Integer noUsePoints) {
+		this.noUsePoints = noUsePoints;
+	}
+
+	public Integer getUsePoints() {
+		return usePoints;
+	}
+
+	public void setUsePoints(Integer usePoints) {
+		this.usePoints = usePoints;
+	}
 
 	@Override
 	public String toString() {
@@ -300,7 +328,11 @@ public class User {
 				+ ", sysname=" + sysname + ", psysname=" + psysname + ", userType=" + userType + ", generateName="
 				+ generateName + ", token=" + token + ", userAlias=" + userAlias + ", loginTime=" + loginTime
 				+ ", lastLoginTime=" + lastLoginTime + ", role=" + role + ", roleName=" + roleName + ", creatorId="
-				+ creatorId + ", creatorName=" + creatorName + ", locked=" + locked + "]";
+				+ creatorId + ", creatorName=" + creatorName + ", locked=" + locked + ", address=" + address
+				+ ", wxOpenId=" + wxOpenId + ", merchant=" + merchant + ", loginFrequency=" + loginFrequency
+				+ ", telephone=" + telephone + ", flagCode=" + flagCode + ", points=" + points + ", noUsePoints="
+				+ noUsePoints + ", usePoints=" + usePoints + ", thirdType=" + thirdType + ", thirdOpenid="
+				+ thirdOpenid + ", menuList=" + menuList + "]";
 	}
 	
 }

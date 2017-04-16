@@ -92,6 +92,12 @@
 								<td>
 									<c:if test="${sr.user != null}">
 										${sr.user.username}
+										<c:if test="${sr.user.userAlias != null }">
+										(${sr.user.userAlias})
+										</c:if>
+									</c:if>
+									<c:if test="${sr.user == null}">
+										${sr.userName}
 									</c:if>
 								</td>
 								<td><fmt:formatDate pattern="yyyy-MM-dd HH:mm:ss" value="${sr.scanTime}" /></td>

@@ -92,6 +92,7 @@ public class NoAuthController {
 	
 	private final Logger log = LoggerFactory.getLogger(NoAuthController.class);
 	
+	private final Integer exchangeRatio = 100; // 兑换比率
 	private static PageHelper page = new PageHelper();
 
 	@Resource
@@ -279,50 +280,207 @@ public class NoAuthController {
 		return result;
 	}
 
-	/**
-	 * @Title:			exchangeRecord
-	 * @Description:	APP用户查询自己的兑奖记录
-	 * @param userType	用户类型
-	 * @param userId	用户ID
-	 * @param beginTime	记录开始时间
-	 * @param endTime	记录结束时间
-	 * @return
-	 */
-	@RequestMapping(value = "/exchangeRecord", method = RequestMethod.POST)
+	@RequestMapping(value = "/scanExPoint", method = RequestMethod.POST)
 	@ResponseBody
-	@ApiOperation(value = "兑奖记录", httpMethod = "POST", response = ApiResult.class, notes = "根据用户名、用户类型、时间查询兑奖记录")
-	public ApiResult exchangeRecord(@ApiParam(required = true, name = "userId", value = "用户ID") @RequestParam("userId") String userId, 
-			@ApiParam(required = true, name = "beginTime", value = "开始时间") @RequestParam("beginTime") String beginTime,
-			@ApiParam(required = true, name = "endTime", value = "结束时间") @RequestParam("endTime") String endTime) {
+	@Authorization
+	@ApiOperation(value = "扫码兑换积分", httpMethod = "POST", response = ApiResult.class, notes = "先扫码，如果有奖，再进行积分兑换")
+	public ApiResult scanExPoint(@ApiParam(required = true, name = "userId", value = "公众号userId") @RequestParam("userId") String userId, 
+			@ApiParam(required = true, name = "flagCode", value = "硬件标识码") @RequestParam("flagCode") String flagCode,
+			@ApiParam(required = true, name = "time", value = "客户端时间") @RequestParam("time") String time,
+			@ApiParam(required = true, name = "longitude", value = "经度") @RequestParam("longitude") String longitude, 
+			@ApiParam(required = true, name = "latitude", value = "纬度") @RequestParam("latitude") String latitude, 
+			@ApiParam(required = true, name = "publicCode", value = "公共编码") @RequestParam("publicCode") String publicCode, 
+			@ApiParam(required = true, name = "privateCode", value = "唯一码") @RequestParam("privateCode") String privateCode,
+			@ApiParam(required = false, name = "insideCode", value = "内码") @RequestParam(value = "insideCode", required= false) String insideCode, 
+			@ApiParam(required = false, name = "writeIn", value = "是否写入") @RequestParam(value = "writeIn", required= false) String writeIn) {
+    	
+    	ApiResult result = new ApiResult();
+    	result.setOperate(Const.OPERATE_USER_WITH_INFO);
+    	
+    	User user = this.userService.getUserById(userId);  // 查找用户
+    	
+    	if (user == null) {  // 用户不存在，则直接返回
+			result.setCode(Const.ERROR_NULL_POINTER);
+			result.setSuccess(false);
+			result.setMsg("需要先绑定手机才能进行兑换.");
+			
+			return result;
+		}
+    	
+    	/**
+		 * 1、查询该商品信息
+		 */
+		StringBuffer conditionSql = new StringBuffer();
+		conditionSql.append(" and publicCode = '").append(publicCode).append("' ")
+			.append(" and privateCode = '").append(privateCode).append("'");
 	
-		ApiResult result = new ApiResult();
-		result.setOperate(Const.OPERATE_EXCHANGE_RECORD);
+		// 查询商品信息
+		Wares wares = null;
+		List<Wares> waresList = waresService.getDatagrid(conditionSql.toString());
+		if (waresList != null && waresList.size() > 0) {
+			wares = waresList.get(0);
+		}
+    	
+    	/**
+		 * 2、添加扫码记录
+		 */
+		ScanRecord sr = new ScanRecord();
+		Address address = null;
+		try {
+			address = MapUtil.location2Address(Double.parseDouble(latitude), Double.parseDouble(longitude));
+			
+			sr = this.pushAddress2SR(address);
+			sr.setLatitude(Double.parseDouble(latitude));
+			sr.setLongitude(Double.parseDouble(longitude));
+		} catch (NumberFormatException e) {
+			result.setCode(Const.ERROR_PARAM_MISS);
+			result.setSuccess(false);
+			result.setMsg("经纬度数据错误!");
+			result.setData(null);
+			return result;
+		} catch (Exception e) {
+			e.printStackTrace();
+		} 
 		
-		StringBuffer conditionsql = new StringBuffer("");
-		
-		if (beginTime != null && !beginTime.equals("")) {
-			conditionsql.append(" and date(exchangeTime) > '").append(beginTime).append("'");
+		sr.setScanTime(new Date());
+		if (user != null) {
+			sr.setUserId(user.getId());
+			sr.setUserName(user.getUsername());
+			sr.setUserType(user.getUserType());
 		}
 		
-		if (endTime != null && !endTime.equals("")) {
-			conditionsql.append(" and date(exchangeTime) < '").append(endTime).append("'");
+		result.setOperate(Const.OPERATE_APP_SCAN);
+		
+		/**
+		 * 3、检查参数合法性，不合法，直接返回
+		 */
+		if (wares == null) {
+    		result.setCode(Const.ERROR_NULL_POINTER);
+    		result.setMsg("该商品不存在");
+    		result.setSuccess(false);
+    		
+    		return result;
+    	}
+		
+		sr.setInsideCode(insideCode);
+		sr.setWaresId(wares.getId());
+		sr.setPublicCode(wares.getPublicCode());
+		sr.setPrivateCode(wares.getPrivateCode());
+		try {
+			if (writeIn != null && !writeIn.equals("")) {  // “写入”参数非空，则写入数据库
+				this.scanRecordService.saveScanRecord(sr);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 		
-		conditionsql.append(" and userId = '").append(userId).append("'")
-			.append(" order by exchangeTime desc");
+		// 已消费未中奖
+		if (wares.getStatus().equals(Const.EX_STATUS_NO_AWARD)) {  
+			result.setCode(Const.INFO_NO_AWARD);
+			result.setSuccess(false);
+			result.setMsg("该商品已消费[未中奖]!");
+			result.setData(wares);
+			
+			return result;
+		}
 		
-		List<Exchange> list = this.exchangeSercie.findByCondition(conditionsql.toString());
+		// 已消费已兑奖
+		if (wares.getStatus().equals(Const.EX_STATUS_EXCHANGED)) {  
+			result.setCode(Const.INFO_EXCHANGED);
+			result.setSuccess(false);
+			result.setMsg("该商品已消费[已兑奖]!");
+			result.setData(wares);
+			
+			return result;
+		}
 		
-		if (list != null && list.size() > 0) {
+		/**
+		 * 3、判断是否中奖
+		 */
+		String awardId = wares.getAwardId(); // 获取对应的奖项位ID
+		if (awardId == null || awardId.equals("")) {  // 没有奖
+			if (!wares.getStatus().equals(Const.EX_STATUS_NO_AWARD)) {
+				wares.setStatus(Const.EX_STATUS_NO_AWARD);
+				waresService.updateWares(wares);
+			}
+			
+			/* --> 返回值2  未中奖  【200 + false】
+			 */
+			result.setCode(Const.INFO_NO_AWARD);
+			result.setSuccess(false);
+			result.setMsg("该商品未中奖，欢迎下次惠顾！");
+			result.setData(wares);
+		} else {
+			/* --> 返回值3  中奖  【200 + false】
+			 */
+			Award award = awardService.findById(awardId);
+			
+			/**
+			 * 判断insideCode是否匹配
+			 */
+			if (insideCode == null || !insideCode.equals(wares.getInsideCode())) {
+				result.setCode(Const.INFO_NO_AWARD);
+				result.setSuccess(false);
+				result.setMsg("兑奖操作，请扫描匹配的瓶盖[瓶盖内码不匹配]");
+				
+				wares.setInsideCode(null);
+				result.setData(wares);
+				return result;
+			}
+
+			/**
+			 * 兑奖处理
+			 * 	先兑奖，再添加兑奖记录
+			 */
+			/**
+			 * I 积分兑奖
+			 */
+			Double amount = award.getAmount();  // 奖项金额
+			Integer point = (int) (amount * exchangeRatio);
+			
+			user.setPoints(user.getPoints() + point);
+			user.setNoUsePoints(user.getNoUsePoints() + point);
+			
+			this.userService.edit(user);
+			
+			/**
+			 * III 添加兑奖记录
+			 */
+			Exchange ex = this.pushAddress2Ex(address);
+			ex.setUserId(user.getId());
+			ex.setExchangeTime(new Date());
+			ex.setWaresId(wares.getId());
+			ex.setLongitude(Double.parseDouble(longitude));
+			ex.setLatitude(Double.parseDouble(latitude));
+			ex.setFlagCode(flagCode);
+			ex.setPublicCode(wares.getPublicCode());
+			ex.setPrivateCode(wares.getPrivateCode());
+			ex.setInsideCode(insideCode);
+			ex.setAward(award);
+			ex.setAwardId(awardId);
+			ex.setExchangeType("POINT_EXCHANGE");
+			
+			try {
+				exchangeSercie.saveExchange(ex);
+			} catch (Exception e) {
+				e.printStackTrace();
+				
+				result.setCode(Const.ERROR_SERVER);
+				result.setSuccess(false);
+				result.setMsg("新增兑奖记录失败!");
+				
+				return result;
+			}
+			
+			/**
+			 * 修改商品的兑奖状态
+			 */
+			wares.setStatus(Const.EX_STATUS_EXCHANGED);
+			waresService.updateWares(wares);
+				
 			result.setCode(Const.INFO_NORMAL);
 			result.setSuccess(true);
-			result.setMsg("获取到 " + list.size() + " 条兑奖记录!");
-			result.setData(list);
-		} else {
-			result.setCode(Const.WARN_NO_MORE_DATA);
-			result.setSuccess(false);
-			result.setMsg("数据到头了...");
-			result.setData(null);
+			result.setData(ex);
 		}
 		
 		return result;
@@ -630,6 +788,8 @@ public class NoAuthController {
 	    					return result;
     					}
     					
+    					int remain = award.getRemain();  // 该奖项剩余数目
+    					
     					/**
 						 * 兑奖处理
 						 * 	先兑奖，再添加兑奖记录
@@ -697,7 +857,7 @@ public class NoAuthController {
     				    		result.setData(response.getMch_billno());
     				    	}
     				    	result.setMsg("您中了" + award.getTitle() + ", 系统正在为您开奖！");
-    						
+    				    	
     						break;
     					case Const.EX_PHONE:
     						String phone = user.getTelephone();
@@ -736,6 +896,7 @@ public class NoAuthController {
     								
     								return result;
     							}
+    					
     						} else {
     							result.setSuccess(false);
     							result.setMsg("充值失败");
@@ -787,6 +948,19 @@ public class NoAuthController {
     						}
     						
     						break;
+    					case Const.EX_POINT:  // 积分兑换
+    						/**
+    						 * 积分兑奖
+    						 */
+    						Double amount = award.getAmount();  // 奖项金额
+    						Integer point = (int) (amount * exchangeRatio);
+    						
+    						user.setPoints(user.getPoints() + point);
+    						user.setNoUsePoints(user.getNoUsePoints() + point);
+    						
+    						this.userService.edit(user);
+    						
+    						break;
     					default:
     						result.setCode(Const.ERROR_PARAM_MISS);
 							result.setSuccess(false);
@@ -814,6 +988,7 @@ public class NoAuthController {
 						ex.setBeneficiary(recNo);
 						
     					//result.setData(ex);
+						result.setData(award);
     					
 						try {
 							exchangeSercie.saveExchange(ex);
@@ -832,6 +1007,14 @@ public class NoAuthController {
     					 */
     					wares.setStatus(Const.EX_STATUS_EXCHANGED);
     					waresService.updateWares(wares);
+    					
+    					/**
+    					 * 修改奖项剩余数目
+    					 */
+    					if (remain > 0) {
+    				    	award.setRemain(remain - 1);
+    				    	awardService.updateAward(award);
+				    	}
     						
     				}
     				
@@ -893,9 +1076,52 @@ public class NoAuthController {
 		notes = "privateCode 在数据库中不存在，返回该商品还未生产\nprivateCode 对应的记录已经兑奖，返回该商品已消费\nprivateCode与insideCode不匹配，返回该商品涉嫌伪造\nprivateCode与insideCode匹配，返回该商品为正品，请扫码兑奖")
 	public ApiResult antiFake(@ApiParam(required = true, name = "publicCode", value = "公共编码") @RequestParam("publicCode") String publicCode, 
 			@ApiParam(required = true, name = "privateCode", value = "唯一码") @RequestParam("privateCode") String privateCode, 
+			@ApiParam(required = true, name = "userId", value = "用户ID") @RequestParam("userId") String userId, 
+			@ApiParam(required = true, name = "flagCode", value = "硬件标识码") @RequestParam("flagCode") String flagCode,
+			@ApiParam(required = true, name = "time", value = "客户端时间") @RequestParam("time") String time,
+			@ApiParam(required = true, name = "longitude", value = "经度") @RequestParam("longitude") String longitude, 
+			@ApiParam(required = true, name = "latitude", value = "纬度") @RequestParam("latitude") String latitude, 
+			@ApiParam(required = false, name = "writeIn", value = "是否写入") @RequestParam(value = "writeIn", required= false) String writeIn, 
 			@ApiParam(required = false, name = "insideCode", value = "内码") @RequestParam(value = "insideCode", required = false) String insideCode) {
 		ApiResult result = new ApiResult();
 		result.setOperate(Const.OPERATE_ANTI_FAKE);
+		
+		ScanRecord sr = new ScanRecord();
+		Address address = null;
+		try {
+			address = MapUtil.location2Address(Double.parseDouble(latitude), Double.parseDouble(longitude));
+			
+			sr = this.pushAddress2SR(address);
+			sr.setLatitude(Double.parseDouble(latitude));
+			sr.setLongitude(Double.parseDouble(longitude));
+		} catch (NumberFormatException e) {
+			result.setCode(Const.ERROR_PARAM_MISS);
+			result.setSuccess(false);
+			result.setMsg("经纬度数据错误!");
+			result.setData(null);
+			return result;
+		} catch (Exception e) {
+			e.printStackTrace();
+		} 
+		
+		sr.setScanTime(new Date());
+		sr.setInsideCode(insideCode);
+		
+		User user = this.userService.getUserById(userId);
+
+		if (user != null) {
+			sr.setUser(user);
+			sr.setUserId(user.getId());
+			sr.setUserName(user.getUsername());
+		} else {
+			sr.setUserType("3");
+			if (userId.equalsIgnoreCase("IOS")) {
+				sr.setUserName("IOS用户");
+			}
+			if (userId.equalsIgnoreCase("Android")) {
+				sr.setUserName("Android用户");
+			}
+		}
 		
 		if (publicCode != null && privateCode != null && !publicCode.equals("") && !privateCode.equals("") ) {
 			
@@ -927,8 +1153,22 @@ public class NoAuthController {
 				return result;
 			}
 			
+			sr.setPublicCode(publicCode);
+			sr.setPrivateCode(privateCode);
+			
+			// 写入扫码记录
+			if (Tool.isNotNullOrEmpty(writeIn)) {
+				try {
+					this.scanRecordService.saveScanRecord(sr);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+			
 			if (wares != null) {
-				//if (wares.getStatus().equals(Const.EX_STATUS_EXCHANGED)) {  // 已兑奖
+				sr.setWares(wares);
+				sr.setWaresId(wares.getId());
+				
 				if (!wares.getStatus().equals(Const.EX_STATUS_UNEXCHANGE)) {  // 未中奖、已兑奖
 					/* --> 返回结果2
 					 */
@@ -986,6 +1226,14 @@ public class NoAuthController {
 			result.setData(null);
 		}
 		
+		if (Tool.isNotNullOrEmpty(writeIn)) {
+			try {
+				scanRecordService.saveScanRecord(sr);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		
 		return result;
 	}
 	
@@ -1003,9 +1251,54 @@ public class NoAuthController {
 	@ApiOperation(value = "商品跟踪/商品信息", httpMethod = "POST", response = ApiResult.class, notes = "用户通过扫码将瓶身二维码信息传给后台识别")
 	public ApiResult deliverGoods(@ApiParam(required = true, name = "flag", value = "操作标识") @RequestParam("flag") String flag,
 			@ApiParam(required = true, name = "publicCode", value = "公共编码") @RequestParam("publicCode") String publicCode,
-			@ApiParam(required = true, name = "privateCode", value = "唯一码") @RequestParam("privateCode") String privateCode) {
+			@ApiParam(required = true, name = "privateCode", value = "唯一码") @RequestParam("privateCode") String privateCode,
+			@ApiParam(required = true, name = "userId", value = "用户ID") @RequestParam("userId") String userId, 
+			@ApiParam(required = true, name = "flagCode", value = "硬件标识码") @RequestParam("flagCode") String flagCode,
+			@ApiParam(required = true, name = "time", value = "客户端时间") @RequestParam("time") String time,
+			@ApiParam(required = true, name = "longitude", value = "经度") @RequestParam("longitude") String longitude, 
+			@ApiParam(required = true, name = "latitude", value = "纬度") @RequestParam("latitude") String latitude, 
+			@ApiParam(required = false, name = "writeIn", value = "是否写入") @RequestParam(value = "writeIn", required= false) String writeIn) {
 		
 		ApiResult result = new ApiResult();
+		
+		ScanRecord sr = new ScanRecord();
+		Address address = null;
+		try {
+			address = MapUtil.location2Address(Double.parseDouble(latitude), Double.parseDouble(longitude));
+			
+			sr = this.pushAddress2SR(address);
+			sr.setLatitude(Double.parseDouble(latitude));
+			sr.setLongitude(Double.parseDouble(longitude));
+		} catch (NumberFormatException e) {
+			result.setCode(Const.ERROR_PARAM_MISS);
+			result.setSuccess(false);
+			result.setMsg("经纬度数据错误!");
+			result.setData(null);
+			return result;
+		} catch (Exception e) {
+			e.printStackTrace();
+		} 
+		
+		sr.setScanTime(new Date());
+		
+		User user = this.userService.getUserById(userId);
+		
+		if (user != null) {
+			sr.setUser(user);
+			sr.setUserId(user.getId());
+			sr.setUserName(user.getUsername());
+		} else {
+			sr.setUserType("3");
+			if (userId.equalsIgnoreCase("IOS")) {
+				sr.setUserName("IOS用户");
+			}
+			if (userId.equalsIgnoreCase("Android")) {
+				sr.setUserName("Android用户");
+			}
+		}
+		
+		sr.setPublicCode(publicCode);
+		sr.setPrivateCode(privateCode);
 		
 		switch(flag){
 		case Const.OPERATE_PRODUCT_TRACE:                     //商品跟踪
@@ -1051,10 +1344,20 @@ public class NoAuthController {
 			if (aty == null) {
 				result.setData(Const.ROOT_HTML_URL + "template.html");
 			} else {
+				sr.setActivity(aty);
+				sr.setActivityName(aty.getTitle());
 				result.setData(aty.getInfoUrl());
 			}
-			// 类似 "http://www.hclinks.cn/crmnew/static/info/123.html"
+			
 		 }
+		
+		if (Tool.isNotNullOrEmpty(writeIn)) {
+			try {
+				this.scanRecordService.saveScanRecord(sr);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
 		 
 		 return result;
 	}
@@ -1072,8 +1375,15 @@ public class NoAuthController {
 	@RequestMapping(value = "/awardAnalysis", method = RequestMethod.POST)
 	@ResponseBody
 	@ApiOperation(value = "奖项统计", httpMethod = "POST", response = ApiResult.class, notes = "统计当前奖项的基本信息和数目信息")
-	public ApiResult awardAnalysis(@ApiParam(required = true, name = "publicCode", value = "公共编码") @RequestParam("publicCode") String publicCode) {
-	
+	public ApiResult awardAnalysis(@ApiParam(required = true, name = "publicCode", value = "公共编码") @RequestParam("publicCode") String publicCode,
+			@ApiParam(required = true, name = "privateCode", value = "唯一码") @RequestParam("privateCode") String privateCode, 
+			@ApiParam(required = true, name = "userId", value = "用户ID") @RequestParam("userId") String userId, 
+			@ApiParam(required = true, name = "flagCode", value = "硬件标识码") @RequestParam("flagCode") String flagCode,
+			@ApiParam(required = true, name = "time", value = "客户端时间") @RequestParam("time") String time,
+			@ApiParam(required = true, name = "longitude", value = "经度") @RequestParam("longitude") String longitude, 
+			@ApiParam(required = true, name = "latitude", value = "纬度") @RequestParam("latitude") String latitude, 
+			@ApiParam(required = false, name = "writeIn", value = "是否写入") @RequestParam(value = "writeIn", required= false) String writeIn) {
+		
 		ApiResult result = new ApiResult();
 		result.setOperate(Const.OPERATE_AWARD_ANALYSIS);
 		
@@ -1094,6 +1404,58 @@ public class NoAuthController {
 			result.setData(null);
 			
 			return result;
+		}
+		
+		/**
+		 * 1.1、添加扫码记录
+		 */
+		ScanRecord sr = new ScanRecord();
+		Address address = null;
+		try {
+			address = MapUtil.location2Address(Double.parseDouble(latitude), Double.parseDouble(longitude));
+			
+			sr = this.pushAddress2SR(address);
+			sr.setLatitude(Double.parseDouble(latitude));
+			sr.setLongitude(Double.parseDouble(longitude));
+		} catch (NumberFormatException e) {
+			result.setCode(Const.ERROR_PARAM_MISS);
+			result.setSuccess(false);
+			result.setMsg("经纬度数据错误!");
+			result.setData(null);
+			return result;
+		} catch (Exception e) {
+			e.printStackTrace();
+		} 
+		
+		sr.setActivity(activity);
+		sr.setScanTime(new Date());
+		sr.setPublicCode(publicCode);
+		sr.setPrivateCode(privateCode);
+		
+		sr.setScanTime(new Date());
+		
+		User user = this.userService.getUserById(userId);
+		
+		if (user != null) {
+			sr.setUser(user);
+			sr.setUserId(user.getId());
+			sr.setUserName(user.getUsername());
+		} else {
+			sr.setUserType("3");
+			if (userId.equalsIgnoreCase("IOS")) {
+				sr.setUserName("IOS用户");
+			}
+			if (userId.equalsIgnoreCase("Android")) {
+				sr.setUserName("Android用户");
+			}
+		}
+		
+		if (Tool.isNotNullOrEmpty(writeIn)) {
+			try {
+				this.scanRecordService.saveScanRecord(sr);
+			} catch (Exception e) {
+				
+			}
 		}
 		
 		/**
@@ -1738,6 +2100,46 @@ public class NoAuthController {
 		result.setSuccess(true);
 		result.setMsg("转换成功");
 		result.setData(address);
+		return result;
+	}
+	
+	@RequestMapping(value = "/exchangeRecord", method = RequestMethod.POST)
+	@ResponseBody
+	@ApiOperation(value = "兑奖记录", httpMethod = "POST", response = ApiResult.class, notes = "根据用户名、用户类型、时间查询兑奖记录")
+	public ApiResult exchangeRecord(@ApiParam(required = true, name = "userId", value = "用户userId") @RequestParam("userId") String userId, 
+			@ApiParam(required = true, name = "beginTime", value = "开始时间") @RequestParam(value = "beginTime", required = false) String beginTime,
+			@ApiParam(required = true, name = "endTime", value = "结束时间") @RequestParam(value = "endTime", required = false) String endTime) {
+	
+		ApiResult result = new ApiResult();
+		result.setOperate(Const.OPERATE_EXCHANGE_RECORD);
+		
+		StringBuffer conditionsql = new StringBuffer("");
+		
+		if (beginTime != null && !beginTime.equals("")) {
+			conditionsql.append(" and date(exchangeTime) > '").append(beginTime).append("'");
+		}
+		
+		if (endTime != null && !endTime.equals("")) {
+			conditionsql.append(" and date(exchangeTime) < '").append(endTime).append("'");
+		}
+		
+		conditionsql.append(" AND t.userId = '" + userId + "'")
+			.append(" order by exchangeTime desc");
+		
+		List<Exchange> list = this.exchangeSercie.findByCondition(conditionsql.toString());
+		
+		if (list != null && list.size() > 0) {
+			result.setCode(Const.INFO_NORMAL);
+			result.setSuccess(true);
+			result.setMsg("获取到 " + list.size() + " 条兑奖记录!");
+			result.setData(list);
+		} else {
+			result.setCode(Const.WARN_NO_MORE_DATA);
+			result.setSuccess(false);
+			result.setMsg("数据到头了...");
+			result.setData(null);
+		}
+		
 		return result;
 	}
 }

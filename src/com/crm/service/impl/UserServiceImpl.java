@@ -207,4 +207,19 @@ public class UserServiceImpl implements UserService {
 		return page;
 	}
 
+	@Override
+	public User findByPhone(String phone) {
+		return userMapper.findByPhone(phone);
+	}
+
+	@Override
+	public User findByOpenId(String openId) {
+		return userMapper.findByOpenId(openId);
+	}
+
+	@Override
+	public int saveUserRole(UserRole userRole) throws Exception {
+		return userRoleMapper.saveUserRole(userRole);
+	}
+
 }

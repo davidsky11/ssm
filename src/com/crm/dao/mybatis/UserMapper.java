@@ -41,5 +41,9 @@ public interface UserMapper {
 	public int editUser(User user);
 	
 	public int deleteUser(@Param("ids") String ids);
+	
+	public User findByPhone(@Param("phone") String phone);
+	
+	public User findByOpenId(@Param("openId") String openId);
 
 }

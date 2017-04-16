@@ -126,6 +126,15 @@ public interface UserService {
     public int deleteUserRole(String conditionsql);
     
     /**
+     * 添加用户——角色对应关系
+     * @Title:			saveUserRole
+     * @Description:	TODO(这里用一句话描述这个方法的作用)
+     * @param userRole
+     * @return
+     */
+    public int saveUserRole(UserRole userRole) throws Exception;
+    
+    /**
      * @Title:			getByUserId
      * @Description:	根据ID获取UserRole
      * @param userId
@@ -135,4 +144,8 @@ public interface UserService {
     
 	public Page<User> userPages(Page<User> page, String conditionSql);
     
+	public User findByPhone(String phone);
+	
+	public User findByOpenId(String openId);
+		
 }

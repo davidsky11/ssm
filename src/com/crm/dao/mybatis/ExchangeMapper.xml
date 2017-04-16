@@ -163,7 +163,7 @@
         </if>
 	</select>
 	
-	<select id="findByCondition" resultType="com.crm.domain.Exchange">
+	<select id="findByCondition" resultMap="exchangeMap">
 		select t.id,t.userId,t.exchangeTime,t.insideCode,t.privateCode,t.publicCode,t.longitude,t.latitude,
 		t.country, t.province, t.city, t.distance, t.street, t.sematicDescription, t.formattedAddress, t.flagCode,t.waresId,
 		u.id u_id, u.username u_username, u.email u_email, u.regtime u_regtime, u.userAlias u_userAlias, u.thirdType u_thirdType,
@@ -172,7 +172,7 @@
 		w.id w_id, w.publicCode w_publicCode, w.privateCode w_privateCode, w.createTime w_createTime
 		 from exchange t 
 		 left join award a on t.awardId = a.id
-		 left join sysuser u on t.userId = u.id
+		 left join sysuser u on t.userId = u.id 
 		 left join activity ac on ac.publicCode = t.publicCode
 		 left join wares w on t.waresId = w.id
 		 where 1=1

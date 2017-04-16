@@ -21,6 +21,7 @@ import com.crm.authorization.model.TokenModel;
 import com.crm.authorization.service.TokenService;
 import com.crm.common.constants.ConstantDBOperateResultTypes;
 import com.crm.domain.User;
+import com.crm.domain.UserRole;
 import com.crm.rest.domain.ApiResult;
 import com.crm.service.UserService;
 import com.crm.service.ValidService;
@@ -123,9 +124,16 @@ public class CommonController {
 			try {
 				user.setLocked(Const.USER_UNLOCK);  // 未锁定
 				res = this.userService.add(user);  // 注册成功返回1
+				
+				String userId = user.getId();
+				UserRole userRole = new UserRole();
+				userRole.setRoleId(userType);
+				userRole.setUserId(userId);
+				
+				userService.saveUserRole(userRole);
 			} catch (Exception e) {
 				if (e instanceof DuplicateKeyException) {
-					res = 0;
+					res = 2;
 				}
 			}
 			
@@ -142,8 +150,14 @@ public class CommonController {
 				
 				result.setData(user);
 				break;
-			default:
+			case 2:
 				result.setCode(Const.ERROR_DUPLICATE);
+				result.setMsg("用户已存在");
+				result.setSuccess(false);
+				result.setData(null);
+				break;
+			default:
+				result.setCode(Const.WARN_OPERATE_FAIL);
 				result.setMsg("注册失败");
 				result.setSuccess(false);
 				result.setData(null);

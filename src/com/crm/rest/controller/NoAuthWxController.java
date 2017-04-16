@@ -5,8 +5,6 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -63,7 +61,8 @@ import com.wordnik.swagger.annotations.ApiParam;
 @Api(value = "/v1/nobusswx/", description = "不需要用户权限的API")
 public class NoAuthWxController {
 	
-	private final Logger log = LoggerFactory.getLogger(NoAuthWxController.class);
+//	private final Logger log = LoggerFactory.getLogger(NoAuthWxController.class);
+	private final Integer exchangeRatio = 100; // 兑换比率
 	
 	@Resource
 	private ExchangeService exchangeSercie;
@@ -272,7 +271,7 @@ public class NoAuthWxController {
     					result.setMsg("兑奖操作，请扫描匹配的瓶盖[瓶盖内码不匹配]");
     					
     					wares.setInsideCode(null);
-    					result.setData(wares);
+    					result.setData(award);
     					return result;
     				}
 					
@@ -283,7 +282,7 @@ public class NoAuthWxController {
     					result.setCode(Const.INFO_NORMAL);
     					result.setSuccess(true);
     					
-    					result.setMsg("您中了" + award.getTitle() + ", " + award.getDescription());
+    					result.setMsg("您中了" + award.getTitle() + ", 奖金 " + award.getAmount());
     					result.setData(award);
     					return result;
 					}
@@ -351,10 +350,10 @@ public class NoAuthWxController {
 				    	 */
 				    	if (null != response && Tool.isNotNullOrEmpty(response.getReturn_code()) && response.getReturn_code().equals("SUCCESS") 
 				    			&& Tool.isNotNullOrEmpty(response.getResult_code()) && response.getResult_code().equals("SUCCESS")) {
-				    		result.setMsg("您中了" + award.getTitle() + ", 系统正在为您开奖！");
+				    		result.setMsg("您中了" + award.getTitle() + "奖金：  " + award.getAmount() + ", 系统正在为您开奖！");
 				    		result.setData(response.getMch_billno());
 				    	}
-				    	result.setMsg("您中了" + award.getTitle() + ", 系统正在为您开奖！");
+				    	result.setMsg("您中了" + award.getTitle() + "奖金：  " + award.getAmount() + ", 系统正在为您开奖！");
 						
 						break;
 					case Const.EX_PHONE:
@@ -406,7 +405,6 @@ public class NoAuthWxController {
 					case Const.EX_Q_BILL:
 						String qq = user.getQq();
 						
-						// TODO 设置正确的手机号
 						if (Tool.isNullOrEmpty(recNo) && Tool.isNullOrEmpty(qq)) {
 							result.setCode(Const.WARN_NO_QQ);
 							result.setSuccess(false);
@@ -424,7 +422,6 @@ public class NoAuthWxController {
 							e.printStackTrace();
 						}
 						
-						System.out.println(res);
 						if (Tool.isNotNullOrEmpty(res)) {
 							ResultBean rb2 = GsonUtils.fromJson(res, ResultBean.class);
 							if (rb2.getError_code() != null && rb2.getError_code().equals("0")) {
@@ -443,6 +440,19 @@ public class NoAuthWxController {
 							
 							return result;
 						}
+						
+						break;
+					case Const.EX_POINT:
+						/**
+						 * 积分兑奖
+						 */
+						Double amount = award.getAmount();  // 奖项金额
+						Integer point = (int) (amount * exchangeRatio);
+						
+						user.setPoints(user.getPoints() + point);
+						user.setNoUsePoints(user.getNoUsePoints() + point);
+						
+						this.userService.edit(user);
 						
 						break;
 					default:
@@ -472,6 +482,7 @@ public class NoAuthWxController {
 					ex.setBeneficiary(recNo);
 					
 					//result.setData(ex);
+					result.setData(award);
 					
 					try {
 						exchangeSercie.saveExchange(ex);
@@ -490,6 +501,15 @@ public class NoAuthWxController {
 					 */
 					wares.setStatus(Const.EX_STATUS_EXCHANGED);
 					waresService.updateWares(wares);
+					
+					/**
+					 * 修改奖项剩余数目
+					 */
+					int remain = award.getRemain();
+					if (remain > 0) {
+				    	award.setRemain(remain - 1);
+				    	awardService.updateAward(award);
+			    	}
 						
 				}
 	    		
@@ -551,9 +571,53 @@ public class NoAuthWxController {
 	@Authorization
 	@ApiOperation(value = "商品防伪", httpMethod = "POST", response = ApiResult.class, 
 		notes = "wechatCode 在数据库中未兑奖返回为消费\nwechatcode 在数据库已兑奖返回已消费，不再数据库返回未生产\n")
-	public ApiResult antiFakeWx(@ApiParam(required = true, name = "wechatCode", value = "微信编码") @RequestParam("wechatCode") String wechatCode) {
+	public ApiResult antiFakeWx(@ApiParam(required = true, name = "wechatCode", value = "微信编码") @RequestParam("wechatCode") String wechatCode,
+			@ApiParam(required = true, name = "userId", value = "用户ID") @RequestParam("userId") String userId, 
+			@ApiParam(required = true, name = "flagCode", value = "硬件标识码") @RequestParam("flagCode") String flagCode,
+			@ApiParam(required = true, name = "time", value = "客户端时间") @RequestParam("time") String time,
+			@ApiParam(required = true, name = "longitude", value = "经度") @RequestParam("longitude") String longitude, 
+			@ApiParam(required = true, name = "latitude", value = "纬度") @RequestParam("latitude") String latitude, 
+			@ApiParam(required = false, name = "writeIn", value = "是否写入") @RequestParam(value = "writeIn", required= false) String writeIn, 
+			@ApiParam(required = false, name = "insideCode", value = "内码") @RequestParam(value = "insideCode", required = false) String insideCode) {
 		ApiResult result = new ApiResult();
 		result.setOperate(Const.OPERATE_ANTI_FAKE);
+		
+		ScanRecord sr = new ScanRecord();
+		Address address = null;
+		try {
+			address = MapUtil.location2Address(Double.parseDouble(latitude), Double.parseDouble(longitude));
+			
+			sr = this.pushAddress2SR(address);
+			sr.setLatitude(Double.parseDouble(latitude));
+			sr.setLongitude(Double.parseDouble(longitude));
+		} catch (NumberFormatException e) {
+			result.setCode(Const.ERROR_PARAM_MISS);
+			result.setSuccess(false);
+			result.setMsg("经纬度数据错误!");
+			result.setData(null);
+			return result;
+		} catch (Exception e) {
+			e.printStackTrace();
+		} 
+		
+		sr.setScanTime(new Date());
+		sr.setInsideCode(insideCode);
+		
+		User user = this.userService.getUserById(userId);
+
+		if (user != null) {
+			sr.setUser(user);
+			sr.setUserId(user.getId());
+			sr.setUserName(user.getUsername());
+		} else {
+			sr.setUserType("3");
+			if (userId.equalsIgnoreCase("IOS")) {
+				sr.setUserName("IOS用户");
+			}
+			if (userId.equalsIgnoreCase("Android")) {
+				sr.setUserName("Android用户");
+			}
+		}
 		
 		if (wechatCode != null && !wechatCode.equals("") ) {
 			
@@ -572,6 +636,18 @@ public class NoAuthWxController {
 				
 				return result;
 			} else {
+				sr.setPublicCode(wares.getPublicCode());
+				sr.setPrivateCode(wares.getPrivateCode());
+				
+				// 写入扫码记录
+				if (Tool.isNotNullOrEmpty(writeIn)) {
+					try {
+						this.scanRecordService.saveScanRecord(sr);
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				}
+				
 				if (!wares.getStatus().equals(Const.EX_STATUS_UNEXCHANGE)) {  // 未中奖、已兑奖
 					/* --> 返回结果2
 					 */
@@ -589,7 +665,6 @@ public class NoAuthWxController {
 					return result;
 				}
 			}
-			
 		} else {
 			result.setCode(Const.ERROR_PARAM_MISS);
 			result.setSuccess(false);
@@ -613,7 +688,13 @@ public class NoAuthWxController {
 	@ResponseBody
 	@ApiOperation(value = "商品跟踪/商品信息", httpMethod = "POST", response = ApiResult.class, notes = "用户通过扫码将瓶身二维码信息传给后台识别")
 	public ApiResult deliverGoodsWx(@ApiParam(required = true, name = "flag", value = "操作标识") @RequestParam("flag") String flag,
-			@ApiParam(required = true, name = "wechatCode", value = "微信编码") @RequestParam("wechatCode") String wechatCode) {
+			@ApiParam(required = true, name = "wechatCode", value = "微信编码") @RequestParam("wechatCode") String wechatCode,
+			@ApiParam(required = true, name = "userId", value = "用户ID") @RequestParam("userId") String userId, 
+			@ApiParam(required = true, name = "flagCode", value = "硬件标识码") @RequestParam("flagCode") String flagCode,
+			@ApiParam(required = true, name = "time", value = "客户端时间") @RequestParam("time") String time,
+			@ApiParam(required = true, name = "longitude", value = "经度") @RequestParam("longitude") String longitude, 
+			@ApiParam(required = true, name = "latitude", value = "纬度") @RequestParam("latitude") String latitude, 
+			@ApiParam(required = false, name = "writeIn", value = "是否写入") @RequestParam(value = "writeIn", required= false) String writeIn){
 		
 		ApiResult result = new ApiResult();
 		
@@ -622,6 +703,42 @@ public class NoAuthWxController {
 		String publicCode = "";
 		String privateCode = "";
 		
+		ScanRecord sr = new ScanRecord();
+		Address address = null;
+		try {
+			address = MapUtil.location2Address(Double.parseDouble(latitude), Double.parseDouble(longitude));
+			
+			sr = this.pushAddress2SR(address);
+			sr.setLatitude(Double.parseDouble(latitude));
+			sr.setLongitude(Double.parseDouble(longitude));
+		} catch (NumberFormatException e) {
+			result.setCode(Const.ERROR_PARAM_MISS);
+			result.setSuccess(false);
+			result.setMsg("经纬度数据错误!");
+			result.setData(null);
+			return result;
+		} catch (Exception e) {
+			e.printStackTrace();
+		} 
+		
+		sr.setScanTime(new Date());
+		
+		User user = this.userService.getUserById(userId);
+
+		if (user != null) {
+			sr.setUser(user);
+			sr.setUserId(user.getId());
+			sr.setUserName(user.getUsername());
+		} else {
+			sr.setUserType("3");
+			if (userId.equalsIgnoreCase("IOS")) {
+				sr.setUserName("IOS用户");
+			}
+			if (userId.equalsIgnoreCase("Android")) {
+				sr.setUserName("Android用户");
+			}
+		}
+		
 		switch(flag){
 		case Const.OPERATE_PRODUCT_TRACE:                     //商品跟踪
 			result.setOperate(Const.OPERATE_PRODUCT_TRACE);
@@ -629,6 +746,9 @@ public class NoAuthWxController {
 			if (wares != null) {
 				publicCode = wares.getPublicCode();
 				privateCode = wares.getPrivateCode();
+				
+				sr.setPublicCode(publicCode);
+				sr.setPrivateCode(privateCode);
 			} else {
 				result.setCode(Const.ERROR_NULL_POINTER);
 				result.setSuccess(false);
@@ -663,13 +783,16 @@ public class NoAuthWxController {
 			
 			if (wares != null) {
 				publicCode = wares.getPublicCode();
+				
+				sr.setPublicCode(wares.getPublicCode());
+				sr.setPrivateCode(wares.getPrivateCode());
 			} else {
 				result.setCode(Const.ERROR_NULL_POINTER);
 				result.setSuccess(false);
 				result.setMsg("该wechatCode对应的商品不存在");
 				return result;
 			}
-
+			
 			Activity aty = null;
 	    	List<Activity> atyList = activityService.getActivityList(" and t.publicCode = '" + publicCode + "'");
 	    	if (atyList != null && atyList.size() > 0) {
@@ -685,19 +808,37 @@ public class NoAuthWxController {
 			if (aty == null) {
 				result.setData(Const.ROOT_HTML_URL + "template.html");
 			} else {
+				sr.setActivity(aty);
+				sr.setActivityName(aty.getTitle());
+				sr.setUserType("3");
+				sr.setScanTime(new Date());
 				result.setData(aty.getInfoUrl());
 			}
-			// 类似 "http://www.hclinks.cn/crmnew/static/info/123.html"
 		 }
+		
+		// 写入扫码记录
+		if (Tool.isNotNullOrEmpty(writeIn)) {
+			try {
+				this.scanRecordService.saveScanRecord(sr);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
 		 
-		 return result;
+		return result;
 	}
 	
 	@RequestMapping(value = "/awardAnalysisWx", method = RequestMethod.POST)
 	@ResponseBody
 	@ApiOperation(value = "奖项统计", httpMethod = "POST", response = ApiResult.class, notes = "统计当前奖项的基本信息和数目信息")
-	public ApiResult awardAnalysis(@ApiParam(required = true, name = "wechatCode", value = "微信编码") @RequestParam("wechatCode") String wechatCode) {
-	
+	public ApiResult awardAnalysisWx(@ApiParam(required = true, name = "wechatCode", value = "微信编码") @RequestParam("wechatCode") String wechatCode,
+			@ApiParam(required = true, name = "openId", value = "用户openID") @RequestParam("openId") String openId, 
+			@ApiParam(required = true, name = "flagCode", value = "硬件标识码") @RequestParam("flagCode") String flagCode,
+			@ApiParam(required = true, name = "time", value = "客户端时间") @RequestParam("time") String time,
+			@ApiParam(required = true, name = "longitude", value = "经度") @RequestParam("longitude") String longitude, 
+			@ApiParam(required = true, name = "latitude", value = "纬度") @RequestParam("latitude") String latitude, 
+			@ApiParam(required = false, name = "writeIn", value = "是否写入") @RequestParam(value = "writeIn", required= false) String writeIn) {
+		
 		ApiResult result = new ApiResult();
 		result.setOperate(Const.OPERATE_AWARD_ANALYSIS);
 		
@@ -731,6 +872,58 @@ public class NoAuthWxController {
 			result.setData(null);
 			
 			return result;
+		}
+		
+		/**
+		 * 1.1、添加扫码记录
+		 */
+		ScanRecord sr = new ScanRecord();
+		Address address = null;
+		try {
+			address = MapUtil.location2Address(Double.parseDouble(latitude), Double.parseDouble(longitude));
+			
+			sr = this.pushAddress2SR(address);
+			sr.setLatitude(Double.parseDouble(latitude));
+			sr.setLongitude(Double.parseDouble(longitude));
+		} catch (NumberFormatException e) {
+			result.setCode(Const.ERROR_PARAM_MISS);
+			result.setSuccess(false);
+			result.setMsg("经纬度数据错误!");
+			result.setData(null);
+			return result;
+		} catch (Exception e) {
+			e.printStackTrace();
+		} 
+		
+		sr.setActivity(activity);
+		sr.setScanTime(new Date());
+		sr.setPublicCode(wares.getPublicCode());
+		sr.setPrivateCode(wares.getPrivateCode());
+		
+		sr.setScanTime(new Date());
+		
+		User user = this.userService.findByOpenId(openId);
+		
+		if (user != null) {
+			sr.setUser(user);
+			sr.setUserId(user.getId());
+			sr.setUserName(user.getUsername());
+		} else {
+			sr.setUserType("3");
+			if (openId.equalsIgnoreCase("IOS")) {
+				sr.setUserName("IOS用户");
+			}
+			if (openId.equalsIgnoreCase("Android")) {
+				sr.setUserName("Android用户");
+			}
+		}
+		
+		if (Tool.isNotNullOrEmpty(writeIn)) {
+			try {
+				this.scanRecordService.saveScanRecord(sr);
+			} catch (Exception e) {
+				
+			}
 		}
 		
 		/**
@@ -833,5 +1026,545 @@ public class NoAuthWxController {
 		return result;
 	}
 
+	@RequestMapping(value = "/boundPhoneWx", method = RequestMethod.POST)
+	@ResponseBody
+	@ApiOperation(value = "手机绑定_微信", httpMethod = "POST", response = ApiResult.class, notes = "微信公众号用户绑定手机")
+	public ApiResult boundPhoneWx(@ApiParam(required = true, name = "phone", value = "手机号码") @RequestParam("phone") String phone, 
+			@ApiParam(required = true, name = "validCode", value = "验证码") @RequestParam("validCode") String validCode,
+			@ApiParam(required = true, name = "openId", value = "微信公众号openid") @RequestParam("openId") String openId) {
+	
+		ApiResult result = new ApiResult();
+		result.setOperate(Const.OPERATE_BOUND_PHONE);
+		
+		String code = this.validService.getValidCode(phone);
+		if (!validCode.equals(code)) {
+			result.setMsg("验证码不正确");
+			result.setSuccess(false);
+			result.setCode(Const.ERROR_PARAM_MISS);
+			
+			return result;
+		}
+		
+		User user = this.userService.findByPhone(phone);
+		
+		User tmp = this.userService.findByOpenId(openId);
+		if (tmp != null) {
+			/*result.setCode(Const.ERROR_NOT_EQUALS);
+			result.setSuccess(false);
+			result.setMsg("该公众号用户openId已经绑定另一手机用户!");
+			
+			User t = new User();
+			t.setUsername(tmp.getUsername());
+			t.setUserAlias(tmp.getUserAlias());
+			
+			result.setData(t);
+			return result;*/
+			
+			tmp.setWxOpenId(null);
+			this.userService.edit(tmp);  // 解绑wxOpenId
+		}
+		
+		if (user == null) { // 用户不存在
+			List<User> userList = this.userService.findByNameAndType(phone, "3"); // 查询是否存在该phone对应的用户
+			if (userList != null && userList.size() > 0) {
+				user = userList.get(0);
+				user.setWxOpenId(openId);
+				user.setTelephone(phone);
+				
+				this.userService.edit(user);
+				
+				result.setCode(Const.INFO_NORMAL);
+				result.setSuccess(true);
+				result.setMsg("与已有APP用户手机绑定成功[公众号用户]");
+			} else {
+				user = new User();
+				user.setUsername(phone);
+				user.setPassword(phone);  // 密码默认为手机号
+				user.setTelephone(phone);
+				user.setWxOpenId(openId);
+				user.setPoints(0);
+				user.setUserType("3");
+				user.setLocked(0);
+				
+				this.userService.add(user);
+				
+				result.setCode(Const.INFO_NORMAL);
+				result.setSuccess(true);
+				result.setMsg("新建用户，并绑定手机成功，密码为手机号[公众号用户]");
+				result.setData(user);
+			}
+		} else {
+			user.setWxOpenId(openId);
+			this.userService.edit(user);
+			
+			result.setCode(Const.INFO_NORMAL);
+			result.setSuccess(true);
+			result.setMsg("手机绑定成功[公众号用户]");
+			result.setData(user);
+		}
+	
+		return result;
+	}
+	
+	@RequestMapping(value = "/pointQueryWx", method = RequestMethod.POST)
+	@ResponseBody
+	@ApiOperation(value = "积分查询", httpMethod = "POST", response = ApiResult.class, notes = "根据openId查询积分")
+	public ApiResult pointQueryWx(@ApiParam(required = true, name = "openId", value = "公众号OpenId") @RequestParam("openId") String openId) {
+	
+		ApiResult result = new ApiResult();
+		result.setOperate(Const.OPERATE_POINTS_QUERY);
+		
+		User user = this.userService.findByOpenId(openId);
+		
+		if (user != null) {
+			result.setCode(Const.INFO_NORMAL);
+			result.setSuccess(true);
+			result.setMsg("积分查询成功.");
+			result.setData(user);
+		} else {
+			result.setCode(Const.ERROR_NULL_POINTER);
+			result.setSuccess(false);
+			result.setMsg("需要先绑定手机才能进行查询.");
+		}
+	
+		return result;
+	}
+	
+	@RequestMapping(value = "/pointExchangeWx", method = RequestMethod.POST)
+	@ResponseBody
+	@ApiOperation(value = "积分兑换", httpMethod = "POST", response = ApiResult.class, notes = "根据openId兑换积分")
+	public ApiResult pointExchangeWx(@ApiParam(required = true, name = "openId", value = "公众号OpenId") @RequestParam("openId") String openId,
+			@ApiParam(required = true, name = "num", value = "积分兑换数量，100积分=1元") @RequestParam("num") String num,
+			@ApiParam(required = false, name = "exType", value = "积分兑换方式") @RequestParam("exType") String exType) {
+	
+		ApiResult result = new ApiResult();
+		result.setOperate(Const.OPERATE_POINTS_EXCHANGE);
+		
+		Integer points = 0, usePoints = 0, noUsePoints = 0;
+		
+		User user = this.userService.findByOpenId(openId);
+		
+		if (user == null) {  // 用户不存在，则直接返回
+			result.setCode(Const.ERROR_NULL_POINTER);
+			result.setSuccess(false);
+			result.setMsg("需要先绑定手机才能进行兑换.");
+			
+			return result;
+		}
+		
+		points = user.getPoints();
+		usePoints = user.getUsePoints();
+		noUsePoints = user.getNoUsePoints();
+		
+		if (noUsePoints < Integer.parseInt(num)) {
+			result.setCode(Const.ERROR_NO_ENOUGH);
+			result.setSuccess(false);
+			result.setMsg("所剩积分不够兑换.");
+			result.setData(user);
+			
+			return result;
+		}
+			
+		/**
+		 * 兑奖处理
+		 * 	先兑奖，再添加兑奖记录
+		 */
+		/**
+		 * I 兑奖
+		 */
+		switch (exType) {
+		case Const.EX_WECHAT:
+			
+			Integer amount = new Double(num).intValue();
+			
+			user.setNoUsePoints(noUsePoints - Integer.parseInt(num));
+    		user.setUsePoints(usePoints + Integer.parseInt(num));
+    		
+    		this.userService.edit(user);
+	    	
+			/**
+			 * 1、微信红包
+			 */
+			WeixinNormalRedPackRequest request = new WeixinNormalRedPackRequest();
+	    	request.setRe_openid(openId);  // 使用openId
+	    	request.setTotal_amount(amount);
+	    	request.setTotal_num(1);
+	    	request.setSend_name("快乐兑[积分兑换]");
+	    	request.setAct_name("快乐兑[积分兑换]");
+	    	request.setRemark("积分兑换红包");
+	    	request.setWishing("恭喜使用积分兑换了这个微信红包！");
+	    	request.setRemark(user.getWeixin());
+	    	request.setClient_ip(WeixinUtils.getHostIp());
+	    	
+	    	WeixinRedPackResponse response = new WeixinRedPackResponse();
+	    	try {
+				response = iWeixinSendRedPackService.sendRedPack(1, request);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+	    	
+	    	/**
+	    	 * 兑奖成功
+	    	 */
+	    	if (null != response && Tool.isNotNullOrEmpty(response.getReturn_code()) && response.getReturn_code().equals("SUCCESS") 
+	    			&& Tool.isNotNullOrEmpty(response.getResult_code()) && response.getResult_code().equals("SUCCESS")) {
+	    		result.setMsg("您使用积分兑换微信红包成功.");
+	    		result.setData(response.getMch_billno());
+	    	}
+			
+			break;
+		case Const.EX_PHONE:
+			String phone = user.getTelephone();
+			
+			/**
+			 * 设置正确的手机号码
+			 */
+			if (Tool.isNullOrEmpty(phone) && ValidUtil.isValidMobile(phone)) {
+				result.setCode(Const.WARN_PHONE_ERROR);
+				result.setSuccess(false);
+				result.setMsg("手机号码不正确，请为用户绑定合适的手机号或者直接指定一个待充值的手机号码!");
+				
+				return result;
+			}
+			
+			user.setNoUsePoints(noUsePoints - Integer.parseInt(num));
+    		user.setUsePoints(usePoints + Integer.parseInt(num));
+    		
+    		this.userService.edit(user);
+			
+			String result2 = "";
+			Integer amount2 = 0;
+			try {
+				amount2 = new Double(num).intValue() / exchangeRatio;
+				result2 = PhoneRecharge.onlineOrder(phone, amount2);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			
+			if (Tool.isNotNullOrEmpty(result2)) {
+				ResultBean rb1 = GsonUtils.fromJson(result2, ResultBean.class);
+				if (rb1.getError_code() != null && rb1.getError_code().equals("0")) {
+					result.setSuccess(true);
+					result.setMsg("[积分兑换]手机充值" + amount2 + "元，请稍后查询充值结果");
+					result.setData(rb1 == null ? null : (rb1.getResult() == null ? null : rb1.getResult().getUorderid()));
+				} else {
+					result.setSuccess(false);
+					result.setMsg(rb1.getReason() == null ? "[积分兑换]手机充值失败" : rb1.getReason());
+					
+					return result;
+				}
+			} else {
+				result.setSuccess(false);
+				result.setMsg("[积分兑换]充值失败");
+				
+				return result;
+			}
+			
+			
+			break;
+		case Const.EX_Q_BILL:
+			String qq = user.getQq();
+			
+			if (Tool.isNullOrEmpty(qq)) {
+				result.setCode(Const.WARN_NO_QQ);
+				result.setSuccess(false);
+				result.setMsg("请为用户绑定合适的QQ号或者指定一个待充值的qq号码!");
+				
+				return result;
+			}
+			
+			user.setNoUsePoints(noUsePoints - Integer.parseInt(num));
+    		user.setUsePoints(usePoints + Integer.parseInt(num));
+    		
+    		this.userService.edit(user);
+			
+			String res = "";
+			Integer amount3 = 0;
+			try {
+				amount3 = new Double(num).intValue() / exchangeRatio;
+				res = QbRecharge.qbRecharge(qq, amount3);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			
+			if (Tool.isNotNullOrEmpty(res)) {
+				ResultBean rb2 = GsonUtils.fromJson(res, ResultBean.class);
+				if (rb2.getError_code() != null && rb2.getError_code().equals("0")) {
+					result.setSuccess(true);
+					result.setMsg("[积分兑换]Q币充值" + amount3 + "元，请稍后查询充值结果");
+					result.setData(rb2 == null ? null : (rb2.getResult() == null ? null : rb2.getResult().getUorderid()));
+				
+					user.setUsePoints(usePoints + Integer.parseInt(num));
+		    		user.setNoUsePoints(noUsePoints - Integer.parseInt(num));
+		    		userService.edit(user);
+				} else {
+					result.setSuccess(false);
+					result.setMsg(rb2.getReason() == null ? "[积分兑换]Q币充值失败" : rb2.getReason());
+				
+					return result;
+				}
+			} else {
+				result.setSuccess(false);
+				result.setMsg("[积分兑换]充值失败");
+				
+				return result;
+			}
+			
+			break;
+		default:
+			result.setCode(Const.ERROR_PARAM_MISS);
+			result.setSuccess(false);
+			result.setMsg("请选择合适的兑奖类型!");
+			
+			return result;
+		}
+		
+		return result;
+	}
+
+	@RequestMapping(value = "/scanExPointWx", method = RequestMethod.POST)
+	@ResponseBody
+	@Authorization
+	@ApiOperation(value = "扫码兑换积分", httpMethod = "POST", response = ApiResult.class, notes = "先扫码，如果有奖，再进行积分兑换")
+	public ApiResult scanExPointWx(@ApiParam(required = true, name = "openId", value = "公众号openId") @RequestParam("openId") String openId, 
+			@ApiParam(required = true, name = "flagCode", value = "硬件标识码") @RequestParam("flagCode") String flagCode,
+			@ApiParam(required = true, name = "time", value = "客户端时间") @RequestParam("time") String time,
+			@ApiParam(required = true, name = "longitude", value = "经度") @RequestParam("longitude") String longitude, 
+			@ApiParam(required = true, name = "latitude", value = "纬度") @RequestParam("latitude") String latitude, 
+			@ApiParam(required = true, name = "wechatCode", value = "微信编码") @RequestParam("wechatCode") String wechatCode, 
+			@ApiParam(required = false, name = "insideCode", value = "内码") @RequestParam(value = "insideCode", required= false) String insideCode, 
+			@ApiParam(required = false, name = "writeIn", value = "是否写入") @RequestParam(value = "writeIn", required= false) String writeIn) {
+    	
+    	ApiResult result = new ApiResult();
+    	result.setOperate(Const.OPERATE_USER_WITH_INFO);
+    	
+    	User user = this.userService.findByOpenId(openId); //  查找用户
+    	
+    	if (user == null) {  // 用户不存在，则直接返回
+			result.setCode(Const.ERROR_NULL_POINTER);
+			result.setSuccess(false);
+			result.setMsg("需要先绑定手机才能进行兑换.");
+			
+			return result;
+		}
+    	
+    	/**
+		 * 1、查询该商品信息
+		 */
+    	Wares wares = waresService.findByWxCode(wechatCode);
+    	
+    	/**
+		 * 2、添加扫码记录
+		 */
+		ScanRecord sr = new ScanRecord();
+		Address address = null;
+		try {
+			address = MapUtil.location2Address(Double.parseDouble(latitude), Double.parseDouble(longitude));
+			
+			sr = this.pushAddress2SR(address);
+			sr.setLatitude(Double.parseDouble(latitude));
+			sr.setLongitude(Double.parseDouble(longitude));
+		} catch (NumberFormatException e) {
+			result.setCode(Const.ERROR_PARAM_MISS);
+			result.setSuccess(false);
+			result.setMsg("经纬度数据错误!");
+			result.setData(null);
+			return result;
+		} catch (Exception e) {
+			e.printStackTrace();
+		} 
+		
+		sr.setScanTime(new Date());
+		if (user != null) {
+			sr.setUserId(user.getId());
+			sr.setUserName(user.getUsername());
+			sr.setUserType(user.getUserType());
+		}
+		
+		result.setOperate(Const.OPERATE_APP_SCAN);
+		
+		/**
+		 * 3、检查参数合法性，不合法，直接返回
+		 */
+		if (wares == null) {
+    		result.setCode(Const.ERROR_NULL_POINTER);
+    		result.setMsg("该wechatCode对应的商品不存在");
+    		result.setSuccess(false);
+    		
+    		return result;
+    	}
+		
+		sr.setInsideCode(insideCode);
+		sr.setWaresId(wares.getId());
+		sr.setPublicCode(wares.getPublicCode());
+		sr.setPrivateCode(wares.getPrivateCode());
+		try {
+			if (writeIn != null && !writeIn.equals("")) {  // “写入”参数非空，则写入数据库
+				this.scanRecordService.saveScanRecord(sr);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		// 已消费未中奖
+		if (wares.getStatus().equals(Const.EX_STATUS_NO_AWARD)) {  
+			result.setCode(Const.INFO_NO_AWARD);
+			result.setSuccess(false);
+			result.setMsg("该商品已消费[未中奖]!");
+			result.setData(wares);
+			
+			return result;
+		}
+		
+		// 已消费已兑奖
+		if (wares.getStatus().equals(Const.EX_STATUS_EXCHANGED)) {  
+			result.setCode(Const.INFO_EXCHANGED);
+			result.setSuccess(false);
+			result.setMsg("该商品已消费[已兑奖]!");
+			result.setData(wares);
+			
+			return result;
+		}
+		
+		/**
+		 * 3、判断是否中奖
+		 */
+		String awardId = wares.getAwardId(); // 获取对应的奖项位ID
+		if (awardId == null || awardId.equals("")) {  // 没有奖
+			if (!wares.getStatus().equals(Const.EX_STATUS_NO_AWARD)) {
+				wares.setStatus(Const.EX_STATUS_NO_AWARD);
+				waresService.updateWares(wares);
+			}
+			
+			/* --> 返回值2  未中奖  【200 + false】
+			 */
+			result.setCode(Const.INFO_NO_AWARD);
+			result.setSuccess(false);
+			result.setMsg("该商品未中奖，欢迎下次惠顾！");
+			result.setData(wares);
+		} else {
+			/* --> 返回值3  中奖  【200 + false】
+			 */
+			Award award = awardService.findById(awardId);
+			
+			/**
+			 * 判断insideCode是否匹配
+			 */
+			if (insideCode == null || !insideCode.equals(wares.getInsideCode())) {
+				result.setCode(Const.INFO_NO_AWARD);
+				result.setSuccess(false);
+				result.setMsg("兑奖操作，请扫描匹配的瓶盖[瓶盖内码不匹配]");
+				
+				wares.setInsideCode(null);
+				result.setData(wares);
+				return result;
+			}
+
+			/**
+			 * 兑奖处理
+			 * 	先兑奖，再添加兑奖记录
+			 */
+			/**
+			 * I 积分兑奖
+			 */
+			Double amount = award.getAmount();  // 奖项金额
+			Integer point = (int) (amount * exchangeRatio);
+			
+			user.setPoints(user.getPoints() + point);
+			user.setNoUsePoints(user.getNoUsePoints() + point);
+			
+			this.userService.edit(user);
+			
+			/**
+			 * III 添加兑奖记录
+			 */
+			Exchange ex = this.pushAddress2Ex(address);
+			ex.setUserId(user.getId());
+			ex.setExchangeTime(new Date());
+			ex.setWaresId(wares.getId());
+			ex.setLongitude(Double.parseDouble(longitude));
+			ex.setLatitude(Double.parseDouble(latitude));
+			ex.setFlagCode(flagCode);
+			ex.setPublicCode(wares.getPublicCode());
+			ex.setPrivateCode(wares.getPrivateCode());
+			ex.setInsideCode(insideCode);
+			ex.setAward(award);
+			ex.setAwardId(awardId);
+			ex.setExchangeType("POINT_EXCHANGE");
+			
+			try {
+				exchangeSercie.saveExchange(ex);
+			} catch (Exception e) {
+				e.printStackTrace();
+				
+				result.setCode(Const.ERROR_SERVER);
+				result.setSuccess(false);
+				result.setMsg("新增兑奖记录失败!");
+				
+				return result;
+			}
+			
+			/**
+			 * 修改商品的兑奖状态
+			 */
+			wares.setStatus(Const.EX_STATUS_EXCHANGED);
+			waresService.updateWares(wares);
+				
+			result.setCode(Const.INFO_NORMAL);
+			result.setSuccess(true);
+			result.setData(ex);
+		}
+		
+		return result;
+	}
+
+	/**
+	 * @Title:			exchangeRecordWx
+	 * @Description:	兑奖记录查询
+	 * @param openId
+	 * @param beginTime
+	 * @param endTime
+	 * @return
+	 */
+	@RequestMapping(value = "/exchangeRecordWx", method = RequestMethod.POST)
+	@ResponseBody
+	@ApiOperation(value = "兑奖记录_微信", httpMethod = "POST", response = ApiResult.class, notes = "根据用户名、用户类型、时间查询兑奖记录")
+	public ApiResult exchangeRecordWx(@ApiParam(required = true, name = "openId", value = "用户openId") @RequestParam("openId") String openId, 
+			@ApiParam(required = true, name = "beginTime", value = "开始时间") @RequestParam(value = "beginTime", required = false) String beginTime,
+			@ApiParam(required = true, name = "endTime", value = "结束时间") @RequestParam(value = "endTime", required = false) String endTime) {
+	
+		ApiResult result = new ApiResult();
+		result.setOperate(Const.OPERATE_EXCHANGE_RECORD);
+		
+		StringBuffer conditionsql = new StringBuffer("");
+		
+		if (beginTime != null && !beginTime.equals("")) {
+			conditionsql.append(" and date(exchangeTime) > '").append(beginTime).append("'");
+		}
+		
+		if (endTime != null && !endTime.equals("")) {
+			conditionsql.append(" and date(exchangeTime) < '").append(endTime).append("'");
+		}
+		
+		conditionsql.append(" AND t.userId in (select id from sysuser where wxOpenId = '" + openId + "')")
+			.append(" order by exchangeTime desc");
+		
+		List<Exchange> list = this.exchangeSercie.findByCondition(conditionsql.toString());
+		
+		if (list != null && list.size() > 0) {
+			result.setCode(Const.INFO_NORMAL);
+			result.setSuccess(true);
+			result.setMsg("获取到 " + list.size() + " 条兑奖记录!");
+			result.setData(list);
+		} else {
+			result.setCode(Const.WARN_NO_MORE_DATA);
+			result.setSuccess(false);
+			result.setMsg("数据到头了...");
+			result.setData(null);
+		}
+		
+		return result;
+	}
+	
 }
  

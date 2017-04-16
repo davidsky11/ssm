@@ -227,13 +227,17 @@ public class ScanRecordController /*extends BaseController*/ {
 		page.setOrder("desc");
 		
 		StringBuffer conditionSql = new StringBuffer();
-		conditionSql.append(" and t.userId = '" + user.getId() + "'");
+		//conditionSql.append(" and t.userId = '" + user.getId() + "'");
 		
 		Map<String, String> paramMap = new HashMap<String, String>();
 		if (Tool.isNotNullOrEmpty(publicCode)) {
 			conditionSql.append(" and t.publicCode = '").append(publicCode).append("'");
 			paramMap.put("publicCode", publicCode);
 			model.addAttribute("publicCode", publicCode);
+		} else {
+			conditionSql.append(" and (t.publicCode in (select publicCode from activity where publisherId = '")
+				.append(user.getId()).append("')")
+				.append(" or t.userId = '").append(user.getId()).append("')");
 		}
 		
 		if (Tool.isNotNullOrEmpty(startDate)) {
