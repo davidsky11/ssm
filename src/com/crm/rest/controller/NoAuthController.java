@@ -1603,6 +1603,7 @@ public class NoAuthController {
 			sr.setCity(ac.getCity());
 			sr.setDistance(ac.getDistance());
 			sr.setStreet(ac.getStreet());
+			sr.setDistrict(ac.getDistrict());
 		}
 		
 		return sr;

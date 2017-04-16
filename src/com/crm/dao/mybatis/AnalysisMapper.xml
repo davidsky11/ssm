@@ -3,7 +3,7 @@
 <mapper namespace="com.crm.dao.mybatis.AnalysisMapper">   
 
 	<select id="findPlaceAnalysis" resultType="com.crm.domain.dto.PlaceAnalysis">
-		SELECT province as province, city as city, distance as distance, count(*) as count FROM scan_record WHERE 1=1
+		SELECT province as province, city as city, district as district, count(*) as count FROM scan_record WHERE 1=1
 		<if test="publicCode !=null and publicCode != ''">
 			and publicCode = #{publicCode} 
 		</if>

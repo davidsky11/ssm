@@ -449,7 +449,7 @@ public class AnalysisController {
 		List<AddressType> levelArr = new ArrayList<AddressType>();
 		levelArr.add(new AddressType("province", "省"));
 		levelArr.add(new AddressType("city", "市/县"));
-		levelArr.add(new AddressType("distance", "区/街道"));
+		levelArr.add(new AddressType("district", "区/街道"));
 		
 		model.addAttribute("atyList", atyList);
 		model.addAttribute("levelArr", levelArr);
@@ -519,8 +519,8 @@ public class AnalysisController {
 			if (level.equals(Const.LEVEL_PLACE_CITY)) {
 				dto.setBar(pa.getCity() == null ? "未知区域" : pa.getCity());
 			}
-			if (level.equals(Const.LEVEL_PLACE_DISTANCE)) {
-				dto.setBar(pa.getDistance() == null ? "未知区域" : pa.getDistance());
+			if (level.equals(Const.LEVEL_PLACE_DISTRICT)) {
+				dto.setBar(pa.getDistrict() == null ? "未知区域" : pa.getDistrict());
 			}
 			
 			list.add(dto);

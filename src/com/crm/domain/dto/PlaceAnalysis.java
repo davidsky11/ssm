@@ -12,7 +12,7 @@ public class PlaceAnalysis {
 	private String level;  // province\city\distance
 	private String province;
 	private String city;
-	private String distance;
+	private String district;
 	private Long count;
 	
 	public String getProvince() {
@@ -33,8 +33,8 @@ public class PlaceAnalysis {
 	public String getCity() {
 		return city;
 	}
-	public String getDistance() {
-		return distance;
+	public String getDistrict() {
+		return district;
 	}
 	public void setLevel(String level) {
 		this.level = level;
@@ -42,13 +42,13 @@ public class PlaceAnalysis {
 	public void setCity(String city) {
 		this.city = city;
 	}
-	public void setDistance(String distance) {
-		this.distance = distance;
+	public void setDistrict(String district) {
+		this.district = district;
 	}
 	
 	@Override
 	public String toString() {
-		return "PlaceAnalysis [level=" + level + ", province=" + province + ", city=" + city + ", distance=" + distance
+		return "PlaceAnalysis [level=" + level + ", province=" + province + ", city=" + city + ", district=" + district
 				+ ", count=" + count + "]";
 	}
 	

@@ -18,6 +18,7 @@
 		<result property="province" column="province" />
 		<result property="city" column="city" />
 		<result property="distance" column="distance" />
+		<result property="district" column="district" />
 		<result property="street" column="street" />
 		<result property="sematicDescription" column="sematicDescription" />
 		<result property="formattedAddress" column="formattedAddress" />
@@ -86,6 +87,7 @@
             <if test="province !=null and province !=''">province,</if>
             <if test="city !=null and city !=''">city,</if>
             <if test="distance !=null and distance !=''">distance,</if>
+            <if test="district !=null and district !=''">district,</if>
             <if test="street !=null and street !=''">street,</if>
             <if test="sematicDescription !=null and sematicDescription !=''">sematicDescription,</if>
             <if test="formattedAddress !=null and formattedAddress !=''">formattedAddress,</if>
@@ -105,6 +107,7 @@
             <if test="province !=null and province !=''">#{province},</if>
             <if test="city !=null and city !=''">#{city},</if>
             <if test="distance !=null and distance !=''">#{distance},</if>
+            <if test="district !=null and district !=''">#{district},</if>
             <if test="street !=null and street !=''">#{street},</if>
             <if test="sematicDescription !=null and sematicDescription !=''">#{sematicDescription},</if>
             <if test="formattedAddress !=null and formattedAddress !=''">#{formattedAddress},</if>
@@ -133,6 +136,7 @@
             <if test="province !=null and province !=''">province=#{province},</if>
             <if test="city !=null and city !=''">city=#{city},</if>
             <if test="distance !=null and distance !=''">distance=#{distance},</if>
+            <if test="district !=null and district !=''">district=#{district},</if>
             <if test="street !=null and street !=''">street=#{street},</if>
             <if test="sematicDescription !=null and sematicDescription !=''">sematicDescription=#{sematicDescription},</if>
             <if test="formattedAddress !=null and formattedAddress !=''">formattedAddress=#{formattedAddress},</if>
@@ -146,10 +150,7 @@
     </update>
 
 	<select id="getScanRecordList" resultMap="scanRecordMap">
-		<!-- select t.id,t.userId,t.userName,t.longitude,t.latitude,t.scanTime,t.country,t.province,t.city,
-		t.distance,t.street,t.sematicDescription,t.formattedAddress,t.waresId,t.publicCode,t.privateCode,
-		t.insideCode from scan_record t where 1=1 -->
-		select t.id,t.userId,t.userName,t.longitude,t.latitude,t.scanTime,t.country,t.province,t.city,t.distance,
+		select t.id,t.userId,t.userName,t.longitude,t.latitude,t.scanTime,t.country,t.province,t.city,t.district,t.distance,
 		t.street,t.sematicDescription,t.formattedAddress,t.waresId,t.publicCode,t.privateCode,t.insideCode,
 		u.id u_id, u.username u_username, u.email u_email, u.regtime u_regtime,
 		w.id w_id, w.name w_name, w.creater w_creater, w.awardId w_awardId
@@ -167,7 +168,7 @@
 	</select>
 	
 	<select id="findByCondition" resultMap="scanRecordMap">
-		select t.id,t.userId,t.userName,t.longitude,t.latitude,t.scanTime,t.country,t.province,t.city,
+		select t.id,t.userId,t.userName,t.longitude,t.latitude,t.scanTime,t.country,t.province,t.city,t.district,
 		t.distance,t.street,t.sematicDescription,t.formattedAddress,t.waresId,t.publicCode,t.privateCode,
 		t.insideCode,
 		u.id u_id, u.username u_username, u.email u_email, u.regtime u_regtime, u.userAlias u_userAlias, 
@@ -181,9 +182,7 @@
 	</select>
 	
 	<select id="findByUser" parameterType="com.crm.domain.User" resultType="com.crm.domain.ScanRecord">
-		<!-- select t.id,t.userId,t.exchangeTime,t.innerCode,t.outerCode from exchange t where 1=1
-		where t.publisherId = u.id and u.id = #{id} -->
-		select distinct t.id,t.userId,t.userName,t.longitude,t.latitude,t.scanTime,t.country,t.province,
+		select distinct t.id,t.userId,t.userName,t.longitude,t.latitude,t.scanTime,t.country,t.province,t.district,
 		t.city,t.distance,t.street,t.sematicDescription,t.formattedAddress,t.waresId,t.publicCode,t.privateCode,
 		t.insideCode from scan_record t, sysuser a 
 		where (t.userId = a.id and a.id = #{id}) or (t.userName like concat('%',#{username},'%'))
@@ -207,14 +206,7 @@
 	</select>
 	
 	<select id="datagridScanRecord" resultMap="scanRecordMap">
-		<!-- select t.id,t.userId,t.userName,t.longitude,t.latitude,t.scanTime,t.country,t.province,t.city,t.distance,
-		t.street,t.sematicDescription,t.formattedAddress,t.waresId,t.publicCode,t.privateCode,t.insideCode,
-		u.id u_id, u.username u_username, u.email u_email, u.regtime u_regtime,
-		w.id w_id, w.name w_name, w.creater w_creater, w.awardId w_awardId
-		from scan_record t, sysuser u, wares w 
-		where t.waresId = w.id and t.userId = u.id -->
-		
-		select t.id,t.userId,t.userName,t.longitude,t.latitude,t.scanTime,t.country,t.province,t.city,t.distance,
+		select t.id,t.userId,t.userName,t.longitude,t.latitude,t.scanTime,t.country,t.province,t.city,t.district,t.distance,
 		t.street,t.sematicDescription,t.formattedAddress,t.waresId,t.publicCode,t.privateCode,t.insideCode,
 		u.id u_id, u.username u_username, u.email u_email, u.regtime u_regtime,
 		w.id w_id, w.name w_name, w.creater w_creater, w.awardId w_awardId
@@ -247,7 +239,7 @@
 	</select>
 	
 	<select id="srPages" resultMap="scanRecordMap">
-		select t.id,t.userId,t.userName,t.longitude,t.latitude,t.scanTime,t.country,t.province,t.city,t.distance,
+		select t.id,t.userId,t.userName,t.longitude,t.latitude,t.scanTime,t.country,t.province,t.city,t.district,t.distance,
 		t.street,t.sematicDescription,t.formattedAddress,t.waresId,t.publicCode,t.privateCode,t.insideCode,
 		u.id u_id, u.username u_username, u.email u_email, u.regtime u_regtime, u.thirdType u_thirdType, u.userAlias u_userAlias,
 		w.id w_id, w.name w_name, w.creater w_creater, w.awardId w_awardId
@@ -270,7 +262,7 @@
 	</select>
 	
 	<select id="findById" resultMap="scanRecordMap">
-		select t.id,t.userId,t.userName,t.longitude,t.latitude,t.scanTime,t.country,t.province,t.city,t.distance,
+		select t.id,t.userId,t.userName,t.longitude,t.latitude,t.scanTime,t.country,t.province,t.city,t.district,t.distance,
 		t.street,t.sematicDescription,t.formattedAddress,t.waresId,t.publicCode,t.privateCode,t.insideCode,
 		u.id u_id, u.username u_username, u.email u_email, u.regtime u_regtime, u.userAlias u_userAlias, u.thirdType u_thirdType,
 		w.id w_id, w.name w_name, w.creater w_creater, w.awardId w_awardId,
@@ -293,7 +285,7 @@
 	</select>
 	
 	<select id="selectByPublisher" resultMap="scanRecordMap">
-		select t.id,t.userId,t.userName,t.longitude,t.latitude,t.scanTime,t.country,t.province,t.city,t.distance,
+		select t.id,t.userId,t.userName,t.longitude,t.latitude,t.scanTime,t.country,t.province,t.city,t.district,t.distance,
 		t.street,t.formattedAddress,t.sematicDescription,t.publicCode,t.privateCode,
 		u.id u_id, u.username u_username, u.email u_email, u.regtime u_regtime, u.thirdType u_thirdType,
 		a.id a_id, a.title a_title, a.description a_description, a.content a_content

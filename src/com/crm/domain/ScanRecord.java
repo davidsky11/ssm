@@ -22,6 +22,7 @@ public class ScanRecord {
 	private String country;  // 国家
 	private String province;  // 省份
 	private String city;  // 城市
+	private String district;  // 区
 	private String distance;  // 区
 	private String street;  // 街道
 	private String sematicDescription;  // 详细地址
@@ -173,17 +174,23 @@ public class ScanRecord {
 	public void setAward(Award award) {
 		this.award = award;
 	}
+	public String getDistrict() {
+		return district;
+	}
+	public void setDistrict(String district) {
+		this.district = district;
+	}
 	
 	@Override
 	public String toString() {
 		return "ScanRecord [id=" + id + ", userId=" + userId + ", user=" + user + ", userName=" + userName
 				+ ", userType=" + userType + ", longitude=" + longitude + ", latitude=" + latitude + ", scanTime="
-				+ scanTime + ", country=" + country + ", province=" + province + ", city=" + city + ", distance="
-				+ distance + ", street=" + street + ", sematicDescription=" + sematicDescription + ", formattedAddress="
-				+ formattedAddress + ", waresId=" + waresId + ", wares=" + wares + ", publicCode=" + publicCode
-				+ ", privateCode=" + privateCode + ", insideCode=" + insideCode + ", activityName=" + activityName
-				+ ", activity=" + activity + "]";
-	}
+				+ scanTime + ", country=" + country + ", province=" + province + ", city=" + city + ", district="
+				+ district + ", distance=" + distance + ", street=" + street + ", sematicDescription="
+				+ sematicDescription + ", formattedAddress=" + formattedAddress + ", waresId=" + waresId + ", wares="
+				+ wares + ", publicCode=" + publicCode + ", privateCode=" + privateCode + ", insideCode=" + insideCode
+				+ ", activityName=" + activityName + ", activity=" + activity + ", award=" + award + "]";
+	} 
 	
 }
  

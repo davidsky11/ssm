@@ -37,6 +37,7 @@ public class Const {
 	
 	public static final String LEVEL_PLACE_PROVINCE = "province";
 	public static final String LEVEL_PLACE_CITY = "city";
+	public static final String LEVEL_PLACE_DISTRICT = "district";
 	public static final String LEVEL_PLACE_DISTANCE = "distance";
 	
 	/**
