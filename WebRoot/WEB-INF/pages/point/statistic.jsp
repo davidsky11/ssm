@@ -24,19 +24,13 @@
 					<div class="col-md-12">
 						<div class="box box-primary">
 							<div class="box-header with-border">
-								<h3 class="box-title"><span id="myTitle">积分统计</span></h3>
-								
-								<c:if test="${currentUser.userType == '2'}">
-									<div class="pull-right">
-				                    	<a id="btnChgPwd" href="javascript:void(0);" onclick="chgPwd();" class="btn btn-default btn-flat">修改密码</a>
-				                    </div>
-			                    </c:if>
+								<h3 class="box-title">积分统计</h3>
 							</div>
-							<div class="box-body">
+							<div class="box-body" style="display:block;">
 								<table class="table">
-								<tr><td>累计积分:</td>${user.points}<td></tr>	
-								<tr><td>当前积分:</td>${user.noUsePoints}<td></tr>	
-								<tr><td>已兑积分:</td>${user.usePoints}<td></tr>	
+								<tr><td>累计积分:</td><td>${user.points}</td></tr>	
+								<tr><td>当前积分:</td><td>${user.noUsePoints}</td></tr>	
+								<tr><td>已兑积分:</td><td>${user.usePoints}</td></tr>	
 								</table>
 							</div>
 						
@@ -45,8 +39,6 @@
 					</div>
 					<!-- /.col (right) -->
 				</div>
-				
-				
 			</div>
 			<!-- /.box -->
 		</div>

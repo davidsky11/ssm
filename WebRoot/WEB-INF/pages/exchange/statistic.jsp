@@ -25,18 +25,12 @@
 						<div class="box box-primary">
 							<div class="box-header with-border">
 								<h3 class="box-title"><span id="myTitle">兑奖统计</span></h3>
-								
-								<c:if test="${currentUser.userType == '2'}">
-									<div class="pull-right">
-				                    	<a id="btnChgPwd" href="javascript:void(0);" onclick="chgPwd();" class="btn btn-default btn-flat">修改密码</a>
-				                    </div>
-			                    </c:if>
 							</div>
 							<div class="box-body">
 								<table class="table">
 								<tr><td>兑奖次数:</td><td></td></tr>	
 								<tr><td>奖金总额:</td><td></td></tr>	
-								<tr><td>积分数目：</td><td></td></tr>	
+								<tr><td>积分数目:</td><td></td></tr>	
 								</table>
 							</div>
 						
