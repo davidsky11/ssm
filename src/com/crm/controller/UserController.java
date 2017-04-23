@@ -87,6 +87,7 @@ public class UserController {
 	 * @return
 	 */
 	@RequestMapping(value = "/user/modifyCurrentUserPwd", method=RequestMethod.POST)
+	@ResponseBody
 	public Json modifyCurrentUserPwd(HttpServletRequest request,HttpServletResponse response) {
 		Json j = new Json();
 		User user = (User) request.getSession().getAttribute(Const.SESSION_USER);

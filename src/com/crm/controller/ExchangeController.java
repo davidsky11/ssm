@@ -315,5 +315,18 @@ public class ExchangeController {
 		return "exchange/list4Vender";
 	}
 	
+	/**
+	 * 个人用户兑奖统计
+	 * @Title:			statistic
+	 * @param model
+	 * @return
+	 */
+	@RequestMapping(value="/exchange/statistic", method=RequestMethod.GET)
+	public String statistic(Model model) {
+		
+		
+		return "exchange/statistic";
+	}
+
 }
  

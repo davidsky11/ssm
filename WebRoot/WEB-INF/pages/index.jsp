@@ -77,6 +77,15 @@ scratch. This page gets rid of all links and provides the needed markup only.
          user experience. Slimscroll is required when using the
          fixed layout. -->
 	<script type="text/javascript">
+		function chgPwd() {
+			//document.getElementById("myProfile").style.display="none";
+			//document.getElementById("chgPwd").style.display="block";
+			
+			$("#myTitle").text("修改密码");
+			$("#myProfile").toggle();
+			$("#chgPwd").toggle();
+		}
+	
          $(document).ready(function(){
         	 $(".sidebarMenuHref").click(function(){
         		 
@@ -120,6 +129,40 @@ scratch. This page gets rid of all links and provides the needed markup only.
         	 return false;       		
           	});
           	});
+         
+         function toChgPwd() {
+        	 var pwd = $("#password").val();
+        	 var newPwd = $("#newPwd").val();
+        	 var newPwdRep = $("#newPwdRep").val();
+        	 
+        	 if (pwd == newPwd) {
+        		 alert("重置密码不能与旧密码一样!");
+        		 return false;
+        	 }
+        	 
+        	 if (newPwd !== newPwdRep) {
+        		 alert(newPwd + " " + newPwdRep);
+        		 alert("新密码输入不一致!");
+        		 return false;
+        	 }
+        	 
+        	 $.ajax({
+        		 type: "POST",
+        		 url: "user/modifyCurrentUserPwd",
+        		 data: {
+        			 password: pwd,
+        			 resetPass: newPwd
+        		 },
+        		 dataType: "json",
+        		 success: function(data) {
+        			 var success = data.success;
+        			 if (success || success === "true") {
+        				 alert("密码重置成功!");
+        			 }
+        		 }
+        	 })
+        	 
+         }
           	
          </script>	
 </body>
