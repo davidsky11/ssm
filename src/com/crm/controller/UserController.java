@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.crm.domain.Activity;
 import com.crm.domain.Page;
 import com.crm.domain.Role;
 import com.crm.domain.User;
@@ -25,6 +26,7 @@ import com.crm.domain.UserRole;
 import com.crm.domain.easyui.DataGrid;
 import com.crm.domain.easyui.Json;
 import com.crm.domain.easyui.PageHelper;
+import com.crm.service.ActivityService;
 import com.crm.service.RoleService;
 import com.crm.service.UserService;
 import com.crm.util.Tool;
@@ -43,6 +45,8 @@ public class UserController {
 	private UserService userService;
 	@Resource
 	private RoleService roleService;
+	@Resource
+	private ActivityService activityService;
 	
 	/**
 	 * @Title:			userInfo
@@ -392,6 +396,22 @@ public class UserController {
 		model.addAttribute("userType", user.getUserType());
 		
 		return "user/detail";
+	}
+	
+	/**
+	 * 用户对应的活动详情
+	 * @Title:			atyDetail
+	 * @Description:	TODO(这里用一句话描述这个方法的作用)
+	 * @param model
+	 * @param id
+	 * @return
+	 */
+	@RequestMapping(value="/user/atyDetail/{id}",method=RequestMethod.GET)
+	public String atyDetail(Model model, @PathVariable("id") String id){
+		List<Activity> atyList = this.activityService.getActivityList(" and t.publisherId = '" + id + "'");
+		model.addAttribute("atyList", atyList);
+		
+		return "user/atyDetail";
 	}
 	
 	/**

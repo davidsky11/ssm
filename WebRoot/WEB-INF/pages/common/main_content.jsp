@@ -78,9 +78,24 @@
 			通过APP微信扫码，除了可以实现<span style="color:red;">查询防伪、溯源、防窜货</span>功能，还可以实现<span style="color:red;">扫码兑奖、
 			送话费、送Q币、微信红包</span>等多种促销营销活动。通过快乐兑扫码系统，可帮助企业打通线上线下，实现营销闭环，实现O2O。
 			</p>
-			<div>
+			<%-- <div>
 				<img src="${path}/crmnew/img/jieshao.jpg" width="450" height="400" />
-			</div>
+			</div> --%>
+			
+			<!-- Your Page Content Here！！！！！！ -->
+			<h2>1、数据记录</h2>
+				<ul>
+					<li><h4>扫码记录</h4></li>
+					<span>展示当前用户参与扫码的所有记录信息</span>
+				</ul>
+		
+			<h2>2、数据统计</h2>
+				<ul>
+					<li><h4>区域统计</h4></li>
+						<span>以区域（省/市）为统计单位用统计图形式展示销售信息</span>
+					<li><h4>销售统计</h4></li>
+						<span>以时间（年/月）为统计单位用统计图形式展示销售信息</span>
+				</ul>
 		</section>
 	</c:if>
 	

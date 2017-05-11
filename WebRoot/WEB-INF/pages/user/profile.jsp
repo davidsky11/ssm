@@ -26,11 +26,11 @@
 							<div class="box-header with-border">
 								<h3 class="box-title"><span id="myTitle">个人资料</span></h3>
 								
-								<c:if test="${currentUser.userType == '2'}">
+								<%-- <c:if test="${currentUser.userType == '2'}"> --%>
 									<div class="pull-right">
 				                    	<a id="btnChgPwd" href="javascript:void(0);" onclick="chgPwd();" class="btn btn-default btn-flat">修改密码</a>
 				                    </div>
-			                    </c:if>
+			                    <%-- </c:if> --%>
 							</div>
 							<div id="myProfile" class="box-body" style="display:block;">
 								<table class="table">

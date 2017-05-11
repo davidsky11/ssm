@@ -204,6 +204,9 @@
 											<button id="lockBtn" type="button" class="btn btn-xs btn-primary" onclick="lockItem('${user.id}', 0)">锁定</button>
 										</c:otherwise>
 									</c:choose>
+									<c:if test="${user.userType eq 1}">
+										<button id="atyBtn" type="button" class="btn btn-xs btn-primary" onclick="atyDetail('${user.id}')">活动列表</button>
+									</c:if>
 								</td>					
 							</tr>
 						</c:forEach>
@@ -365,6 +368,10 @@
 	
 	function detailItem(id){
 		modalLoadAndDisplay('user/detail/'+id);
+	}
+	
+	function atyDetail(id){
+		modalLoadAndDisplay('user/atyDetail/'+id);
 	}
 	
 	function uploadItem(){	

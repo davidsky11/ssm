@@ -124,9 +124,9 @@
 </section>
 <!-- /.content -->
 
-<div class="modal fade" id="modal" tabindex="-1" role="dialog"
+<div class="modal fade" id="modal" tabindex="-1" role="dialog" 
 	aria-labelledby="exampleModalLabel">
-	<div class="modal-dialog" role="document">
+	<div class="modal-dialog" role="document" style="display:table;vertical-align: middle;margin-top: 100px;width:900px;">
 		<div class="modal-content">
 			
 		</div>

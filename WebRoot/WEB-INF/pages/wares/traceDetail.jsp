@@ -17,7 +17,7 @@
 							<span><fmt:formatDate pattern="yyyy-MM" value="${sr.scanTime}" /></span>
 							<span><fmt:formatDate pattern="dd" value="${sr.scanTime}" /></span>
 						</time>
-						<aside style="color: #3a3a38; margin-left: 25%; padding-bottom: 15px;">
+						<aside style="color: #3a3a38; margin-left: 25%; padding-bottom: 15px; max-width:850px; word-wrap:break-word; word-break:normal; ">
 							<p class="things">[<strong>${sr.city}</strong>]  ${sr.user.userAlias}(${sr.user.username}) @ <fmt:formatDate pattern="yyyy-MM-dd HH:mm" value="${sr.scanTime}" /></p>
 							<p class="brief"><span class="text-green">${sr.formattedAddress} ${sr.sematicDescription}</span></p>
 						</aside>

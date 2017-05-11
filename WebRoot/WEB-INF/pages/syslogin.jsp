@@ -5,7 +5,7 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>快乐兑登录界面</title>
+<title>快乐兑登录界面</title>
 <link rel="stylesheet" rev="stylesheet" type="text/css" href="css/login1.css" media="all"/>
 
 <script type="text/javascript" src="js/jquery/jQuery1.7.js"></script>
@@ -94,23 +94,26 @@
 
 <body>
 	<div id="head">
-		<span> 快  乐  兑 </span>
+		<span> 快  乐  兑  </span>
 	</div>
 	<div id="tab">
+		<!-- <ul class="tab_menu1">
+			<li>系统管理员登录</li>
+		</ul> -->
 		<div class="tab_box">
 			<!-- 系统用户登录开始 -->
 			<div>
 				<form id="loginForm" name="loginForm" action="login" method="post" >
 					<input type="hidden" id="userType" name="userType" value="0" />
 					<div id="username">
-						<label> 用&nbsp;户&nbsp;名：</label> 
+						<label>用户账户：</label> 
 						<input type="text"
 							id="sys_username_hide" name="username" value="请输入用户名"
 							nullmsg="用户名不能为空!" datatype="s3-18" errormsg="用户名范围在3~18个字符之间!"  />
 						<!--ajaxurl="demo/valid.jsp"-->
 					</div>
 					<div id="password">
-						<label>密&nbsp;&nbsp;&nbsp;码：</label> 
+						<label>用户密码：</label> 
 						<input type="password"
 							id="sys_password_hide" name="password" 
 							nullmsg="密码不能为空!" datatype="*3-16" errormsg="密码范围在3~16之间!"  />
@@ -122,9 +125,11 @@
 						<img id="codeImg" name="codeImg" alt="验证码占位图" title="点击更换" src="" />
 					</div>
 					<div id="remember">
-						<input type="checkbox" id="remember1" name="remember"> <label>记住密码</label>
-						<!-- <input type="hidden" id="autologinch1" name="autologinch"  class="autologinch" value=""/> -->
+						<span name="errorIfo" style="color:red;">${message}</span>
 					</div>
+					<!-- <div id="remember">
+						<input type="checkbox" id="remember1" name="remember"> <label>记住密码</label>
+					</div> -->
 					<div id="login">
 						<button type="submit">登录</button>
 					</div>
