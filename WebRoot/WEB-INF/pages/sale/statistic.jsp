@@ -154,8 +154,9 @@
 			$('#level').val("month");
 		}
 		if (level == "month") {
-			$('#month').val(params.name);
+			//$('#month').val(params.name);
 			$('#level').val("month");
+			return false;
 		}
 		if (level == "" || typeof(level) == "undefined") {
 			$('#level').val("month");
@@ -165,7 +166,7 @@
 			var month = value.substring(idx+1, value.length);
 			$('#year').val(year);
 			$('#month').val(month);
-			alert(month);
+			//alert(month);
 		}
 		getChartData();
 	});
@@ -207,7 +208,7 @@
 				}
 				
 				myChart.hideLoading();
-				myChart.setOption(option);
+				myChart.setOption(option, true);
 			},
 			error : function(errorMsg) {
 				alert("不好意思，图表请求数据失败啦!");
@@ -224,11 +225,28 @@
 	
 	$("#searchBtn").click(function() {
 		var level = $('#level').val();
+		var year = $('#year').val();
+		var month = $('#month').val();
+
 		if (level == "year") {
+			if (year == null || year == "")
+			{
+				alert("请选择年份再进行统计!");
+				return false;
+			}
 			$('#month').val("");
 		}
 		if (level == "month") {
-			$('#month').val("");
+			//$('#month').val("");
+			if (year == null || year == "" || month == null || month == "")
+			{
+				alert("请选择年份/月份再进行统计!");
+				return false;
+			}
+		}
+		if (level == "" || typeof(level) == "undefined") {
+			alert("请先选择统计级别再进行统计!");
+			return false;
 		}
 		
 		getChartData();

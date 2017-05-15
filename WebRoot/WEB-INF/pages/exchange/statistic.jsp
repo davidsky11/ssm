@@ -28,9 +28,9 @@
 							</div>
 							<div class="box-body">
 								<table class="table">
-								<tr><td>兑奖次数:</td><td></td></tr>	
-								<tr><td>奖金总额:</td><td></td></tr>	
-								<tr><td>积分数目:</td><td></td></tr>	
+								<tr><td>兑奖次数:</td><td>${exchangeCount}次</td></tr>	
+								<tr><td>奖金总额:</td><td>￥${exchangeAmount}元</td></tr>	
+								<tr><td>积分数目:</td><td>总 - ${user.points}分 / 剩 - ${user.noUsePoints}分</td></tr>	
 								</table>
 							</div>
 						

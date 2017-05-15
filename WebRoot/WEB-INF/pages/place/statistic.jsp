@@ -133,8 +133,12 @@
 			$('#level').val("city");
 		}
 		if (level == "city") {
-			$('#city').val(params.name);
+			//$('#city').val(params.name);
 			$('#level').val("district");
+		}
+		if (level == "district")
+		{
+			return false;
 		}
 		if (level == "" || typeof(level) == "undefined") {
 			$('#level').val("province");
@@ -179,7 +183,7 @@
 				}
 				
 				myChart.hideLoading();
-				myChart.setOption(option);
+				myChart.setOption(option, true);
 			},
 			error : function(errorMsg) {
 				alert("没有找到想要的数据!");
@@ -196,12 +200,28 @@
 	
 	$("#searchBtn").click(function() {
 		var level = $('#level').val();
+		var province = $('#province').val();
+		var city = $('#city').val();
 		if (level == "province") {
 			$('#province').val("");
 			$('#city').val("");
 		}
 		if (level == "city") {
-			$('#city').val("");
+			if (province == null || province == "") {
+				alert("请填写省再进行统计！");
+				return false;
+			}
+		}
+		if (level == "district") {
+			if (province == null || province == "" || city == null || city == "")
+			{
+				alert("请填写省/市再进行统计!");
+				return false;
+			}
+		}
+		if (level == "" || typeof(level) == "undefined") {
+			alert("请先选择统计级别再进行统计!");
+			return false;
 		}
 		
 		getChartData();

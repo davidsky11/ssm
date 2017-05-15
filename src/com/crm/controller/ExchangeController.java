@@ -31,6 +31,7 @@ import com.crm.domain.system.SysDictionary;
 import com.crm.service.ActivityService;
 import com.crm.service.ExchangeService;
 import com.crm.service.SysDictionaryService;
+import com.crm.service.UserService;
 import com.crm.util.Tool;
 import com.crm.util.common.Const;
 
@@ -52,6 +53,8 @@ public class ExchangeController {
 	private ActivityService activityService;
 	@Resource
 	private SysDictionaryService sysDictionaryService;
+	@Resource
+	private UserService userService;
 
 	/**
 	 * @Title:			accountList
@@ -322,8 +325,29 @@ public class ExchangeController {
 	 * @return
 	 */
 	@RequestMapping(value="/exchange/statistic", method=RequestMethod.GET)
-	public String statistic(Model model) {
+	public String statistic(HttpServletRequest request, Model model) {
 		
+		List<Exchange> exchangeList = new ArrayList<Exchange>();
+		
+		// 兑奖次数  奖金金额  积分数目
+		User user = (User) request.getSession().getAttribute(Const.SESSION_USER);
+		if (user != null) {
+			user = this.userService.getUserById(user.getId());  // 积分金额
+		
+			exchangeList = this.exchangeService.findByCondition(" and t.userId = '" + user.getId() + "'");
+		}
+		
+		
+		Double exchangeAmount = 0.0d;
+		for (Exchange ex : exchangeList) {
+			if (null != ex.getAward()) {
+				exchangeAmount += ex.getAward().getAmount();
+			}
+		}
+		
+		model.addAttribute("exchangeCount", exchangeList.size());
+		model.addAttribute("exchangeAmount", exchangeAmount);
+		model.addAttribute("user", user);
 		
 		return "exchange/statistic";
 	}
