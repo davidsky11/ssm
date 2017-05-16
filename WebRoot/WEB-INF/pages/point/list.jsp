@@ -2,6 +2,7 @@
 	pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
+<%@ taglib prefix="vino" tagdir="/WEB-INF/tags"%>
 
 <section class="content-header">
 	<h1>
@@ -41,13 +42,17 @@
 									<td>${point.user.username}</td>
 									<td><fmt:formatDate pattern="yyyy-MM-dd HH:mm:ss" value="${point.exchangeTime}" /></td>
 									<td>${point.exchangeAmount * 100}</td>
-									<td>${ex.country} ${ex.province} ${ex.city}</td>
+									<td>${point.country} ${point.province} ${point.city} ${point.distance} ${point.street}</td>
 								</tr>
 							</c:forEach>
 						</table>
 					</div>
 				</div>
 				<!-- /.box-body -->
+				<!-- 分页 -->
+				<vino:pagination page="${page}" action="point/list"
+					contentSelector="#content-wrapper">
+				</vino:pagination>
 			</div>
 			<!-- /.box -->
 		</div>
