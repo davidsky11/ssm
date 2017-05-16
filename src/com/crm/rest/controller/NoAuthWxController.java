@@ -362,7 +362,7 @@ public class NoAuthWxController {
 						/**
 						 * 设置正确的手机号码
 						 */
-						if (Tool.isNullOrEmpty(recNo) && Tool.isNullOrEmpty(phone) && ValidUtil.isValidMobile(phone)) {
+						if (Tool.isNullOrEmpty(recNo) || Tool.isNullOrEmpty(phone) || !ValidUtil.isValidMobile(phone)) {
 							result.setCode(Const.WARN_PHONE_ERROR);
 							result.setSuccess(false);
 							result.setMsg("手机号码不正确，请为用户绑定合适的手机号或者直接指定一个待充值的手机号码!");
@@ -1220,7 +1220,7 @@ public class NoAuthWxController {
 			/**
 			 * 设置正确的手机号码
 			 */
-			if (Tool.isNullOrEmpty(phone) && ValidUtil.isValidMobile(phone)) {
+			if (Tool.isNullOrEmpty(phone) || !ValidUtil.isValidMobile(phone)) {
 				result.setCode(Const.WARN_PHONE_ERROR);
 				result.setSuccess(false);
 				result.setMsg("手机号码不正确，请为用户绑定合适的手机号或者直接指定一个待充值的手机号码!");

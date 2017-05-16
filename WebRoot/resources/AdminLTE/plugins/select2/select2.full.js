@@ -4609,7 +4609,7 @@ S2.define('select2/defaults',[
         return matcher(params, match);
       }
 
-      var original = stripDiacritics(data.text).toUpperCase();
+      /*var original = stripDiacritics(data.text).toUpperCase();
       var term = stripDiacritics(params.term).toUpperCase();
 
       // Check if the text contains the term
@@ -4618,7 +4618,22 @@ S2.define('select2/defaults',[
       }
 
       // If it doesn't contain the term, don't return anything
-      return null;
+      return null;*/
+      var original = '', term = stripDiacritics(params.term).toUpperCase();
+      var pinyin = stripDiacritics(data.text).toPinYin(); // a: 首字母， b：拼音
+
+      if (term.length <= 1) {
+          original = pinyin.first.indexOf(term);
+      } else {
+          //从pinyin.js中返回的拼音与输入的拼音比较，只从第一个开始有不间断的匹配就能展示，如果中间有断开例如："FAN"与"FAAN"则认为是不匹配
+          original = ((pinyin.first).indexOf(term) === -1) ? (pinyin.py).indexOf(term) : (pinyin.first).indexOf(term);
+      }
+
+      if (original === -1) {//此处是在中文没有匹配时，匹配对应的拼音
+          original = stripDiacritics(data.text).toUpperCase().indexOf(term);
+      }
+
+      return original > -1 ? data : null;
     }
 
     this.defaults = {

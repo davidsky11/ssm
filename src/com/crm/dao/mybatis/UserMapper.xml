@@ -141,8 +141,8 @@
 	</select>
 	
 	<select id="userPages" resultMap="userMap">
-		select u.id u_id, u.username u_username, u.email u_email, u.gender u_gender, u.qq u_qq, u.userAlias u_userAlias, u.locked u_locked,
-		u.weixin u_weixin, u.regTime u_regtime, u.idcard u_idcard, u.creatorName u_creatorName, u.userType u_userType,
+		select distinct u.id u_id, u.username u_username, u.email u_email, u.gender u_gender, u.qq u_qq, u.userAlias u_userAlias, u.locked u_locked,
+		u.weixin u_weixin, u.regTime u_regtime, u.idcard u_idcard, u.creatorName u_creatorName, u.userType u_userType, u.lastLoginTime u_lastLoginTime,
 		u.telephone u_telephone, u.address u_address, u.merchant u_merchant, u.loginFrequency u_loginFrequency, u.flagCode u_flagCode,
 		r.id r_id, r.name r_name, r.roleDesc r_roleDesc
 		from sysuser u left join sysrole r on u.userType = r.id where 1=1 
@@ -240,7 +240,8 @@
             <if test="merchant != null and merchant != ''">merchant=#{merchant},</if>
             <if test="flagCode != null and flagCode != ''">flagCode=#{flagCode},</if>
             <if test="wxOpenId != null and wxOpenId != ''">wxOpenId=#{wxOpenId},</if>
-            points=#{points}, noUsePoints=#{noUsePoints}
+            <if test="points != null and points != ''">points=#{points},</if>
+            <if test="noUsePoints != null and noUsePoints != ''">noUsePoints=#{noUsePoints},</if>
     	</set>
     	where id = #{id}
     </update>

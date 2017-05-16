@@ -1,22 +1,41 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
+    <style type="text/css">
+    	.desc {
+    		text-indent:2em;
+    		font-size:14px;
+    		line-height:1.5em;
+    		letter-spacing:2px
+    	}
+    </style>
     <script type="text/javascript">
 	    var path = "${path}";
 	</script>
 	
 	<c:if test="${userType eq '0'}">
-		<!-- <section class="content" id="mainContent"> -->
-			<div style="float:left; width:50%;">
-				<h1>快乐兑</h1>
-				<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;快乐兑是以二维码/条形码为媒介，利用可变二维码技术，为每个二维码赋予不同的含义。通过一物一码实现大数据营销管理。
-				通过APP微信扫码，除了可以实现<span style="color:red;">查询防伪、溯源、防窜货</span>功能，还可以实现<span style="color:red;">扫码兑奖、
-				送话费、送Q币、微信红包</span>等多种促销营销活动。通过快乐兑扫码系统，可帮助企业打通线上线下，实现营销闭环，实现O2O。
-				</p>
-			</div style="float:right; width:50%;">
-			<div>
-				<img src="${path}/crmnew/img/jieshao.jpg" width="450" height="450" />
-			</div>
-		<!-- </section> -->
+		<section class="content" id="mainContent">
+			<h1>快乐兑</h1>
+			<p class="desc">快乐兑是以二维码/条形码为媒介，利用可变二维码技术，为每个二维码赋予不同的含义。通过一物一码实现大数据营销管理。
+			通过APP微信扫码，除了可以实现<span style="color:red;">查询防伪、溯源、防窜货</span>功能，还可以实现<span style="color:red;">扫码兑奖、
+			送话费、送Q币、微信红包</span>等多种促销营销活动。通过快乐兑扫码系统，可帮助企业打通线上线下，实现营销闭环，实现O2O。
+			</p>
+			
+			<h2>1、系统设置</h2>
+				<ul>
+					<li><h4>字典维护</h4></li>
+					<span>对系统常用字典数据进行维护</span>
+				</ul>
+		
+			<h2>2、用户管理</h2>
+				<ul>
+					<li><h4>前端用户管理</h4></li>
+						<span>可以对前端用户进行编辑、锁定等操作</span>
+					<li><h4>经销商管理</h4></li>
+						<span>可以对经销商进行编辑、锁定等操作</span>
+					<li><h4>厂商管理</h4></li>
+						<span>可以对厂商进行编辑、锁定、活动列表查看等操作</span>
+				</ul>
+		</section>
 	</c:if>
 	<c:if test="${userType eq '1'}">
 		<!-- Content Header (Page header) -->
@@ -74,13 +93,10 @@
 	<c:if test="${userType eq '2'}">
 		<section class="content" id="mainContent">
 			<h1>快乐兑</h1>
-			<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;快乐兑是以二维码/条形码为媒介，利用可变二维码技术，为每个二维码赋予不同的含义。通过一物一码实现大数据营销管理。
+			<p class="desc">快乐兑是以二维码/条形码为媒介，利用可变二维码技术，为每个二维码赋予不同的含义。通过一物一码实现大数据营销管理。
 			通过APP微信扫码，除了可以实现<span style="color:red;">查询防伪、溯源、防窜货</span>功能，还可以实现<span style="color:red;">扫码兑奖、
 			送话费、送Q币、微信红包</span>等多种促销营销活动。通过快乐兑扫码系统，可帮助企业打通线上线下，实现营销闭环，实现O2O。
 			</p>
-			<%-- <div>
-				<img src="${path}/crmnew/img/jieshao.jpg" width="450" height="400" />
-			</div> --%>
 			
 			<!-- Your Page Content Here！！！！！！ -->
 			<h2>1、数据记录</h2>
@@ -101,10 +117,29 @@
 	
 	<c:if test="${userType eq '3'}">
 		<section class="content" id="mainContent">
-			<!-- <h1>欢迎进入 快乐兑</h1> -->
+			<h1>快乐兑</h1>
+			<p class="desc">快乐兑是以二维码/条形码为媒介，利用可变二维码技术，为每个二维码赋予不同的含义。通过一物一码实现大数据营销管理。
+			通过APP微信扫码，除了可以实现<span style="color:red;">查询防伪、溯源、防窜货</span>功能，还可以实现<span style="color:red;">扫码兑奖、
+			送话费、送Q币、微信红包</span>等多种促销营销活动。通过快乐兑扫码系统，可帮助企业打通线上线下，实现营销闭环，实现O2O。
+			</p>
 			
-			<div>
-				<img src="${path}/crmnew/img/back_app.png" width="80%" height="80%" />
-			</div>
+			<!-- Your Page Content Here！！！！！！ -->
+			<h2>1、用户菜单</h2>
+				<ul>
+					<li><h4>扫码记录</h4></li>
+					<span>展示当前用户参与扫码的所有记录信息</span>
+					<li><h4>兑奖记录</h4></li>
+					<span>展示当前用户参与兑奖的所有记录信息</span>
+					<li><h4>兑奖统计</h4></li>
+					<span>展示当前用户已兑奖信息（兑奖次数、兑奖金额等）</span>
+				</ul>
+		
+			<h2>2、积分管理</h2>
+				<ul>
+					<li><h4>兑换记录</h4></li>
+						<span>展示当前用户参与积分兑换的所有记录信息</span>
+					<li><h4>积分统计</h4></li>
+						<span>展示当前用户的积分详情</span>
+				</ul>
 		</section>
 	</c:if>

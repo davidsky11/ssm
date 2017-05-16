@@ -752,6 +752,15 @@ public class MyBatisTest extends AbstractJUnit4SpringContextTests {
     	}
     }
 	
+	@Test
+	public void userEdit() {
+		User user = new User();
+		user.setId("28");
+		
+		user.setPoints(500);
+		user.setNoUsePoints(200);
+		this.userMapper.editUser(user);
+	}
 	
 	
 }

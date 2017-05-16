@@ -8,8 +8,6 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -34,8 +32,6 @@ import com.crm.util.common.Const;
  */
 @Controller
 public class ActivityController {
-
-	private final Logger log = LoggerFactory.getLogger(ActivityController.class);
 
 	@Resource
 	private ActivityService activityService;
@@ -194,5 +190,33 @@ public class ActivityController {
 			}
 		}
 	}
+	
+	/**
+	 * 活动检索
+	 * @Title:			atySearch
+	 * @Description:	活动检索
+	 * @param model
+	 * @param request
+	 * @param deleteIds
+	 * @return
+	 */
+	@RequestMapping(value = "/aty/search", method = RequestMethod.POST)
+	public String atySearch(Model model, HttpServletRequest request, @RequestParam("atyInfo") String atyInfo) {
+		Page<Activity> page = new Page<Activity>();
+		StringBuffer conditionSql = new StringBuffer();
+		if (Tool.isNotNullOrEmpty(atyInfo)) {
+			conditionSql.append(" and (a.title like '%").append(atyInfo).append("%'");
+			conditionSql.append(" or a.content like '%").append(atyInfo).append("%'");
+			conditionSql.append(" or a.publicCode like '%").append(atyInfo).append("%')");
+			model.addAttribute("atyInfo", atyInfo);
+		}
+		
+		page = activityService.atyPages(page, conditionSql.toString());
+
+		model.addAttribute("page", page);
+		model.addAttribute("atys", page.getContent());
+		return "activity/list";
+	}
+	
 
 }

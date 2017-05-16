@@ -488,4 +488,43 @@ public class UserController {
 		return "user/userList";
 	}
 	
+	/**
+	 * 检索用户
+	 * @Title:			userListPost
+	 * @Description:	检索用户
+	 * @param model
+	 * @param pageNumber
+	 * @param userType
+	 * @return
+	 */
+	@RequestMapping(value = "/user/userList",method = RequestMethod.POST)
+    public String userListPost(Model model, @RequestParam(value="pageNumber",defaultValue="1") int pageNumber,
+    		@RequestParam("userType") String userType, @RequestParam("userInfo") String userInfo) {
+		List<Role> roleList = this.roleService.getRoleList(null);
+		model.addAttribute("roleList", roleList);
+		
+		StringBuffer conditionSql = new StringBuffer();
+		conditionSql.append(" and u.userType = '").append(userType).append("'");
+		model.addAttribute("userType", userType);
+		
+		if (Tool.isNotNullOrEmpty(userInfo)) {
+			conditionSql.append(" and (u.username like '%").append(userInfo).append("%'");
+			conditionSql.append(" or u.qq like '%").append(userInfo).append("%'");
+			conditionSql.append(" or u.email like '%").append(userInfo).append("%'");
+			conditionSql.append(" or u.weixin like '%").append(userInfo).append("%'");
+			conditionSql.append(" or u.userAlias like '%").append(userInfo).append("%')");
+			
+			model.addAttribute("userInfo", userInfo);
+		}
+		
+		Page<User> page = new Page<User>();
+		page.setPage(pageNumber);
+		page = userService.userPages(page, conditionSql.toString());
+		
+		model.addAttribute("userType", userType);
+		model.addAttribute("page", page);
+		model.addAttribute("users", page.getContent());
+		
+        return "user/userList";
+    }
 }

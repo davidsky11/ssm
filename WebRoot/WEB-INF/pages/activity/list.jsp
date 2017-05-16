@@ -3,7 +3,6 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
 <%@ taglib prefix="vino" tagdir="/WEB-INF/tags"%>
-<%-- <%@taglib prefix="shiro" uri="http://shiro.apache.org/tags"%> --%>
 <!-- Content Header (Page header) -->
 <section class="content-header">
 	<h1>
@@ -11,77 +10,101 @@
 	</h1>
 	<ol class="breadcrumb">
 		<li><a href=""><i class="fa fa-dashboard"></i>主页</a></li>
-		<!-- <li><a href="#">用户管理</a></li> -->
 		<li class="active">活动管理</li>
 	</ol>
 </section>
 <!-- Main content -->
 <section class="content">
 	<div class="row">
-		<!-- <div class="col-md-6"> -->
 		<div class="box">
-			<!-- /.box-header -->
 			<div class="box-body">
 			
-				<!-- /.row -->
 				<div class="box box-primary">
-					<div class="btn-group">
-						<!-- 注意，为了设置正确的内补（padding），务必在图标和文本之间添加一个空格。 -->
-						
-						<button id="addBtn" type="button"
-							class="btn btn-primary btn-flat margin" onclick="addItem()">
-							<span class="fa fa-fw fa-plus" aria-hidden="true"></span> 新增
-						</button>
-						<button id="deleteBtn" type="button"
-							class="btn  btn-danger btn-flat margin">
-							<span class="fa fa-fw fa-remove" aria-hidden="true"></span> 删除
-						</button>
+					<form id="searchForm">
+					<div class="form-group">
+						<div class="box-body">
+							<div class="row">
+								<div class="col-xs-1">
+									<button id="addBtn" type="button"
+										class="btn btn-primary btn-flat" onclick="addItem()">
+										<span class="fa fa-fw fa-plus" aria-hidden="true"></span> 新增
+									</button>
+								</div>
+								<div class="col-xs-1">
+									<button id="deleteBtn" type="button"
+										class="btn btn-danger btn-flat">
+										<span class="fa fa-fw fa-remove" aria-hidden="true"></span> 删除
+									</button>
+								</div>
+								<div class="col-xs-6">
+									
+								</div>
+								
+								<div class="col-xs-4" style="position: relative;">
+									<div style="float:left;">
+										<input type="text" class="form-control pull-right" style="margin-right:auto;"
+											id="atyInfo" name="atyInfo" value="${atyInfo}"
+											placeholder="活动信息">
+									</div>
+									<div style="float:right;">
+										<button id="searchBtn" type="button"
+											class="btn btn-info btn-flat pull-right">
+											<span class="fa fa-fw fa-search" aria-hidden="true"></span>查询</button>
+									</div>
+								</div>
+							</div>
+						</div>
 					</div>
-				<div class="table-responsive">
-					<table class="table table-hover center">
-						<tr>
-							<th style="width: 10px"><label> <input id="allCheck"
-									type="checkbox" class="minimal" value="0">
-							</label></th>
-							<th style="width: 10px">#</th>
-							<th>活动名称</th>
-							<th>开始时间</th>
-							<th>结束时间</th>
-							<th>活动内容</th>
-							<th>创建人</th>
-							<th>活动编码</th>
-							<!-- <th style="width:15%;max-width:50px">活动编码</th> -->
-							<th>操作</th>
-
-						</tr>
-						<c:forEach items="${atys}" var="aty" varStatus="status">
+					</form>
+					
+					<div class="table-responsive">
+						<table class="table table-hover center">
 							<tr>
-								<td><label><input type="checkbox"
-										class="minimal deleteCheckbox" value="${aty.id}"></label></td>
-								<td>${status.count}</td>
-								<td>${aty.title}</td>
-								<%-- <td><fmt:formatDate pattern="yyyy-MM-dd" value="${aty.startTime}" /></td>
-								<td><fmt:formatDate pattern="yyyy-MM-dd" value="${aty.endTime}" /></td> --%>
-								<td>${aty.startTime}</td>
-								<td>${aty.endTime}</td>
-								<td>${aty.content}</td>
-								<td>${aty.publisherName}</td>
-								<td>${aty.publicCode}</td>
-								<%-- <td style="width:15%;max-width:50px">${aty.atyCode}</td> --%>
+								<th style="width: 10px"><label> <input
+										id="allCheck" type="checkbox" class="minimal" value="0">
+								</label></th>
+								<th style="width: 10px">#</th>
+								<th>活动名称</th>
+								<th>开始时间</th>
+								<th>结束时间</th>
+								<th>活动内容</th>
+								<th>创建人</th>
+								<th>活动编码</th>
+								<!-- <th style="width:15%;max-width:50px">活动编码</th> -->
+								<th>操作</th>
 
-								<td>
-									<button id="updateBtn" type="button"
-										class="btn btn-xs btn-primary btn-flat" onclick="updateItem('${aty.id}');">编辑</button>
-									<button id="detailBtn" type="button"
-										class="btn btn-xs btn-primary btn-flat" onclick="detailItem('${aty.id}');">详情</button>
-									<button id="buildInfoBtn" type="button" 
-										<c:if test="${aty.infoUrl eq null or aty.infoUrl eq '' }">
+							</tr>
+							<c:forEach items="${atys}" var="aty" varStatus="status">
+								<tr>
+									<td><label><input type="checkbox"
+											class="minimal deleteCheckbox" value="${aty.id}"></label></td>
+									<td>${status.count}</td>
+									<td>${aty.title}</td>
+									<%-- <td><fmt:formatDate pattern="yyyy-MM-dd" value="${aty.startTime}" /></td>
+								<td><fmt:formatDate pattern="yyyy-MM-dd" value="${aty.endTime}" /></td> --%>
+									<td>${aty.startTime}</td>
+									<td>${aty.endTime}</td>
+									<td>${aty.content}</td>
+									<td>${aty.publisherName}</td>
+									<td>${aty.publicCode}</td>
+									<%-- <td style="width:15%;max-width:50px">${aty.atyCode}</td> --%>
+
+									<td>
+										<button id="updateBtn" type="button"
+											class="btn btn-xs btn-primary btn-flat"
+											onclick="updateItem('${aty.id}');">编辑</button>
+										<button id="detailBtn" type="button"
+											class="btn btn-xs btn-primary btn-flat"
+											onclick="detailItem('${aty.id}');">详情</button>
+										<button id="buildInfoBtn" type="button"
+											<c:if test="${aty.infoUrl eq null or aty.infoUrl eq '' }">
 											disabled
 										</c:if>
-										class="btn btn-xs btn-primary btn-flat" onclick="previewItem('${aty.infoUrl}');">预览海报</button>
-							</tr>
-						</c:forEach>
-					</table>
+											class="btn btn-xs btn-primary btn-flat"
+											onclick="previewItem('${aty.infoUrl}');">预览海报</button>
+								</tr>
+							</c:forEach>
+						</table>
 					</div>
 				</div>
 				<!-- /.box-body -->
@@ -160,7 +183,7 @@
 		$.ajax({
 			async : false,
 			cache : false,
-			type : 'GET',
+			type : 'POST',
 			data : $("#searchForm").serialize(),		 
 			url : "aty/search",//请求的action路径  
 			error : function() {//请求失败处理函数  

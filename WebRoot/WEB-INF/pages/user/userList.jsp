@@ -3,7 +3,6 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
 <%@ taglib prefix="vino" tagdir="/WEB-INF/tags"%>
-<%-- <%@taglib prefix="shiro" uri="http://shiro.apache.org/tags"%> --%>
 <!-- Content Header (Page header) -->
 <section class="content-header">
 	<h1>
@@ -20,139 +19,91 @@
 	</h1>
 	<ol class="breadcrumb">
 		<li><a href=""><i class="fa fa-dashboard"></i>系统管理</a></li>
-		<!-- <li><a href="#">用户管理</a></li> -->
-		<li class="active">
-			<c:if test="${userType eq '1'}">
+		<li class="active"><c:if test="${userType eq '1'}">
 				厂商管理
-			</c:if>
-			<c:if test="${userType eq '2'}">
+			</c:if> <c:if test="${userType eq '2'}">
 				经销商管理
-			</c:if>
-			<c:if test="${userType eq '3'}">
+			</c:if> <c:if test="${userType eq '3'}">
 				前端用户管理
-			</c:if>
-		</li>
+			</c:if></li>
 	</ol>
 </section>
 <!-- Main content -->
 <section class="content">
 	<div class="row">
-		<input id="userType" type="hidden" name="userType" value="${userType}" >
-		<!-- <div class="col-md-6"> -->
 		<div class="box">
-			<!-- /.box-header -->
 			<div class="box-body">
-				<%-- <div class="row">
-					<div class="col-md-12">
-						<div class="box box-primary">
-							<div class="box-header with-border">
-								<h3 class="box-title">数据查询</h3>
-							</div>
-							<div class="box-body">
-								<!-- form start -->
-								<form id="searchForm" action="user/search" method="get">
-									<div class="box-body">
-										<div class="row">
-											<input hidden="true" name="pageNumber" id="pageNumber">
-											<div class="form-group col-md-2">
-												<label for="usernameLabel">用户名:</label> <input type="text"
-													class="form-control" id="usernameLabel"
-													name="search_username" value="${searchParamsMap.username }">
-											</div>
-											<div class="form-group col-md-2">
-												<label for="aliasLabel">别名:</label> <input type="text"
-													class="form-control" id="aliasLabel"
-													name="search_userAlias"
-													value="${searchParamsMap.userAlias }">
-											</div>
-											<!-- Date range -->
-											<div class="form-group  col-md-4">
-												<label>创建时间:</label>
-												<div class="input-group">
-													<div class="input-group-addon">
-														<i class="fa fa-calendar"></i>
-													</div>
-													<input type="text" class="form-control pull-right"
-														id="reservation" name="search_createTimeRange"
-														value="${searchParamsMap.createTimeRange}">
-												</div>
-												<!-- /.input group -->
-											</div>
-											<!-- <div class="form-group col-md-2">
-												<label for="isLockedLabel" >是否锁定: </label><br>
-												<input id="isLockedLabel" type="checkbox" name="search_locked">
-											</div> -->
 
-											<!-- /.form group -->
-										</div>
-										<!-- other rows -->
-									</div>
-									<!-- /.box-body -->
-									<div class="box-footer">
-										<button id="searchBtn" type="submit"
-											class="btn btn-info pull-right">查询</button>
-									</div>
-									<!-- /.box-footer -->
-								</form>
-							</div>
-							<!-- /.box-body -->
-						</div>
-						<!-- /.box -->
-					</div>
-					<!-- /.col (right) -->
-				</div> --%>
-				<!-- /.row -->
 				<div class="box box-primary">
-					<%-- <div class="box-header with-border">
-						<h3 class="box-title">
-							<c:if test="${userType eq '1'}">
-								厂商列表
-							</c:if>
-							<c:if test="${userType eq '2'}">
-								经销商列表
-							</c:if>
-							<c:if test="${userType eq '3'}">
-								前端用户列表
-							</c:if>
-						</h3>
-					</div> --%>
-					<div class="btn-group">
-						<!-- 注意，为了设置正确的内补（padding），务必在图标和文本之间添加一个空格。 -->
-						
-							<c:if test="${userType eq '1'}">
-								<button id="addBtn" type="button"
-									class="btn  btn-primary btn-flat margin" onclick="addItem(${userType})">
-									<span class="fa fa-fw  fa-plus" aria-hidden="true"></span> 新增
-								</button>
-								<button id="deleteBtn" type="button"
-									class="btn  btn-danger btn-flat margin">
-									<span class="fa fa-fw fa-remove" aria-hidden="true"></span> 删除
-								</button>
-							</c:if>
-							
-							<!-- <button id="uploadBtn" type="button"
-								class="btn  btn-primary btn-flat margin" onclick="uploadItem()">
-								<span class="fa fa-fw fa-cloud-upload" aria-hidden="true"></span> 上传
-							</button> -->
-							<%-- </shiro:hasPermission> --%>
-							<%-- <shiro:hasPermission name="user:download"> --%>
-							<!-- <form id="downloadForm" action="user/download" method="get" >
-							<button id="downloadBtn" type="submit"
-								class="btn  btn-primary btn-flat margin2" 
-								 onclick="downloadItem()">
-								<span class="fa fa-fw fa-cloud-download" aria-hidden="true"></span> 下载
-							</button>
-							<input id="downloadIds" type="hidden" name="downloadIds[]">
-							</form> -->
-							<%-- </shiro:hasPermission> --%>
-							
+					<div class="form-group">
+						<div class="box-body">
+							<div class="row">
+
+							<form id="searchForm">
+								<input id="userType" type="hidden" name="userType" value="${userType}">
+								<c:choose>
+									<c:when test="${userType eq '1'}">
+										<div class="col-xs-1">
+											<button id="addBtn" type="button"
+												class="btn btn-primary btn-flat"
+												onclick="addItem(${userType})">
+												<span class="fa fa-fw  fa-plus" aria-hidden="true"></span>
+												新增
+											</button>
+										</div>
+										<div class="col-xs-1">
+											<button id="deleteBtn" type="button"
+												class="btn  btn-danger btn-flat">
+												<span class="fa fa-fw fa-remove" aria-hidden="true"></span>
+												删除
+											</button>
+										</div>
+										<div class="col-xs-6"></div>
+
+										<div class="col-xs-4">
+											<div style="float: left;">
+												<input type="text" class="form-control pull-right"
+													style="margin-right: auto;" id="userInfo" name="userInfo"
+													value="${userInfo}" placeholder="用户信息">
+											</div>
+											<div style="float: right;">
+												<button id="searchBtn" type="button"
+													class="btn btn-info btn-flat pull-right">
+													<span class="fa fa-fw fa-search" aria-hidden="true"></span>查询
+												</button>
+											</div>
+										</div>
+									</c:when>
+									<c:otherwise>
+										<div class="col-xs-4">
+											<input type="text" class="form-control pull-right"
+												style="margin-right: auto;" id="userInfo" name="userInfo"
+												value="${userInfo}" placeholder="用户信息">
+										</div>
+										<div class="col-xs-6"></div>
+
+										<div class="col-xs-2" style="position: relative;">
+											<div style="float: right;">
+												<button id="searchBtn" type="button"
+													class="btn btn-info btn-flat pull-right">
+													<span class="fa fa-fw fa-search" aria-hidden="true"></span>查询
+												</button>
+											</div>
+										</div>
+									</c:otherwise>
+								</c:choose>
+							</form>
+							</div>
+						</div>
 					</div>
+				</div>
+
 				<div class="table-responsive">
 					<table class="table table-hover center">
 						<tr>
 							<c:if test="${userType eq '1'}">
-								<th style="width: 10px"><label> <input id="allCheck"
-									type="checkbox" class="minimal" value="0"></label>
+								<th style="width: 10px"><label> <input
+										id="allCheck" type="checkbox" class="minimal" value="0"></label>
 								</th>
 							</c:if>
 							<th style="width: 10px">#</th>
@@ -164,6 +115,9 @@
 							</c:if>
 							<th>创建时间</th>
 							<th>创建人</th>
+							<c:if test="${userType eq '2' or userType eq '3'}">
+								<th>最近登录</th>
+							</c:if>
 							<th>状态</th>
 							<th>操作</th>
 
@@ -172,18 +126,23 @@
 							<tr>
 								<c:if test="${userType eq '1'}">
 									<td><label><input type="checkbox"
-										class="minimal deleteCheckbox" value="${user.id}"></label></td>
+											class="minimal deleteCheckbox" value="${user.id}"></label></td>
 								</c:if>
 								<td>${status.count}</td>
 								<td>${user.username}</td>
 								<td>${user.userAlias}</td>
-								
+
 								<c:if test="${userType eq '1'}">
 									<td>${user.merchant}</td>
 									<td>${user.telephone}</td>
 								</c:if>
-								<td><fmt:formatDate pattern="yyyy-MM-dd HH:mm:ss" value="${user.regTime}" /></td>
+								<td><fmt:formatDate pattern="yyyy-MM-dd HH:mm:ss"
+										value="${user.regTime}" /></td>
 								<td>${user.creatorName}</td>
+								<c:if test="${userType eq '2' or userType eq '3'}">
+									<td><fmt:formatDate pattern="yyyy-MM-dd HH:mm:ss"
+											value="${user.lastLoginTime}" /></td>
+								</c:if>
 								<c:choose>
 									<c:when test="${user.locked eq 1}">
 										<td><span class="badge bg-red">锁定</span></td>
@@ -194,32 +153,40 @@
 								</c:choose>
 
 								<td>
-									<button id="updateBtn" type="button" class="btn btn-xs btn-primary " onclick="updateItem('${user.id}')">编辑</button>
-									<button id="detailBtn" type="button" class="btn btn-xs btn-primary " onclick="detailItem('${user.id}')">详情</button>
-									<c:choose>
+									<button id="updateBtn" type="button"
+										class="btn btn-xs btn-primary "
+										onclick="updateItem('${user.id}')">编辑</button>
+									<button id="detailBtn" type="button"
+										class="btn btn-xs btn-primary "
+										onclick="detailItem('${user.id}')">详情</button> <c:choose>
 										<c:when test="${user.locked eq 1}">
-											<button id="lockBtn" type="button" class="btn btn-xs btn-warning" onclick="lockItem('${user.id}', 1)">解锁</button>
+											<button id="lockBtn" type="button"
+												class="btn btn-xs btn-warning"
+												onclick="lockItem('${user.id}', 1)">解锁</button>
 										</c:when>
 										<c:otherwise>
-											<button id="lockBtn" type="button" class="btn btn-xs btn-primary" onclick="lockItem('${user.id}', 0)">锁定</button>
+											<button id="lockBtn" type="button"
+												class="btn btn-xs btn-primary"
+												onclick="lockItem('${user.id}', 0)">锁定</button>
 										</c:otherwise>
-									</c:choose>
-									<c:if test="${user.userType eq 1}">
-										<button id="atyBtn" type="button" class="btn btn-xs btn-primary" onclick="atyDetail('${user.id}')">活动列表</button>
+									</c:choose> <c:if test="${user.userType eq 1}">
+										<button id="atyBtn" type="button"
+											class="btn btn-xs btn-primary"
+											onclick="atyDetail('${user.id}')">活动列表</button>
 									</c:if>
-								</td>					
+								</td>
 							</tr>
 						</c:forEach>
 					</table>
-					</div>
 				</div>
-				<!-- /.box-body -->
-				<!-- 分页 -->
-				<vino:pagination page="${page}"
-					action="user/userList/${userType}" contentSelector="#content-wrapper"></vino:pagination>
 			</div>
-			<!-- /.box -->
+			<!-- /.box-body -->
+			<!-- 分页 -->
+			<vino:pagination page="${page}" action="user/userList/${userType}"
+				contentSelector="#content-wrapper"></vino:pagination>
 		</div>
+		<!-- /.box -->
+	</div>
 	</div>
 </section>
 <!-- /.content -->
@@ -228,15 +195,13 @@
 <div class="modal fade" id="modal" tabindex="-1" role="dialog"
 	aria-labelledby="exampleModalLabel">
 	<div class="modal-dialog" role="document">
-		<div class="modal-content">
-			
-		</div>
+		<div class="modal-content"></div>
 	</div>
 </div>
 <!-- ./新增页面 modal框 -->
 <!-- 删除确认页面 modal框 -->
-<div class="modal fade" id="deleteConfirmModal" tabindex="-1" role="dialog"
-	aria-labelledby="exampleModalLabel">
+<div class="modal fade" id="deleteConfirmModal" tabindex="-1"
+	role="dialog" aria-labelledby="exampleModalLabel">
 	<div class="modal-dialog" role="document">
 		<div class="modal-content">
 			<div class="modal-header">
@@ -259,8 +224,8 @@
 
 <!-- ./锁定/解锁页面 modal框 -->
 <!-- 锁定/解锁确认页面 modal框 -->
-<div class="modal fade" id="lockConfirmModal" tabindex="-2" role="dialog"
-	aria-labelledby="lockModalLabel">
+<div class="modal fade" id="lockConfirmModal" tabindex="-2"
+	role="dialog" aria-labelledby="lockModalLabel">
 	<div class="modal-dialog" role="document">
 		<div class="modal-content">
 			<div class="modal-header">
@@ -341,9 +306,9 @@
 		$.ajax({
 			async : false,
 			cache : false,
-			type : 'GET',
+			type : 'POST',
 			data : $("#searchForm").serialize(),		 
-			url : "user/search",//请求的action路径  
+			url : "user/userList",//请求的action路径  
 			error : function() {//请求失败处理函数  
 				alert('失败');
 			},

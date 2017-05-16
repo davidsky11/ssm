@@ -189,7 +189,7 @@ public class NoAuthController {
 		/**
 		 * 1、先校验手机号码是否合法
 		 */
-		if (!ValidUtil.isValidMobile(phone)) {
+		if (Tool.isNotNullOrEmpty(phone) || !ValidUtil.isValidMobile(phone)) {
 			result.setCode(Const.ERROR_PARAM_MISS);
 			result.setMsg("手机号码有误，请仔细核对");
 			result.setSuccess(false);
@@ -865,7 +865,7 @@ public class NoAuthController {
     						/**
     						 * 设置正确的手机号码
     						 */
-    						if (Tool.isNullOrEmpty(recNo) && Tool.isNullOrEmpty(phone) && ValidUtil.isValidMobile(phone)) {
+    						if (Tool.isNullOrEmpty(recNo) || Tool.isNullOrEmpty(phone) || !ValidUtil.isValidMobile(phone)) {
     							result.setCode(Const.WARN_PHONE_ERROR);
     							result.setSuccess(false);
     							result.setMsg("手机号码不正确，请为用户绑定合适的手机号或者直接指定一个待充值的手机号码!");
@@ -1779,7 +1779,7 @@ public class NoAuthController {
 		/**
 		 * 1、先校验手机号码是否合法
 		 */
-		if (!ValidUtil.isValidMobile(phone)) {
+		if (Tool.isNotNullOrEmpty(phone) || !ValidUtil.isValidMobile(phone)) {
 			result.setCode(Const.ERROR_PARAM_MISS);
 			result.setMsg("手机号码有误，请仔细核对");
 			result.setSuccess(false);

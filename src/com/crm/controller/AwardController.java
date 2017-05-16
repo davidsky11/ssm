@@ -6,8 +6,6 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -34,8 +32,6 @@ import com.crm.util.common.Const;
 @Controller
 public class AwardController {
 
-	private final Logger log = LoggerFactory.getLogger(AwardController.class);
-
 	@Resource
 	private AwardService awardService;
 	@Resource
@@ -51,7 +47,7 @@ public class AwardController {
 	@RequestMapping(value = "/awd/list", method = RequestMethod.GET)
 	public String awdList(Model model, HttpServletRequest request, @RequestParam(value = "pageNumber", defaultValue = "1") int pageNumber) {
 		User user = (User) request.getSession().getAttribute(Const.SESSION_USER);
-		List<Activity> atyList = activityService.getActivityList("");
+		List<Activity> atyList = activityService.getActivityList(" and t.publisherId = '" + user.getId() + "'");
 		model.addAttribute("atyList", atyList);
 		
 		Page<Award> page = new Page<Award>();
@@ -158,6 +154,29 @@ public class AwardController {
 
 		model.addAttribute("page", page);
 		model.addAttribute("awds", page.getContent());
+		return "award/list";
+	}
+	
+	@RequestMapping(value = "/awd/search", method = RequestMethod.POST)
+	public String awdListPost(Model model, HttpServletRequest request, @RequestParam(value = "pageNumber", defaultValue = "1") int pageNumber,
+			@RequestParam("atyId") String atyId) {
+		User user = (User) request.getSession().getAttribute(Const.SESSION_USER);
+		List<Activity> atyList = activityService.getActivityList(" and t.publisherId = '" + user.getId() + "'");
+		model.addAttribute("atyList", atyList);
+		
+		StringBuffer conditionSql = new StringBuffer();
+		
+		Page<Award> page = new Page<Award>();
+		if (Tool.isNotNullOrEmpty(atyId)) {
+			model.addAttribute("atyId", atyId);
+			conditionSql.append(" and a.activityId = '").append(atyId).append("'");
+		}
+		
+		page = awardService.awdPages(page, conditionSql.toString());
+
+		model.addAttribute("page", page);
+		model.addAttribute("awds", page.getContent());
+	
 		return "award/list";
 	}
 
