@@ -458,7 +458,10 @@ public class NoAuthController {
 			ex.setInsideCode(insideCode);
 			ex.setAward(award);
 			ex.setAwardId(awardId);
-			ex.setExchangeType("POINT_EXCHANGE");
+			ex.setExchangeType(Const.EX_POINT);
+			
+			ex.setExchangeAmount(award.getAmount());
+			ex.setExchangeStyle(Const.EX_STYLE_DIRECT);
 			
 			try {
 				exchangeSercie.saveExchange(ex);
@@ -791,6 +794,24 @@ public class NoAuthController {
     					int remain = award.getRemain();  // 该奖项剩余数目
     					
     					/**
+						 * II 添加兑奖记录
+						 */
+						Exchange ex = this.pushAddress2Ex(address);
+						ex.setUserId(user.getId());
+						ex.setExchangeTime(new Date());
+						ex.setWaresId(wares.getId());
+						ex.setLongitude(Double.parseDouble(longitude));
+						ex.setLatitude(Double.parseDouble(latitude));
+						ex.setFlagCode(flagCode);
+						ex.setPublicCode(publicCode);
+						ex.setPrivateCode(privateCode);
+						ex.setInsideCode(insideCode);
+						ex.setAward(award);
+						ex.setAwardId(awardId);
+						ex.setExchangeType(exType);
+						ex.setBeneficiary(recNo);
+    					
+    					/**
 						 * 兑奖处理
 						 * 	先兑奖，再添加兑奖记录
 						 */
@@ -858,6 +879,8 @@ public class NoAuthController {
     				    	}
     				    	result.setMsg("您中了" + award.getTitle() + ", 系统正在为您开奖！");
     				    	
+    				    	ex.setExchangeAmount(award.getAmount());
+    				    	ex.setExchangeStyle(Const.EX_STYLE_DIRECT);
     						break;
     					case Const.EX_PHONE:
     						String phone = user.getTelephone();
@@ -904,6 +927,9 @@ public class NoAuthController {
     							return result;
     						}
     						
+    						ex.setExchangeAmount(award.getAmount());
+    				    	ex.setExchangeStyle(Const.EX_STYLE_DIRECT);
+    						
     						
     						break;
     					case Const.EX_Q_BILL:
@@ -947,6 +973,9 @@ public class NoAuthController {
     							return result;
     						}
     						
+    						ex.setExchangeAmount(award.getAmount());
+    				    	ex.setExchangeStyle(Const.EX_STYLE_DIRECT);
+    						
     						break;
     					case Const.EX_POINT:  // 积分兑换
     						/**
@@ -960,6 +989,9 @@ public class NoAuthController {
     						
     						this.userService.edit(user);
     						
+    						ex.setExchangeAmount(award.getAmount());
+    				    	ex.setExchangeStyle(Const.EX_STYLE_DIRECT);
+    						
     						break;
     					default:
     						result.setCode(Const.ERROR_PARAM_MISS);
@@ -968,26 +1000,7 @@ public class NoAuthController {
 							
 							return result;
     					}
-    					
-						/**
-						 * II 添加兑奖记录
-						 */
-						Exchange ex = this.pushAddress2Ex(address);
-						ex.setUserId(user.getId());
-						ex.setExchangeTime(new Date());
-						ex.setWaresId(wares.getId());
-						ex.setLongitude(Double.parseDouble(longitude));
-						ex.setLatitude(Double.parseDouble(latitude));
-						ex.setFlagCode(flagCode);
-						ex.setPublicCode(publicCode);
-						ex.setPrivateCode(privateCode);
-						ex.setInsideCode(insideCode);
-						ex.setAward(award);
-						ex.setAwardId(awardId);
-						ex.setExchangeType(exType);
-						ex.setBeneficiary(recNo);
 						
-    					//result.setData(ex);
 						result.setData(award);
     					
 						try {

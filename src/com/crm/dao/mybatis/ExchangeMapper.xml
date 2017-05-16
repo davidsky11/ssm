@@ -23,6 +23,8 @@
 		<result property="formattedAddress" column="formattedAddress" />
 		<result property="exchangeType" column="exchangeType" />
 		<result property="beneficiary" column="beneficiary" />
+		<result property="exchangeAmount" column="exchangeAmount" />
+		<result property="exchangeStyle" column="exchangeStyle" />
 		
 		<association property="user" resultMap="userMap" />
 		<association property="award" resultMap="awardMap" />
@@ -99,7 +101,9 @@
             <if test="sematicDescription !=null and sematicDescription !=''">sematicDescription,</if>
             <if test="formattedAddress !=null and formattedAddress !=''">formattedAddress,</if>
             <if test="flagCode !=null and flagCode !=''">flagCode,</if>
-            <if test="waresId !=null and waresId !=''">waresId</if>
+            <if test="waresId !=null and waresId !=''">waresId,</if>
+            <if test="exchangeStyle !=null and exchangeStyle !=''">exchangeStyle,</if>
+            <if test="exchangeAmount !=null and exchangeAmount !=''">exchangeAmount</if>
             </trim>)values(<trim suffixOverrides=",">
             <if test="id !=null and id !=''">#{id},</if>
             <if test="userId !=null and userId !=''">#{userId},</if>
@@ -117,7 +121,9 @@
             <if test="sematicDescription !=null and sematicDescription !=''">#{sematicDescription},</if>
             <if test="formattedAddress !=null and formattedAddress !=''">#{formattedAddress},</if>
             <if test="flagCode !=null and flagCode !=''">#{flagCode},</if>
-            <if test="waresId !=null and waresId !=''">#{waresId}</if>
+            <if test="waresId !=null and waresId !=''">#{waresId},</if>
+            <if test="exchangeStyle !=null and exchangeStyle !=''">#{exchangeStyle},</if>
+            <if test="exchangeAmount !=null and exchangeAmount !=''">#{exchangeAmount}</if>
             </trim>)
 	</insert>
 	
@@ -143,14 +149,16 @@
             <if test="formattedAddress !=null and formattedAddress !=''">formattedAddress=#{formattedAddress},</if>
             <if test="latitude !=null and latitude !=''">latitude=#{latitude},</if>
             <if test="flagCode !=null and flagCode !=''">flagCode=#{flagCode},</if>
-            <if test="waresId !=null and waresId !=''">waresId=#{waresId}</if>
+            <if test="waresId !=null and waresId !=''">waresId=#{waresId},</if>
+            <if test="exchangeStyle !=null and exchangeStyle !=''">exchangeStyle=#{exchangeStyle},</if>
+            <if test="exchangeAmount !=null and exchangeAmount !=''">exchangeAmount=#{exchangeAmount}</if>
     	</set>
     	where id = #{id}
     </update>
 
 	<select id="getExchangeList" resultType="com.crm.domain.Exchange">
 		select t.id,t.userId,t.exchangeTime,t.insideCode,t.privateCode,t.publicCode,t.longitude,t.latitude,t.flagCode,t.waresId，
-			t.country, t.province, t.city, t.distance, t.street, t.sematicDescription, t.formattedAddress
+			t.country, t.province, t.city, t.distance, t.street, t.sematicDescription, t.formattedAddress, t.exchangeStyle, t.exchangeAmount
 		 from exchange t where 1=1
 		<if test="conditionSql !=null and conditionSql !=''">
 			${conditionSql}
@@ -166,6 +174,7 @@
 	<select id="findByCondition" resultMap="exchangeMap">
 		select t.id,t.userId,t.exchangeTime,t.insideCode,t.privateCode,t.publicCode,t.longitude,t.latitude,
 		t.country, t.province, t.city, t.distance, t.street, t.sematicDescription, t.formattedAddress, t.flagCode,t.waresId,
+		t.exchangeStyle, t.exchangeAmount,
 		u.id u_id, u.username u_username, u.email u_email, u.regtime u_regtime, u.userAlias u_userAlias, u.thirdType u_thirdType,
 		a.id a_id, a.title a_title, a.description a_description, a.amount a_amount,
 		ac.id ac_id, ac.title ac_title, ac.description ac_description, ac.content ac_content,
@@ -183,7 +192,7 @@
 		<!-- select t.id,t.userId,t.exchangeTime,t.insideCode,t.privateCode from exchange t where 1=1
 		where t.publisherId = u.id and u.id = #{id} -->
 		select distinct t.id,t.userId,t.exchangeTime,t.insideCode,t.privateCode,t.publicCode,t.longitude,t.latitude,t.flagCode,t.waresId,
-		t.country, t.province, t.city, t.distance, t.street, t.sematicDescription, t.formattedAddress
+		t.country, t.province, t.city, t.distance, t.street, t.sematicDescription, t.formattedAddress, t.exchangeStyle, t.exchangeAmount
 		 from exchange t, sysuser a 
 		where (t.userId = a.id and a.id = #{id}) or (t.userName like concat('%',#{username},'%'))
 	</select> 
@@ -192,7 +201,7 @@
 		select t.id, t.userId, t.exchangeTime, t.insideCode, t.privateCode, 
 		t.publicCode, t.longitude, t.latitude, t.flagCode, t.waresId,
 		t.awardId, t.exchangeType, t.beneficiary,
-		t.country, t.province, t.city, t.distance, t.street, t.sematicDescription, t.formattedAddress,
+		t.country, t.province, t.city, t.distance, t.street, t.sematicDescription, t.formattedAddress, t.exchangeStyle, t.exchangeAmount,
 		u.id u_id, u.username u_username, u.email u_email, u.regtime u_regtime, u.userAlias u_userAlias, u.thirdType u_thirdType,
 		a.id a_id, a.title a_title, a.description a_description, a.amount a_amount,
 		ac.id ac_id, ac.title ac_title, ac.description ac_description, ac.content ac_content
@@ -219,7 +228,7 @@
 
 	<select id="datagridExchange" resultMap="exchangeMap">
 		select t.id, t.userId, t.exchangeTime, t.insideCode, t.privateCode, 
-		t.publicCode, t.longitude, t.latitude, t.flagCode, t.waresId,
+		t.publicCode, t.longitude, t.latitude, t.flagCode, t.waresId, t.exchangeStyle, t.exchangeAmount,
 		t.country, t.province, t.city, t.distance, t.street, t.sematicDescription, t.formattedAddress,
 		u.id u_id, u.username u_username, u.email u_email, u.regtime u_regtime, u.thirdType u_thirdType, u.userAlias u_userAlias,
 		a.id a_id, a.title a_title, a.description a_description, a.amount a_amount
@@ -248,7 +257,7 @@
 	
 	<select id="exPages" resultMap="exchangeMap">
 		select t.id, t.userId, t.exchangeTime, t.insideCode, t.privateCode, 
-		t.publicCode, t.longitude, t.latitude, t.flagCode, t.waresId,
+		t.publicCode, t.longitude, t.latitude, t.flagCode, t.waresId, t.exchangeStyle, t.exchangeAmount,
 		t.country, t.province, t.city, t.distance, t.street, t.sematicDescription, t.formattedAddress,
 		t.awardId, t.exchangeType, t.beneficiary,
 		u.id u_id, u.username u_username, u.email u_email, u.regtime u_regtime, u.userAlias u_userAlias, u.thirdType u_thirdType,
@@ -282,7 +291,7 @@
 	<select id="selectByPublisher" resultMap="exchangeMap">
 		select t.id, t.userId, t.exchangeTime, t.insideCode, t.privateCode, 
 		t.publicCode, t.longitude, t.latitude, t.flagCode, t.waresId,
-		t.awardId, t.exchangeType, t.beneficiary,
+		t.awardId, t.exchangeType, t.beneficiary, t.exchangeStyle, t.exchangeAmount,
 		t.country, t.province, t.city, t.distance, t.street, t.sematicDescription, t.formattedAddress,
 		u.id u_id, u.username u_username, u.email u_email, u.regtime u_regtime, u.userAlias u_userAlias, u.thirdType u_thirdType,
 		a.id a_id, a.title a_title, a.description a_description, a.amount a_amount,

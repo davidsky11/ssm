@@ -168,6 +168,12 @@ public class Const {
     public static final String EX_POINT = "POINT";
     
     /**
+     * 兑换形式
+     */
+    public static final String EX_STYLE_DIRECT = "DIRECT";  // 直接兑换
+    public static final String EX_STYLE_POINT = "POINT";  // 积分兑换
+    
+    /**
      * 兑奖状态 【未兑奖】
      */
     public static final String EX_STATUS_UNEXCHANGE = "0";

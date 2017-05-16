@@ -196,6 +196,7 @@ public class ExchangeController {
 			paramMap.put("endDate", endDate);
 			model.addAttribute("endDate", endDate);
 		}
+		conditionSql.append(" and t.exchangeStyle = '").append(Const.EX_STYLE_DIRECT).append("'");
 		
 		if (user != null) {
 			page = exchangeService.exPages(page, conditionSql.toString());
@@ -305,6 +306,8 @@ public class ExchangeController {
 			paramMap.put("endDate", endDate);
 			model.addAttribute("endDate", endDate);
 		}
+		
+		conditionSql.append(" and t.exchangeStyle = '").append(Const.EX_STYLE_DIRECT).append("'");
 		
 		if (user != null) {
 			page = exchangeService.selectByPublisher(page, conditionSql.toString(), user.getId());

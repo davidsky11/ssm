@@ -31,6 +31,8 @@ public class Exchange {
 	private String street;  // 街道
 	private String sematicDescription;  // 详细地址
 	private String formattedAddress;  // 地址
+	private String exchangeStyle;  // 兑换形式
+	private Double exchangeAmount;  // 兑换金额
 	private Wares wares;
 	private String awardId;
 	private Award award;
@@ -180,14 +182,29 @@ public class Exchange {
 	public void setFormattedAddress(String formattedAddress) {
 		this.formattedAddress = formattedAddress;
 	}
+	public String getExchangeStyle() {
+		return exchangeStyle;
+	}
+	public void setExchangeStyle(String exchangeStyle) {
+		this.exchangeStyle = exchangeStyle;
+	}
+	public Double getExchangeAmount() {
+		return exchangeAmount;
+	}
+	public void setExchangeAmount(Double exchangeAmount) {
+		this.exchangeAmount = exchangeAmount;
+	}
 	
 	@Override
 	public String toString() {
 		return "Exchange [id=" + id + ", userId=" + userId + ", user=" + user + ", exchangeTime=" + exchangeTime
 				+ ", insideCode=" + insideCode + ", privateCode=" + privateCode + ", publicCode=" + publicCode
 				+ ", longitude=" + longitude + ", latitude=" + latitude + ", flagCode=" + flagCode + ", waresId="
-				+ waresId + ", exchangeType=" + exchangeType + ", beneficiary=" + beneficiary + ", awardId=" + awardId
-				+ "]";
+				+ waresId + ", exchangeType=" + exchangeType + ", beneficiary=" + beneficiary + ", country=" + country
+				+ ", province=" + province + ", city=" + city + ", distance=" + distance + ", street=" + street
+				+ ", sematicDescription=" + sematicDescription + ", formattedAddress=" + formattedAddress
+				+ ", exchangeStyle=" + exchangeStyle + ", exchangeAmount=" + exchangeAmount + ", wares=" + wares
+				+ ", awardId=" + awardId + ", award=" + award + ", activity=" + activity + "]";
 	}
 	
 }

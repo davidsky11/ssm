@@ -28,32 +28,20 @@
 					<div class="table-responsive">
 						<table class="table table-hover center">
 							<tr>
-								<th style="width: 10px"><label> <input
-										id="allCheck" type="checkbox" class="minimal" value="0">
-								</label></th>
 								<th style="width: 10px">#</th>
 								<th>兑奖人</th>
 								<th>兑换时间</th>
 								<th>兑换积分数</th>
 								<th>兑换地点</th>
-								<th>操作</th>
 
 							</tr>
-							<c:forEach items="${users}" var="user" varStatus="status">
+							<c:forEach items="${points}" var="point" varStatus="status">
 								<tr>
-									<td><label><input type="checkbox"
-											class="minimal deleteCheckbox" value="${user.id}"></label></td>
 									<td>${status.count}</td>
-									<td>${user.username}</td>
-									<td><fmt:formatDate pattern="yyyy-MM-dd HH:mm:ss"
-											value="${user.createTime}" /></td>
-									<td>${user.creatorName}</td>
-									<td></td>
-									<td>
-										<button id="detailBtn" type="button"
-											class="btn  btn-xs btn-primary btn-flat"
-											onclick='detailItem(${user.id})'>详情</button>
-									</td>		
+									<td>${point.user.username}</td>
+									<td><fmt:formatDate pattern="yyyy-MM-dd HH:mm:ss" value="${point.exchangeTime}" /></td>
+									<td>${point.exchangeAmount * 100}</td>
+									<td>${ex.country} ${ex.province} ${ex.city}</td>
 								</tr>
 							</c:forEach>
 						</table>

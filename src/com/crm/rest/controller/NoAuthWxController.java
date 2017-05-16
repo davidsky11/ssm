@@ -65,8 +65,6 @@ public class NoAuthWxController {
 	private final Integer exchangeRatio = 100; // 兑换比率
 	
 	@Resource
-	private ExchangeService exchangeSercie;
-	@Resource
 	private ScanRecordService scanRecordService;
 	@Resource
 	private WaresService waresService;
@@ -400,7 +398,6 @@ public class NoAuthWxController {
 							return result;
 						}
 						
-						
 						break;
 					case Const.EX_Q_BILL:
 						String qq = user.getQq();
@@ -481,11 +478,13 @@ public class NoAuthWxController {
 					ex.setExchangeType(exType);
 					ex.setBeneficiary(recNo);
 					
-					//result.setData(ex);
+					ex.setExchangeAmount(award.getAmount());
+					ex.setExchangeStyle(Const.EX_STYLE_DIRECT);  // 直接兑换
+					
 					result.setData(award);
 					
 					try {
-						exchangeSercie.saveExchange(ex);
+						exchangeService.saveExchange(ex);
 					} catch (Exception e) {
 						e.printStackTrace();
 						
@@ -1136,15 +1135,18 @@ public class NoAuthWxController {
 	@ApiOperation(value = "积分兑换", httpMethod = "POST", response = ApiResult.class, notes = "根据openId兑换积分")
 	public ApiResult pointExchangeWx(@ApiParam(required = true, name = "openId", value = "公众号OpenId") @RequestParam("openId") String openId,
 			@ApiParam(required = true, name = "num", value = "积分兑换数量，100积分=1元") @RequestParam("num") String num,
-			@ApiParam(required = false, name = "exType", value = "积分兑换方式") @RequestParam("exType") String exType) {
+			@ApiParam(required = true, name = "exType", value = "积分兑换方式") @RequestParam("exType") String exType,
+			@ApiParam(required = false, name = "flagCode", value = "硬件标识码") @RequestParam("flagCode") String flagCode,
+			@ApiParam(required = false, name = "longitude", value = "经度") @RequestParam("longitude") String longitude, 
+			@ApiParam(required = false, name = "latitude", value = "纬度") @RequestParam("latitude") String latitude) {
 	
 		ApiResult result = new ApiResult();
 		result.setOperate(Const.OPERATE_POINTS_EXCHANGE);
 		
-		Integer points = 0, usePoints = 0, noUsePoints = 0;
+		Integer usePoints = 0, noUsePoints = 0;
 		
 		User user = this.userService.findByOpenId(openId);
-		
+
 		if (user == null) {  // 用户不存在，则直接返回
 			result.setCode(Const.ERROR_NULL_POINTER);
 			result.setSuccess(false);
@@ -1153,7 +1155,16 @@ public class NoAuthWxController {
 			return result;
 		}
 		
-		points = user.getPoints();
+		Address address = null;
+		try {
+			if (Tool.isNotNullOrEmpty(latitude) && Tool.isNotNullOrEmpty(longitude)) {
+				address = MapUtil.location2Address(Double.parseDouble(latitude), Double.parseDouble(longitude));
+			} 
+		} catch (NumberFormatException e) {
+		} catch (Exception e) {
+			e.printStackTrace();
+		} 
+		
 		usePoints = user.getUsePoints();
 		noUsePoints = user.getNoUsePoints();
 		
@@ -1165,6 +1176,14 @@ public class NoAuthWxController {
 			
 			return result;
 		}
+		
+		Exchange ex = this.pushAddress2Ex(address);
+		ex.setUserId(user.getId());
+		ex.setExchangeTime(new Date());
+		ex.setLongitude(Double.parseDouble(longitude));
+		ex.setLatitude(Double.parseDouble(latitude));
+		ex.setFlagCode(flagCode);
+		
 			
 		/**
 		 * 兑奖处理
@@ -1212,6 +1231,9 @@ public class NoAuthWxController {
 	    		result.setMsg("您使用积分兑换微信红包成功.");
 	    		result.setData(response.getMch_billno());
 	    	}
+	    	
+	    	ex.setExchangeAmount((amount / exchangeRatio) + 0.0d);
+			ex.setBeneficiary(user.getWeixin());
 			
 			break;
 		case Const.EX_PHONE:
@@ -1261,6 +1283,8 @@ public class NoAuthWxController {
 				return result;
 			}
 			
+			ex.setExchangeAmount(amount2 + 0.0d);
+			ex.setBeneficiary(phone);
 			
 			break;
 		case Const.EX_Q_BILL:
@@ -1287,6 +1311,9 @@ public class NoAuthWxController {
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
+			
+			ex.setExchangeAmount(amount3 + 0.0d);
+			ex.setBeneficiary(qq);
 			
 			if (Tool.isNotNullOrEmpty(res)) {
 				ResultBean rb2 = GsonUtils.fromJson(res, ResultBean.class);
@@ -1319,6 +1346,11 @@ public class NoAuthWxController {
 			
 			return result;
 		}
+		
+		ex.setExchangeType(exType);
+		ex.setExchangeStyle(Const.EX_STYLE_POINT);  // 积分兑换
+		
+		this.exchangeService.saveExchange(ex);
 		
 		return result;
 	}
@@ -1491,10 +1523,11 @@ public class NoAuthWxController {
 			ex.setInsideCode(insideCode);
 			ex.setAward(award);
 			ex.setAwardId(awardId);
-			ex.setExchangeType("POINT_EXCHANGE");
+			ex.setExchangeType(Const.EX_POINT);
+			ex.setExchangeStyle(Const.EX_STYLE_DIRECT);
 			
 			try {
-				exchangeSercie.saveExchange(ex);
+				exchangeService.saveExchange(ex);
 			} catch (Exception e) {
 				e.printStackTrace();
 				
@@ -1550,7 +1583,7 @@ public class NoAuthWxController {
 		conditionsql.append(" AND t.userId in (select id from sysuser where wxOpenId = '" + openId + "')")
 			.append(" order by exchangeTime desc");
 		
-		List<Exchange> list = this.exchangeSercie.findByCondition(conditionsql.toString());
+		List<Exchange> list = this.exchangeService.findByCondition(conditionsql.toString());
 		
 		if (list != null && list.size() > 0) {
 			result.setCode(Const.INFO_NORMAL);
